@@ -87,7 +87,45 @@ Cela crée les tables nécessaires dans la base.
 
 ---
 
-## 7. Conseils de sécurité
+## 7. Sécurité et assignation de masse
+
+### À propos de `$fillable` dans les modèles Laravel
+
+- **L’assignation de masse** permet de remplir plusieurs champs d’un modèle d’un coup, par exemple avec `Model::create($request->all())`.
+- **Risque** : Si tu n’utilises pas `$fillable`, un utilisateur peut tenter d’injecter des champs non prévus (ex : `is_admin`).
+- **Solution** : `$fillable` liste explicitement les champs autorisés à être remplis automatiquement.  
+  Cela protège ton application et te permet d’utiliser l’assignation de masse en toute sécurité.
+
+**Exemple dans `app/Models/Plant.php`** :
+```php
+protected $fillable = [
+    'name', 'scientific_name', 'purchase_date', 'purchase_place', 'purchase_price',
+    'category_id', 'description', 'watering_frequency', 'last_watering_date',
+    'light_requirement', 'temperature_min', 'temperature_max', 'humidity_level',
+    'soil_humidity', 'soil_ideal_ph', 'soil_type', 'info_url', 'main_photo',
+    'location', 'pot_size', 'health_status', 'last_fertilizing_date',
+    'fertilizing_frequency', 'last_repotting_date', 'next_repotting_date',
+    'growth_speed', 'max_height', 'is_toxic', 'flowering_season', 'difficulty_level',
+    'is_indoor', 'is_outdoor', 'is_favorite', 'is_archived', 'archived_date', 'archived_reason'
+];
+```
+
+---
+
+## 8. À propos de `HasFactory`
+
+- `HasFactory` est un trait Laravel qui permet de générer facilement des données de test via les **factories**.
+- Il est inclus par défaut dans chaque modèle généré.
+- Il n’est pas obligatoire pour le fonctionnement de base, mais recommandé pour les tests et le développement.
+
+**Exemple d’utilisation** :
+```php
+Plant::factory()->count(10)->create();
+```
+
+---
+
+## 9. Conseils de sécurité
 
 - Ne partage jamais ton fichier `.env` ou tes identifiants en clair.
 - Utilise un mot de passe fort pour l’utilisateur MySQL/MariaDB.
