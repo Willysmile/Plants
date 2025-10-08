@@ -48,5 +48,45 @@ class Plant extends Model
         'archived_date',
         'archived_reason'
     ];
+/**
+ * Les tags associés à cette plante.
+ */
+public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 
+    /**
+     * Photos associées à la plante
+     */
+    public function photos()
+    {
+        return $this->hasMany(Photo::class);
+    }
+
+    /**
+     * Plantes "filles" (daughters) issues de cette plante
+     */
+    public function daughters()
+    {
+        return $this->belongsToMany(
+            Plant::class,
+            'plant_propagations',
+            'parent_id',
+            'daughter_id'
+        )->withPivot('method','propagation_date')->withTimestamps();
+    }
+
+    /**
+     * Plantes "mères" (parents) dont cette plante est issue
+     */
+    public function parents()
+    {
+        return $this->belongsToMany(
+            Plant::class,
+            'plant_propagations',
+            'daughter_id',
+            'parent_id'
+        )->withPivot('method','propagation_date')->withTimestamps();
+    }
 }
