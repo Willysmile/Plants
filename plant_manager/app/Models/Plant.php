@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; 
 
 class Plant extends Model
 {
@@ -88,5 +90,27 @@ public function tags()
             'daughter_id',
             'parent_id'
         )->withPivot('method','propagation_date')->withTimestamps();
+    }
+        public static array $wateringLabels = [
+        1 => 'Très rare',
+        2 => 'Rare',
+        3 => 'Moyen',
+        4 => 'Fréquent',
+        5 => 'Quotidien',
+    ];
+
+    /**
+     * Labels pour les besoins en lumière.
+     */
+    public static array $lightLabels = [
+        1 => 'Faible lumière',
+        2 => 'Lumière modérée',
+        3 => 'Lumière moyenne',
+        4 => 'Bonne lumière',
+        5 => 'Soleil direct',
+    ];
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 }
