@@ -50,7 +50,7 @@
     </div>
   </div>
 
-  <!-- Modal container (inject HTML de plants.partials.modal via fetch) -->
+  <!-- Modal container -->
   <div id="plant-modal-root" x-data x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" @click="closeModal()"></div>
     <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
@@ -60,23 +60,38 @@
     (function(){
       const modalRoot = document.getElementById('plant-modal-root');
       const modalContent = document.getElementById('plant-modal-content');
+      
       function showModalHtml(html){
         modalContent.innerHTML = html;
         modalRoot.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        
+        // charger les images depuis le script JSON embarqué dans la modal
+        const dataScript = modalContent.querySelector('script[data-lightbox-images]');
+        if (dataScript) {
+          try {
+            window.globalLightboxImages = JSON.parse(dataScript.textContent);
+            console.log('Images modal chargées:', window.globalLightboxImages.length);
+          } catch(e) {
+            console.error('Erreur parsing images modal:', e);
+          }
+        }
       }
+      
       window.closeModal = function(){
         modalRoot.style.display = 'none';
         modalContent.innerHTML = '';
         document.body.style.overflow = '';
+        window.globalLightboxImages = []; // nettoyer
       };
+      
       document.addEventListener('click', function(e){
         const btn = e.target.closest('button[data-modal-url]');
         if(!btn) return;
         e.preventDefault();
         const url = btn.getAttribute('data-modal-url');
         if(!url) return;
-        // fetch partial HTML
+        
         fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
           .then(r => {
             if(!r.ok) throw new Error('Erreur de chargement');
@@ -89,11 +104,12 @@
           });
       });
 
-      // close on escape
       document.addEventListener('keydown', function(e){
         if(e.key === 'Escape') window.closeModal();
       });
     })();
   </script>
+  
+  @include('partials.lightbox')
 </body>
 </html>
