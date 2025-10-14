@@ -1,52 +1,99 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes Plantes</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plantes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>[x-cloak]{display:none!important}</style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Mes Plantes</h1>
-            <a href="{{ route('plants.create') }}" class="bg-green-500 text-white px-4 py-2 rounded">Ajouter une plante</a>
-        </div>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold">Plantes</h1>
+      <a href="{{ route('plants.create') }}" class="px-3 py-1 bg-blue-600 text-white rounded">Ajouter</a>
+    </header>
 
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                {{ session('success') }}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      @foreach($plants as $plant)
+        <article class="bg-white rounded-lg shadow overflow-hidden">
+          <div class="w-full h-48 bg-gray-100 overflow-hidden">
+            <button
+              type="button"
+              class="w-full h-full block focus:outline-none"
+              data-modal-url="{{ route('plants.modal', $plant) }}"
+              aria-label="Ouvrir {{ $plant->name }}"
+            >
+              @if($plant->main_photo)
+                <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="w-full h-full object-cover">
+              @else
+                <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
+              @endif
+            </button>
+          </div>
+
+          <div class="p-3">
+            <h3 class="text-sm font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
+            <p class="text-xs text-gray-500 mt-1 truncate">{{ $plant->category->name ?? '—' }}</p>
+            <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
+              <span>Arrosage: {{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}</span>
+              <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline">Détails</a>
             </div>
-        @endif
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @forelse($plants as $plant)
-                <div class="bg-white rounded-lg shadow p-4">
-                    <div class="flex justify-between">
-                        <h2 class="text-xl font-semibold">{{ $plant->name }}</h2>
-                        <span class="text-sm text-gray-500">{{ $plant->category->name ?? 'Sans catégorie' }}</span>
-                    </div>
-                    <p class="text-gray-600 italic">{{ $plant->scientific_name }}</p>
-                    
-                    @if($plant->main_photo)
-                        <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="mt-2 w-full h-40 object-cover rounded">
-                    @endif
-
-                    <div class="mt-4 flex justify-between">
-                        <a href="{{ route('plants.show', $plant) }}" class="text-blue-500">Détails</a>
-                        <a href="{{ route('plants.edit', $plant) }}" class="text-yellow-500">Modifier</a>
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-3 text-center py-8">
-                    <p>Aucune plante trouvée. Ajoutez votre première plante !</p>
-                </div>
-            @endforelse
-        </div>
-
-        <div class="mt-6">
-            {{ $plants->links() }}
-        </div>
+          </div>
+        </article>
+      @endforeach
     </div>
+
+    <div class="mt-6">
+      {{ $plants->links() }}
+    </div>
+  </div>
+
+  <!-- Modal container (inject HTML de plants.partials.modal via fetch) -->
+  <div id="plant-modal-root" x-data x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" @click="closeModal()"></div>
+    <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
+  </div>
+
+  <script>
+    (function(){
+      const modalRoot = document.getElementById('plant-modal-root');
+      const modalContent = document.getElementById('plant-modal-content');
+      function showModalHtml(html){
+        modalContent.innerHTML = html;
+        modalRoot.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+      window.closeModal = function(){
+        modalRoot.style.display = 'none';
+        modalContent.innerHTML = '';
+        document.body.style.overflow = '';
+      };
+      document.addEventListener('click', function(e){
+        const btn = e.target.closest('button[data-modal-url]');
+        if(!btn) return;
+        e.preventDefault();
+        const url = btn.getAttribute('data-modal-url');
+        if(!url) return;
+        // fetch partial HTML
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
+          .then(r => {
+            if(!r.ok) throw new Error('Erreur de chargement');
+            return r.text();
+          })
+          .then(html => showModalHtml(html))
+          .catch(err => {
+            console.error(err);
+            alert('Impossible de charger la fiche. Voir console.');
+          });
+      });
+
+      // close on escape
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape') window.closeModal();
+      });
+    })();
+  </script>
 </body>
 </html>

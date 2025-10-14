@@ -1,116 +1,124 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier {{ $plant->name }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Modifier : {{ $plant->name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>[x-cloak]{display:none!important}</style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4">
-        <div class="mb-4">
-            <a href="{{ route('plants.show', $plant) }}" class="text-blue-500">&larr; Retour au détail</a>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-4xl mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold">Modifier la plante</h1>
+      <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-200 rounded">Retour fiche</a>
+    </header>
+
+    <form action="{{ route('plants.update', $plant) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6 space-y-6">
+      @csrf
+      @method('PATCH')
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nom</label>
+          <input name="name" value="{{ old('name', $plant->name) }}" class="mt-1 block w-full border rounded p-2" required>
         </div>
 
-        <h1 class="text-2xl font-bold mb-6">Modifier {{ $plant->name }}</h1>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nom scientifique</label>
+          <input name="scientific_name" value="{{ old('scientific_name', $plant->scientific_name) }}" class="mt-1 block w-full border rounded p-2">
+        </div>
 
-        @if($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700">Description</label>
+          <textarea name="description" rows="4" class="mt-1 block w-full border rounded p-2">{{ old('description', $plant->description) }}</textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Catégorie</label>
+          <select name="category_id" class="mt-1 block w-full border rounded p-2">
+            <option value="">— Aucun —</option>
+            @foreach($categories as $cat)
+              <option value="{{ $cat->id }}" @selected(old('category_id', $plant->category_id)==$cat->id)>{{ $cat->name }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Tags (Ctrl/Cmd pour multi)</label>
+          <select name="tags[]" multiple class="mt-1 block w-full border rounded p-2">
+            @foreach($tags as $tag)
+              <option value="{{ $tag->id }}" @selected(in_array($tag->id, old('tags', $plant->tags->pluck('id')->toArray())))>{{ $tag->name }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Arrosage</label>
+          <select name="watering_frequency" class="mt-1 block w-full border rounded p-2">
+            <option value="">— Sélectionner —</option>
+            @foreach(\App\Models\Plant::$wateringLabels as $key => $label)
+              <option value="{{ $key }}" @selected((string) old('watering_frequency', $plant->watering_frequency) === (string)$key)>{{ $label }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Lumière</label>
+          <select name="light_requirement" class="mt-1 block w-full border rounded p-2">
+            <option value="">— Sélectionner —</option>
+            @foreach(\App\Models\Plant::$lightLabels as $key => $label)
+              <option value="{{ $key }}" @selected((string) old('light_requirement', $plant->light_requirement) === (string)$key)>{{ $label }}</option>
+            @endforeach
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-medium mb-2">Photo principale</h3>
+        @if($plant->main_photo)
+          <div class="mb-2">
+            <img src="{{ Storage::url($plant->main_photo) }}" alt="" class="w-48 h-48 object-cover rounded shadow">
+          </div>
         @endif
+        <input type="file" name="main_photo" accept="image/*" class="block">
+        <p class="text-xs text-gray-500 mt-1">Remplacer la photo principale (optionnel).</p>
+      </div>
 
-        <form action="{{ route('plants.update', $plant) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6">
-            @csrf
-            @method('PUT')
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Champs obligatoires -->
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nom *</label>
-                    <input type="text" name="name" id="name" required value="{{ old('name', $plant->name) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
+      <div>
+        <h3 class="text-lg font-medium mb-2">Ajouter des photos (galerie)</h3>
+        <input type="file" name="photos[]" accept="image/*" multiple class="block">
+        <p class="text-xs text-gray-500 mt-1">Les nouvelles images seront ajoutées à la galerie.</p>
+      </div>
 
-                <div>
-                    <label for="scientific_name" class="block text-sm font-medium text-gray-700">Nom scientifique</label>
-                    <input type="text" name="scientific_name" id="scientific_name" value="{{ old('scientific_name', $plant->scientific_name) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
+      <div>
+        <h3 class="text-lg font-medium">Galerie & légendes</h3>
+        <p class="text-xs text-gray-500 mb-3">Modifie les légendes ci‑dessous. Pour supprimer une photo, coche "Supprimer".</p>
 
-                <div>
-                    <label for="category_id" class="block text-sm font-medium text-gray-700">Catégorie *</label>
-                    <select name="category_id" id="category_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option value="">Sélectionner...</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id', $plant->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="watering_frequency" class="block text-sm font-medium text-gray-700">Fréquence d'arrosage *</label>
-                    <select name="watering_frequency" id="watering_frequency" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        @foreach(\App\Models\Plant::$wateringLabels as $key => $label)
-                            <option value="{{ $key }}" {{ old('watering_frequency', $plant->watering_frequency) == $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="light_requirement" class="block text-sm font-medium text-gray-700">Besoin en lumière *</label>
-                    <select name="light_requirement" id="light_requirement" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        @foreach(\App\Models\Plant::$lightLabels as $key => $label)
-                            <option value="{{ $key }}" {{ old('light_requirement', $plant->light_requirement) == $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          @foreach($plant->photos as $photo)
+            <div class="bg-gray-50 p-3 rounded shadow-sm">
+              <img src="{{ Storage::url($photo->filename) }}" alt="" class="w-full h-32 object-cover rounded mb-2">
+              <label class="block text-xs text-gray-600 mb-1">Légende</label>
+              <textarea name="photo_descriptions[{{ $photo->id }}]" rows="2" maxlength="1000" class="w-full border p-2 rounded text-sm">{{ old('photo_descriptions.'.$photo->id, $photo->description) }}</textarea>
+              <label class="inline-flex items-center text-xs text-red-600 mt-2">
+                <input type="checkbox" name="photo_delete[{{ $photo->id }}]" value="1" class="mr-2"> Supprimer
+              </label>
             </div>
+          @endforeach
+        </div>
+      </div>
 
-            <!-- Description -->
-            <div class="mt-4">
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('description', $plant->description) }}</textarea>
-            </div>
-
-            <!-- Tags -->
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700">Tags</label>
-                <div class="mt-2 flex flex-wrap gap-2">
-                    @foreach($tags as $tag)
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
-                                {{ in_array($tag->id, old('tags', $plant->tags->pluck('id')->toArray())) ? 'checked' : '' }} 
-                                class="rounded border-gray-300 text-indigo-600 shadow-sm">
-                            <span class="ml-2">{{ $tag->name }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Photo actuelle + changement -->
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700">Photo principale</label>
-                
-                @if($plant->main_photo)
-                    <div class="mt-2 flex items-center">
-                        <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="h-20 w-auto rounded">
-                        <span class="ml-2 text-sm text-gray-500">Photo actuelle</span>
-                    </div>
-                @endif
-                
-                <input type="file" name="main_photo" id="main_photo" accept="image/*" class="mt-2 block w-full">
-                <p class="text-sm text-gray-500">Laissez vide pour conserver l'image actuelle</p>
-            </div>
-
-            <!-- Actions -->
-            <div class="mt-6 flex justify-between">
-                <a href="{{ route('plants.show', $plant) }}" class="bg-gray-300 px-4 py-2 rounded">Annuler</a>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Enregistrer</button>
-            </div>
-        </form>
-    </div>
+      <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+          <em>Les légendes sont limitées à 1000 caractères.</em>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="{{ route('plants.show', $plant) }}" class="px-3 py-2 bg-gray-200 rounded">Annuler</a>
+          <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Enregistrer</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
