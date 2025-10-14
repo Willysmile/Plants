@@ -1,100 +1,88 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une plante</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Nouvelle plante</title>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-6">Ajouter une plante</h1>
+<body class="p-6 bg-gray-50">
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-xl font-bold mb-4">Ajouter une plante</h1>
 
-        @if($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    @if($errors->any())
+      <div class="mb-4 text-red-700">
+        <ul>
+          @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
 
-        <form action="{{ route('plants.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6">
-            @csrf
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Champs obligatoires -->
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Nom *</label>
-                    <input type="text" name="name" id="name" required value="{{ old('name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
+    <form action="{{ route('plants.store') }}" method="post" enctype="multipart/form-data">
+      @csrf
 
-                <div>
-                    <label for="scientific_name" class="block text-sm font-medium text-gray-700">Nom scientifique</label>
-                    <input type="text" name="scientific_name" id="scientific_name" value="{{ old('scientific_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
+      <label class="block mb-2">Nom *
+        <input name="name" required class="w-full border p-2 rounded" value="{{ old('name') }}">
+      </label>
 
-                <div>
-                    <label for="category_id" class="block text-sm font-medium text-gray-700">Catégorie *</label>
-                    <select name="category_id" id="category_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        <option value="">Sélectionner...</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+      <label class="block mb-2">Nom scientifique
+        <input name="scientific_name" class="w-full border p-2 rounded" value="{{ old('scientific_name') }}">
+      </label>
 
-                <div>
-                    <label for="watering_frequency" class="block text-sm font-medium text-gray-700">Fréquence d'arrosage *</label>
-                    <select name="watering_frequency" id="watering_frequency" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        @foreach(\App\Models\Plant::$wateringLabels as $key => $label)
-                            <option value="{{ $key }}" {{ old('watering_frequency') == $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+      <label class="block mb-2">Catégorie *
+        <select name="category_id" required class="w-full border p-2 rounded">
+          <option value="">Sélectionner...</option>
+          @foreach($categories as $cat)
+            <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+          @endforeach
+        </select>
+      </label>
 
-                <div>
-                    <label for="light_requirement" class="block text-sm font-medium text-gray-700">Besoin en lumière *</label>
-                    <select name="light_requirement" id="light_requirement" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        @foreach(\App\Models\Plant::$lightLabels as $key => $label)
-                            <option value="{{ $key }}" {{ old('light_requirement') == $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+      <label class="block mb-2">Fréquence d'arrosage *
+        <select name="watering_frequency" required class="w-full border p-2 rounded">
+          @foreach(\App\Models\Plant::$wateringLabels as $k=>$v)
+            <option value="{{ $k }}" {{ old('watering_frequency') == $k ? 'selected' : '' }}>{{ $v }}</option>
+          @endforeach
+        </select>
+      </label>
 
-            <!-- Description -->
-            <div class="mt-4">
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">{{ old('description') }}</textarea>
-            </div>
+      <label class="block mb-2">Besoin en lumière *
+        <select name="light_requirement" required class="w-full border p-2 rounded">
+          @foreach(\App\Models\Plant::$lightLabels as $k=>$v)
+            <option value="{{ $k }}" {{ old('light_requirement') == $k ? 'selected' : '' }}>{{ $v }}</option>
+          @endforeach
+        </select>
+      </label>
 
-            <!-- Tags -->
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700">Tags</label>
-                <div class="mt-2 flex flex-wrap gap-2">
-                    @foreach($tags as $tag)
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ in_array($tag->id, old('tags', [])) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm">
-                            <span class="ml-2">{{ $tag->name }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
+      <label class="block mb-2">Description
+        <textarea name="description" class="w-full border p-2 rounded">{{ old('description') }}</textarea>
+      </label>
 
-            <!-- Photo principale -->
-            <div class="mt-4">
-                <label for="main_photo" class="block text-sm font-medium text-gray-700">Photo principale</label>
-                <input type="file" name="main_photo" id="main_photo" accept="image/*" class="mt-1 block w-full">
-            </div>
+      <label class="block mb-2">Tags
+        <div class="flex flex-wrap gap-2 mt-2">
+          @foreach($tags as $tag)
+            <label class="inline-flex items-center">
+              <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ in_array($tag->id, old('tags', [])) ? 'checked' : '' }}>
+              <span class="ml-2">{{ $tag->name }}</span>
+            </label>
+          @endforeach
+        </div>
+      </label>
 
-            <!-- Actions -->
-            <div class="mt-6 flex justify-between">
-                <a href="{{ route('plants.index') }}" class="bg-gray-300 px-4 py-2 rounded">Annuler</a>
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Ajouter</button>
-            </div>
-        </form>
-    </div>
+      <label class="block mb-2">Photo principale
+        <input type="file" name="main_photo" accept="image/*" class="w-full">
+      </label>
+
+      <label class="block mb-2">Galerie (plusieurs images acceptées)
+        <input type="file" name="photos[]" accept="image/*" multiple class="w-full">
+      </label>
+
+      <div class="flex gap-2 mt-4">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded">Créer</button>
+        <a href="{{ route('plants.index') }}" class="px-4 py-2 bg-gray-200 rounded">Annuler</a>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
