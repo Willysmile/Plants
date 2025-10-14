@@ -30,7 +30,7 @@
       <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2">
           @if($plant->main_photo)
-            <button type="button" onclick="openLightbox(0)" style="background:none;border:0;padding:0;">
+            <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
               <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="w-full h-96 object-cover rounded">
             </button>
           @else
@@ -53,64 +53,36 @@
           </div>
         </aside>
       </div>
-@php $lightboxStart = $plant->main_photo ? 1 : 0; @endphp
 
-@if($plant->photos->count())
-  <div class="mt-6">
-    <h2 class="text-lg font-semibold mb-3">Galerie</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      @foreach($plant->photos as $i => $photo)
-        <button type="button" onclick="openLightbox({{ $lightboxStart + $i }})" style="background:none;border:0;padding:0;">
-          <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" class="w-full h-36 object-cover rounded">
-        </button>
+      @php $lightboxStart = $plant->main_photo ? 1 : 0; @endphp
+
+      @if($plant->photos->count())
+        <div class="mt-6">
+          <h2 class="text-lg font-semibold mb-3">Galerie</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            @foreach($plant->photos as $i => $photo)
+              <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" style="background:none;border:0;padding:0;">
+                <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" class="w-full h-36 object-cover rounded">
+              </button>
+            @endforeach
+          </div>
+        </div>
+      @endif
+    </div>
+  </div>
+
+ <script>
+    // tableau d'images global utilisé par la lightbox incluse via partial
+    window.globalLightboxImages = [
+      @if($plant->main_photo)
+        { url: {!! json_encode(Storage::url($plant->main_photo)) !!}, caption: {!! json_encode($plant->name) !!} }@if($plant->photos->count()),@endif
+      @endif
+      @foreach($plant->photos as $photo)
+        { url: {!! json_encode(Storage::url($photo->filename)) !!}, caption: {!! json_encode($photo->description ?? '') !!} }@if(!$loop->last),@endif
       @endforeach
-    </div>
-  </div>
-@endif
-    </div>
-  </div>
+    ];
+  </script>
 
-  <!-- lightbox : ne dépasse pas l'écran -->
-<div id="lb" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-6" role="dialog" aria-modal="true">
-  <div class="relative" style="max-width:100%;max-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-    <button onclick="closeLightbox()" aria-label="Fermer" style="position:absolute;right:12px;top:12px;z-index:60;background:#fff;border-radius:6px;padding:6px 8px;border:0;cursor:pointer;">✕</button>
-
-    <img id="lb-img" src="" alt="" 
-         style="max-width:calc(100vw - 48px); max-height:calc(100vh - 96px); width:auto; height:auto; display:block; object-fit:contain; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.6);">
-
-    <div id="lb-caption" style="color:#fff;margin-top:12px;text-align:center;max-width:calc(100vw - 48px);word-break:break-word"></div>
-  </div>
-</div>
-
-<script>
- const images = [
-  @if($plant->main_photo)
-    { url: "{{ Storage::url($plant->main_photo) }}", caption: {!! json_encode($plant->name) !!} }@if($plant->photos->count()),@endif
-  @endif
-  @foreach($plant->photos as $photo)
-    { url: "{{ Storage::url($photo->filename) }}", caption: {!! json_encode($photo->description ?? '') !!} }@if(!$loop->last),@endif
-  @endforeach
-];
-  function openLightbox(i){
-    const lb = document.getElementById('lb');
-    const img = document.getElementById('lb-img');
-    const cap = document.getElementById('lb-caption');
-    if(!images[i]) return;
-    img.src = images[i].url;
-    cap.textContent = images[i].caption || '';
-    lb.classList.remove('hidden');
-    lb.style.display = 'flex';
-    // bloquer scroll page
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLightbox(){
-    const lb = document.getElementById('lb');
-    document.getElementById('lb-img').src = '';
-    lb.classList.add('hidden');
-    lb.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
-</script>
+  @include('partials.lightbox')
 </body>
 </html>
