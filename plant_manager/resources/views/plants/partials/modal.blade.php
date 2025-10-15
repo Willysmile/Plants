@@ -5,21 +5,21 @@
       <div class="mb-2">
         <h2 class="text-xl font-semibold">{{ $plant->name }}</h2>
         @if($plant->scientific_name)
-          <div class="text-sm italic text-gray-500 mt-1">{{ $plant->scientific_name }}</div>
+        <div class="text-sm italic text-gray-500 mt-1">{{ $plant->scientific_name }}</div>
         @endif
       </div>
 
       <div class="rounded overflow-hidden mb-3" style="flex:0 0 60%; min-height:0;">
         @if($plant->main_photo)
-          <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
-            <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
-          </button>
+        <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
+          <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
         @elseif($plant->photos->count())
-          <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
-            <img src="{{ Storage::url($plant->photos->first()->filename) }}" alt="{{ $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
-          </button>
+        <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
+          <img src="{{ Storage::url($plant->photos->first()->filename) }}" alt="{{ $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
         @else
-          <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
+        <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
         @endif
       </div>
 
@@ -27,23 +27,32 @@
         <h3 class="font-medium text-sm mb-2 text-center">Galerie</h3>
 
         @php
-          $gallery = $plant->photos->filter(function($p) use ($plant){
-            if ($plant->main_photo && $p->filename === $plant->main_photo) return false;
-            if (isset($p->is_main) && $p->is_main) return false;
-            return true;
-          })->values();
-          $lightboxStart = $plant->main_photo ? 1 : 0;
+        $gallery = $plant->photos->filter(function($p) use ($plant){
+          if ($plant->main_photo && $p->filename === $plant->main_photo) return false;
+          if (isset($p->is_main) && $p->is_main) return false;
+          return true;
+        })->values();
+        $lightboxStart = $plant->main_photo ? 1 : 0;
+        $maxGallery = 2; // Afficher max 2 photos
         @endphp
 
         <div class="flex justify-center">
           <div class="grid grid-cols-3 gap-2">
-            @forelse($gallery as $i => $photo)
+            @for($i = 0; $i < min($maxGallery, $gallery->count()); $i++)
               <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" style="aspect-ratio:1/1; width:100px; height:100px; padding:0; border:0; background:transparent;" aria-label="Ouvrir image">
-                <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;">
+                <img src="{{ Storage::url($gallery[$i]->filename) }}" alt="{{ $gallery[$i]->description ?? $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;">
               </button>
-            @empty
-              <div class="col-span-3 text-center text-sm text-gray-500">Aucune image</div>
-            @endforelse
+            @endfor
+            @if($gallery->count() > $maxGallery)
+              <a href="{{ route('plants.show', $plant) }}" 
+                 style="width:100px; height:100px; padding:0; background:transparent; display:flex; align-items:center; justify-content:center; border-radius:6px; text-decoration:none; transition:all 0.2s;" 
+                 class="more-photos" 
+                 aria-label="Voir plus de photos" 
+                 onmouseover="this.style.border='1px solid #15803d'; this.querySelector('span').style.color='#15803d';" 
+                 onmouseout="this.style.border='0'; this.querySelector('span').style.color='#333';">
+                <span style="font-size:48px; color:#333; line-height:0.5; transition:color 0.2s;">⋯</span>
+              </a>
+            @endif
           </div>
         </div>
       </div>
@@ -59,7 +68,7 @@
       </div>
 
       @if($plant->description)
-        <p class="text-sm text-gray-700 mb-3">{{ $plant->description }}</p>
+      <p class="text-sm text-gray-700 mb-3">{{ $plant->description }}</p>
       @endif
 
       <div class="mb-4">
