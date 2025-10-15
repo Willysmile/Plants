@@ -1,91 +1,98 @@
-<div id="global-lb" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-6" role="dialog" aria-modal="true" style="display:none;">
-  <div class="relative" style="max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;gap:20px;">
-    <!-- Flèche gauche SVG -->
-    <button id="global-lb-prev" aria-label="Image précédente" style="background:transparent;border:0;cursor:pointer;flex-shrink:0;padding:0;">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
-    
-    <div style="display:flex;flex-direction:column;align-items:center;max-width:calc(100vw - 200px);position:relative;">
-      <!-- Croix de fermeture en haut à droite sur la photo, même couleur que les flèches -->
-      <button id="global-lb-close" aria-label="Fermer" style="position:absolute;top:10px;right:10px;z-index:61;background:transparent;border:0;cursor:pointer;font-size:24px;color:#15803d;font-weight:bold;">✕</button>
-      <img id="global-lb-img" src="" alt="" style="max-width:100%; max-height:calc(100vh - 120px); width:auto; height:auto; object-fit:contain; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.6);">
-      <div id="global-lb-caption" style="color:#fff;margin-top:12px;text-align:center;max-width:100%;word-break:break-word"></div>
-      <!-- Compteur ajusté pour éviter la coupure -->
-      <div id="global-lb-counter" style="color:#fff;margin-top:8px;margin-bottom:10px;font-size:14px;"></div>
+<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:600px;max-width:calc(100vw - 40px);">
+  <div class="h-full grid grid-cols-1 lg:grid-cols-2" style="height:100%;">
+    <div class="flex flex-col p-3" style="overflow:hidden;">
+      <!-- Noms au-dessus de la photo principale -->
+      <div class="mb-2">
+        <h2 class="text-xl font-semibold">{{ $plant->name }}</h2>
+        @if($plant->scientific_name)
+          <div class="text-sm italic text-gray-500 mt-1">{{ $plant->scientific_name }}</div>
+        @endif
+      </div>
+
+      <div class="rounded overflow-hidden mb-3" style="flex:0 0 60%; min-height:0;">
+        @if($plant->main_photo)
+          <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
+            <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+          </button>
+        @elseif($plant->photos->count())
+          <button type="button" onclick="openLightboxGlobal(0)" style="background:none;border:0;padding:0;">
+            <img src="{{ Storage::url($plant->photos->first()->filename) }}" alt="{{ $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;">
+          </button>
+        @else
+          <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
+        @endif
+      </div>
+
+      <div class="pt-2" style="flex:0 0 40%; min-height:0;">
+        <h3 class="font-medium text-sm mb-2 text-center">Galerie</h3>
+
+        @php
+          $gallery = $plant->photos->filter(function($p) use ($plant){
+            if ($plant->main_photo && $p->filename === $plant->main_photo) return false;
+            if (isset($p->is_main) && $p->is_main) return false;
+            return true;
+          })->values();
+          $lightboxStart = $plant->main_photo ? 1 : 0;
+        @endphp
+
+        <div class="flex justify-center">
+          <div class="grid grid-cols-3 gap-2">
+            @forelse($gallery as $i => $photo)
+              <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" style="aspect-ratio:1/1; width:100px; height:100px; padding:0; border:0; background:transparent;" aria-label="Ouvrir image">
+                <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;">
+              </button>
+            @empty
+              <div class="col-span-3 text-center text-sm text-gray-500">Aucune image</div>
+            @endforelse
+          </div>
+        </div>
+      </div>
     </div>
-    
-    <!-- Flèche droite SVG -->
-    <button id="global-lb-next" aria-label="Image suivante" style="background:transparent;border:0;cursor:pointer;flex-shrink:0;padding:0;">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    </button>
+
+    <div class="p-4 overflow-auto" style="height:100%;">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm">Voir la fiche</a>
+          <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm">Éditer</a>
+          <button onclick="window.closeModal && window.closeModal()" class="px-3 py-1 bg-gray-200 rounded text-sm">Fermer</button>
+        </div>
+      </div>
+
+      @if($plant->description)
+        <p class="text-sm text-gray-700 mb-3">{{ $plant->description }}</p>
+      @endif
+
+      <div class="mb-4">
+        <div class="grid grid-cols-1 gap-2 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            <strong class="w-24 text-gray-700">Catégorie :</strong>
+            <div class="text-gray-800">{{ $plant->category->name ?? '—' }}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <strong class="w-24 text-gray-700">Arrosage :</strong>
+            <div class="text-gray-800">{{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <strong class="w-24 text-gray-700">Lumière :</strong>
+            <div class="text-gray-800">{{ \App\Models\Plant::$lightLabels[$plant->light_requirement] ?? $plant->light_requirement }}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <strong class="w-24 text-gray-700">Tags :</strong>
+            <div class="text-gray-800">{{ $plant->tags->pluck('name')->join(', ') ?: '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script type="application/json" data-lightbox-images>
+[
+  @if($plant->main_photo)
+    { "url": {!! json_encode(Storage::url($plant->main_photo)) !!}, "caption": {!! json_encode($plant->name) !!} }@if($gallery->count()),@endif
+  @endif
+  @foreach($gallery as $p)
+    { "url": {!! json_encode(Storage::url($p->filename)) !!}, "caption": {!! json_encode($p->description ?? '') !!} }@if(!$loop->last),@endif
+  @endforeach
+]
+  </script>
 </div>
-
-<script>
-(function(){
-  const overlay = document.getElementById('global-lb');
-  const img = document.getElementById('global-lb-img');
-  const cap = document.getElementById('global-lb-caption');
-  const counter = document.getElementById('global-lb-counter');
-  const closeBtn = document.getElementById('global-lb-close');
-  const prevBtn = document.getElementById('global-lb-prev');
-  const nextBtn = document.getElementById('global-lb-next');
-  
-  let currentIndex = 0;
-
-  function openByIndex(index){
-    const arr = window.globalLightboxImages || [];
-    if (!arr.length) return;
-    
-    if (index < 0) index = arr.length - 1;
-    if (index >= arr.length) index = 0;
-    
-    currentIndex = index;
-    img.src = arr[index].url;
-    cap.textContent = arr[index].caption || '';
-    counter.textContent = `${index + 1} / ${arr.length}`;
-    show();
-  }
-
-  function show(){
-    overlay.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeAll(){
-    overlay.style.display = 'none';
-    img.src = '';
-    cap.textContent = '';
-    counter.textContent = '';
-    document.body.style.overflow = '';
-  }
-
-  function prev(){
-    openByIndex(currentIndex - 1);
-  }
-
-  function next(){
-    openByIndex(currentIndex + 1);
-  }
-
-  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeAll(); });
-  closeBtn.addEventListener('click', closeAll);
-  prevBtn.addEventListener('click', prev);
-  nextBtn.addEventListener('click', next);
-  
-  document.addEventListener('keydown', function(e){
-    if (overlay.style.display === 'none') return;
-    if (e.key === 'Escape') closeAll();
-    if (e.key === 'ArrowLeft') prev();
-    if (e.key === 'ArrowRight') next();
-  });
-
-  window.openLightboxGlobal = openByIndex;
-  if (typeof window.openLightbox !== 'function') window.openLightbox = openByIndex;
-  window.closeLightboxGlobal = closeAll;
-})();
-</script>
