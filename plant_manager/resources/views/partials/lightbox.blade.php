@@ -7,11 +7,16 @@
       </svg>
     </button>
     
-    <div style="display:flex;flex-direction:column;align-items:center;max-width:calc(100vw - 200px);">
-      <button id="global-lb-close" aria-label="Fermer" style="align-self:flex-end;margin-bottom:8px;background:#fff;border-radius:6px;padding:6px 8px;border:0;cursor:pointer;">✕</button>
-      <img id="global-lb-img" src="" alt="" style="max-width:100%; max-height:calc(100vh - 96px); width:auto; height:auto; object-fit:contain; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.6);">
+    <div style="display:flex;flex-direction:column;align-items:center;max-width:calc(100vw - 200px);position:relative;">
+      <img id="global-lb-img" src="" alt="" style="max-width:100%; max-height:calc(100vh - 120px); width:auto; height:auto; object-fit:contain; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.6);">
+      
+      <!-- Croix de fermeture sur la photo en haut à droite, même couleur que les flèches -->
+      <button id="global-lb-close" aria-label="Fermer" style="position:absolute;top:10px;right:10px;z-index:61;background:transparent;border:0;cursor:pointer;font-size:24px;color:#15803d;font-weight:bold;">✕</button>
+      
       <div id="global-lb-caption" style="color:#fff;margin-top:12px;text-align:center;max-width:100%;word-break:break-word"></div>
-      <div id="global-lb-counter" style="color:#fff;margin-top:8px;font-size:14px;"></div>
+      
+      <!-- Compteur avec marge pour éviter la coupure -->
+      <div id="global-lb-counter" style="color:#fff;margin-top:8px;margin-bottom:10px;font-size:14px;"></div>
     </div>
     
     <!-- Flèche droite SVG -->
