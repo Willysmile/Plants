@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Plant extends Model
 {
-   
     use HasFactory;
 
-    // Champs autorisés à l’assignation de masse
+    // Champs autorisés à l'assignation de masse
     protected $fillable = [
         'name',
         'scientific_name',
@@ -50,10 +49,11 @@ class Plant extends Model
         'archived_date',
         'archived_reason'
     ];
-/**
- * Les tags associés à cette plante.
- */
-public function tags()
+
+    /**
+     * Les tags associés à cette plante.
+     */
+    public function tags()
     {
         return $this->belongsToMany(Tag::class);
     }
@@ -91,12 +91,38 @@ public function tags()
             'parent_id'
         )->withPivot('method','propagation_date')->withTimestamps();
     }
-        public static array $wateringLabels = [
+
+    /**
+     * Labels pour la fréquence d'arrosage.
+     */
+    public static array $wateringLabels = [
         1 => 'Très rare',
         2 => 'Rare',
         3 => 'Moyen',
         4 => 'Fréquent',
         5 => 'Quotidien',
+    ];
+
+    /**
+     * Icônes pour la fréquence d'arrosage.
+     */
+    public static array $wateringIcons = [
+        1 => 'droplet-slash',
+        2 => 'droplet',
+        3 => 'droplets',
+        4 => 'droplets',
+        5 => 'waves',
+    ];
+
+    /**
+     * Couleurs pour la fréquence d'arrosage.
+     */
+    public static array $wateringColors = [
+        1 => 'gray',
+        2 => 'blue',
+        3 => 'cyan',
+        4 => 'blue-600',
+        5 => 'blue-700',
     ];
 
     /**
@@ -109,6 +135,32 @@ public function tags()
         4 => 'Bonne lumière',
         5 => 'Soleil direct',
     ];
+
+    /**
+     * Icônes pour les besoins en lumière.
+     */
+    public static array $lightIcons = [
+        1 => 'moon',
+        2 => 'cloud',
+        3 => 'sun',
+        4 => 'sun-bright',
+        5 => 'sun-bright',
+    ];
+
+    /**
+     * Couleurs pour les besoins en lumière.
+     */
+    public static array $lightColors = [
+        1 => 'gray',
+        2 => 'yellow-200',
+        3 => 'yellow',
+        4 => 'yellow-600',
+        5 => 'orange-600',
+    ];
+
+    /**
+     * Relation avec la catégorie
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
