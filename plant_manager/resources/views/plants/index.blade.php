@@ -6,6 +6,7 @@
   <title>Plantes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>[x-cloak]{display:none!important}</style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -75,6 +76,17 @@
           } catch(e) {
             console.error('Erreur parsing images modal:', e);
           }
+        }
+        
+        // Réinitialiser les icônes Lucide après le chargement du contenu
+        if (typeof lucide !== 'undefined') {
+          console.log('Lucide trouvé, réinitialisation des icônes');
+          setTimeout(() => {
+            lucide.createIcons();
+            console.log('Icônes Lucide réinitialisées');
+          }, 50);
+        } else {
+          console.log('Lucide non trouvé');
         }
       }
       
@@ -200,7 +212,9 @@ document.addEventListener('click', function(event) {
 });
 
 console.log('Global gallery handler initialized');
-</script>
+  </script>
+
+
   @include('partials.lightbox')
 </body>
 </html>

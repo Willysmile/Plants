@@ -1,125 +1,199 @@
 <div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:750px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
-  <div class="h-full grid grid-cols-1 lg:grid-cols-2" style="height:100%;">
-    <div class="flex flex-col p-3" style="overflow:hidden;">
-      <!-- Noms au-dessus de la photo principale -->
-      <div class="mb-2">
-        <h2 class="text-xl font-semibold">{{ $plant->name }}</h2>
-        @if($plant->scientific_name)
-        <div class="text-sm italic text-gray-500 mt-1">{{ $plant->scientific_name }}</div>
-        @endif
-      </div>
-
-      <!-- Photo principale avec conteneur pour centrage -->
-      <div class="rounded overflow-hidden mb-3" style="flex:0 0 50%; min-height:0; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;">
-        @if($plant->main_photo)
-        <img id="main-photo-display" 
-             src="{{ Storage::url($plant->main_photo) }}" 
-             alt="{{ $plant->name }}" 
-             data-original-src="{{ Storage::url($plant->main_photo) }}"
-             data-type="main-photo"
-             style="max-width:100%; max-height:100%; object-fit:contain; display:block; cursor:pointer;">
-        @elseif($plant->photos->count())
-        <img id="main-photo-display" 
-             src="{{ Storage::url($plant->photos->first()->filename) }}" 
-             alt="{{ $plant->name }}" 
-             data-original-src="{{ Storage::url($plant->photos->first()->filename) }}"
-             data-type="main-photo"
-             style="max-width:100%; max-height:100%; object-fit:contain; display:block; cursor:pointer;">
-        @else
-        <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
-        @endif
-      </div>
-
-      <!-- Galerie (5 photos max en grille 3+2) -->
-      <div class="pt-2" style="flex:0 0 50%; min-height:0;">
-        <h3 class="font-medium text-sm mb-2 text-center">Galerie</h3>
-
-        @php
-        $gallery = $plant->photos->filter(function($p) use ($plant){
-          if ($plant->main_photo && $p->filename === $plant->main_photo) return false;
-          if (isset($p->is_main) && $p->is_main) return false;
-          return true;
-        })->values();
-        $maxGallery = 5;
-        @endphp
-
-        <div class="flex justify-center">
-          <div id="gallery-grid" class="grid gap-2" style="grid-template-columns: repeat(3, 100px);">
-            <!-- Première ligne : 3 photos -->
-            @for($i = 0; $i < min(3, $gallery->count()); $i++)
-              <button type="button" 
-                     class="gallery-thumbnail"
-                     data-type="thumbnail"
-                     data-index="{{ $i }}"
-                     data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
-                     style="aspect-ratio:1/1; width:100px; height:100px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;" 
-                     aria-label="Échanger avec la photo principale">
-                <img src="{{ Storage::url($gallery[$i]->filename) }}" 
-                     alt="{{ $gallery[$i]->description ?? $plant->name }}" 
-                     style="max-width:100%; max-height:100%; object-fit:cover; border-radius:6px;">
-              </button>
-            @endfor
-
-            <!-- Deuxième ligne : 2 photos + éventuellement les 3 points -->
-            @for($i = 3; $i < min($maxGallery, $gallery->count()); $i++)
-              <button type="button" 
-                     class="gallery-thumbnail"
-                     data-type="thumbnail" 
-                     data-index="{{ $i }}"
-                     data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
-                     style="aspect-ratio:1/1; width:100px; height:100px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;" 
-                     aria-label="Échanger avec la photo principale">
-                <img src="{{ Storage::url($gallery[$i]->filename) }}" 
-                     alt="{{ $gallery[$i]->description ?? $plant->name }}" 
-                     style="max-width:100%; max-height:100%; object-fit:cover; border-radius:6px;">
-              </button>
-            @endfor
-
-            <!-- 3 petits points, toujours affichés -->
-            <a href="{{ route('plants.show', $plant) }}" 
-               style="width:100px; height:100px; padding:0; background:transparent; display:flex; align-items:center; justify-content:center; border-radius:6px; text-decoration:none; transition:all 0.2s;" 
-               class="more-photos" 
-               aria-label="Voir la galerie complète" 
-               onmouseover="this.style.border='1px solid #15803d'; this.querySelector('span').style.color='#15803d';" 
-               onmouseout="this.style.border='0'; this.querySelector('span').style.color='#333';">
-              <span style="font-size:48px; color:#333; line-height:0.5; transition:color 0.2s;">⋯</span>
-            </a>
-          </div>
+  <div class="h-full flex flex-col">
+    <!-- En-tête -->
+    <div class="flex items-center justify-between p-3 border-b">
+      <div class="flex items-center gap-3">
+        <div>
+          <h2 class="text-lg font-semibold">{{ $plant->name }}</h2>
+          @if($plant->scientific_name)
+            <div class="text-sm italic text-gray-500">{{ $plant->scientific_name }}</div>
+          @endif
         </div>
+        <!-- Catégorie à côté du titre -->
+        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium border border-blue-200">
+          {{ $plant->category->name ?? '—' }}
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm">Voir</a>
+        <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm">Éditer</a>
+        <button class="px-3 py-1 bg-gray-200 rounded text-sm modal-close">Fermer</button>
       </div>
     </div>
 
-    <div class="p-4 overflow-auto" style="height:100%;">
-      <div class="flex items-start justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm">Voir la fiche</a>
-          <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm">Éditer</a>
-          <button class="px-3 py-1 bg-gray-200 rounded text-sm modal-close">Fermer</button>
+    <!-- Contenu principal -->
+    <div class="flex-1 overflow-hidden flex p-3 gap-4">
+      <!-- Colonne gauche (1/2) : Photo + Description + Galerie -->
+      <div class="w-1/2 flex flex-col gap-3 overflow-y-auto pr-2">
+        <!-- Photo principale -->
+        <div class="rounded overflow-hidden flex-shrink-0" style="aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;">
+          @if($plant->main_photo)
+            <img id="main-photo-display" 
+                 src="{{ Storage::url($plant->main_photo) }}" 
+                 alt="{{ $plant->name }}" 
+                 data-original-src="{{ Storage::url($plant->main_photo) }}"
+                 data-type="main-photo"
+                 style="max-width:100%; max-height:100%; object-fit:contain; display:block; cursor:pointer;">
+          @elseif($plant->photos->count())
+            <img id="main-photo-display" 
+                 src="{{ Storage::url($plant->photos->first()->filename) }}" 
+                 alt="{{ $plant->name }}" 
+                 data-original-src="{{ Storage::url($plant->photos->first()->filename) }}"
+                 data-type="main-photo"
+                 style="max-width:100%; max-height:100%; object-fit:contain; display:block; cursor:pointer;">
+          @else
+            <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
+          @endif
         </div>
+
+        <!-- Description -->
+        @if($plant->description)
+          <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-green-500 text-sm">
+            <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide text-center">Description</h3>
+            <p class="mt-2 text-gray-700 leading-relaxed text-xs">{{ $plant->description }}</p>
+          </div>
+        @endif
+
+        <!-- Galerie (2 cartes + points) -->
+        @php
+          $gallery = $plant->photos->filter(function($p) use ($plant){
+            if ($plant->main_photo && $p->filename === $plant->main_photo) return false;
+            if (isset($p->is_main) && $p->is_main) return false;
+            return true;
+          })->values();
+          $maxGallery = 2;
+        @endphp
+
+        @if($gallery->count())
+          <div>
+            <h3 class="font-medium text-xs mb-2 text-center uppercase">Galerie</h3>
+            <div class="flex justify-center gap-2">
+              @for($i = 0; $i < min($maxGallery, $gallery->count()); $i++)
+                <button type="button" 
+                       class="gallery-thumbnail"
+                       data-type="thumbnail"
+                       data-index="{{ $i }}"
+                       data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
+                       style="aspect-ratio:1/1; width:70px; height:70px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;" 
+                       aria-label="Échanger avec la photo principale">
+                  <img src="{{ Storage::url($gallery[$i]->filename) }}" 
+                       alt="{{ $gallery[$i]->description ?? $plant->name }}" 
+                       style="max-width:100%; max-height:100%; object-fit:cover; border-radius:4px;">
+                </button>
+              @endfor
+
+              <!-- Points toujours affichés -->
+              <a href="{{ route('plants.show', $plant) }}" 
+                 style="width:70px; height:70px; padding:0; background:transparent; display:flex; align-items:center; justify-content:center; border-radius:4px; text-decoration:none; transition:all 0.2s;" 
+                 class="more-photos" 
+                 aria-label="Voir la galerie complète" 
+                 onmouseover="this.style.border='1px solid #15803d'; this.querySelector('span').style.color='#15803d';" 
+                 onmouseout="this.style.border='0'; this.querySelector('span').style.color='#999';">
+                <span style="font-size:32px; color:#999; line-height:0.5; transition:color 0.2s;">⋯</span>
+              </a>
+            </div>
+          </div>
+        @endif
       </div>
 
-      @if($plant->description)
-      <p class="text-sm text-gray-700 mb-3">{{ $plant->description }}</p>
-      @endif
+      <!-- Colonne droite (1/2) : Cartes en 2 colonnes -->
+      <div class="w-1/2 overflow-y-auto pr-2">
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Besoins -->
+          <div class="bg-yellow-50 p-2 rounded-lg border-l-4 border-yellow-500">
+            <div class="text-center">
+              <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Besoins</h3>
+            </div>
 
-      <div class="mb-4">
-        <div class="grid grid-cols-1 gap-2 text-sm text-gray-600">
-          <div class="flex items-center gap-2">
-            <strong class="w-24 text-gray-700">Catégorie :</strong>
-            <div class="text-gray-800">{{ $plant->category->name ?? '—' }}</div>
+            @php
+              $wf = $plant->watering_frequency ?? 3;
+              $lf = $plant->light_requirement ?? 3;
+              $wIcon = \App\Models\Plant::$wateringIcons[$wf] ?? 'droplet';
+              $lIcon = \App\Models\Plant::$lightIcons[$lf] ?? 'sun';
+              $wColor = \App\Models\Plant::$wateringColors[$wf] ?? 'blue';
+              $lColor = \App\Models\Plant::$lightColors[$lf] ?? 'yellow';
+              $wLabel = \App\Models\Plant::$wateringLabels[$wf] ?? 'N/A';
+              $lLabel = \App\Models\Plant::$lightLabels[$lf] ?? 'N/A';
+            @endphp
+
+            <div class="mt-2 flex items-center justify-around gap-3">
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-xs text-gray-600">Arrosage</span>
+                <i data-lucide="{{ $wIcon }}" class="w-5 h-5 text-{{ $wColor }}"></i>
+                <span class="text-xs text-gray-600">{{ $wLabel }}</span>
+              </div>
+
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-xs text-gray-600">Lumière</span>
+                <i data-lucide="{{ $lIcon }}" class="w-5 h-5 text-{{ $lColor }}"></i>
+                <span class="text-xs text-gray-600">{{ $lLabel }}</span>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <strong class="w-24 text-gray-700">Arrosage :</strong>
-            <div class="text-gray-800">{{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}</div>
+
+          <!-- Tags -->
+          <div class="bg-purple-50 p-2 rounded-lg border-l-4 border-purple-500">
+            <div class="text-center">
+              <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Tags</h3>
+            </div>
+            <div class="mt-2 text-center text-xs text-gray-800">{{ $plant->tags->pluck('name')->join(', ') ?: '—' }}</div>
           </div>
-          <div class="flex items-center gap-2">
-            <strong class="w-24 text-gray-700">Lumière :</strong>
-            <div class="text-gray-800">{{ \App\Models\Plant::$lightLabels[$plant->light_requirement] ?? $plant->light_requirement }}</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <strong class="w-24 text-gray-700">Tags :</strong>
-            <div class="text-gray-800">{{ $plant->tags->pluck('name')->join(', ') ?: '—' }}</div>
-          </div>
+
+          <!-- Température & Humidité -->
+          @if($plant->temperature_min || $plant->temperature_max || $plant->humidity_level)
+            <div class="bg-red-50 p-2 rounded-lg border-l-4 border-red-500">
+              <div class="text-center">
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Température</h3>
+              </div>
+              <div class="mt-2 flex flex-col items-center gap-1">
+                <span class="text-xs text-gray-600">Valeurs</span>
+                <div class="text-gray-800 text-xs font-medium">
+                  @if($plant->temperature_min || $plant->temperature_max)
+                    @php
+                      $minTemp = $plant->temperature_min ?? '?';
+                      $maxTemp = $plant->temperature_max ?? '?';
+                    @endphp
+                    {{ $minTemp }}°C-{{ $maxTemp }}°C
+                  @else
+                    —
+                  @endif
+                </div>
+              </div>
+            </div>
+          @endif
+
+          <!-- Humidité -->
+          @if($plant->humidity_level)
+            <div class="bg-cyan-50 p-2 rounded-lg border-l-4 border-cyan-500">
+              <div class="text-center">
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Humidité</h3>
+              </div>
+              <div class="mt-2 flex flex-col items-center gap-1">
+                <span class="text-xs text-gray-600">Taux</span>
+                <div class="text-gray-800 text-xs font-medium">{{ $plant->humidity_level }}%</div>
+              </div>
+            </div>
+          @endif
+
+          <!-- Notes -->
+          @if($plant->notes)
+            <div class="bg-indigo-50 p-2 rounded-lg border-l-4 border-indigo-500 col-span-2">
+              <div class="text-center">
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Notes</h3>
+              </div>
+              <p class="mt-2 text-gray-700 leading-relaxed text-xs">{{ $plant->notes }}</p>
+            </div>
+          @endif
+
+          <!-- Date d'achat -->
+          @if($plant->purchase_date)
+            <div class="bg-teal-50 p-2 rounded-lg border-l-4 border-teal-500 col-span-2">
+              <div class="text-center">
+                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
+              </div>
+              <div class="mt-2 text-center text-xs font-medium text-gray-800">{{ $plant->purchase_date->format('d/m/Y') }}</div>
+            </div>
+          @endif
         </div>
       </div>
     </div>
@@ -135,4 +209,14 @@
   @endforeach
 ]
   </script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    // Initialiser les icônes quand la modale est chargée
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  </script>
+
 </div>
