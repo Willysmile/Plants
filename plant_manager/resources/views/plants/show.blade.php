@@ -11,55 +11,107 @@
     <div class="bg-white rounded-lg shadow flex flex-col flex-grow overflow-hidden">
       <!-- En-tête avec titre et boutons d'action -->
       <div class="flex items-start justify-between p-4 border-b">
-        <div>
-          <h1 class="text-2xl font-semibold">{{ $plant->name }}</h1>
+        <div class="flex-1">
           @if($plant->scientific_name)
-            <p class="text-sm text-gray-500 italic mt-1">{{ $plant->scientific_name }}</p>
+            <h1 class="text-3xl font-semibold italic text-green-700">{{ $plant->scientific_name }}</h1>
+            <p class="text-base text-gray-700 mt-2">{{ $plant->name }}</p>
+          @else
+            <h1 class="text-3xl font-semibold">{{ $plant->name }}</h1>
           @endif
         </div>
-        <div class="flex items-center gap-2">
-          <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded">Modifier</a>
-          <a href="{{ route('plants.index') }}" class="px-3 py-1 bg-gray-200 rounded">Retour</a>
+        <div class="flex items-center gap-2 ml-4">
+          <a href="{{ route('plants.edit', $plant) }}" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition">Modifier</a>
+          <a href="{{ route('plants.index') }}" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition">Retour</a>
         </div>
       </div>
 
       <!-- Contenu principal - occupe les 2/3 supérieurs -->
-      <div class="flex-grow overflow-auto p-4" style="height: 66%;">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
-          <!-- Image principale -->
-          <div class="lg:col-span-2 flex items-center justify-center">
+      <div class="flex-grow overflow-hidden p-4" style="height: 66%;">
+        <div class="grid grid-cols-3 gap-6 h-full">
+          <!-- Image principale - 1/3 de la largeur (col-span-1) -->
+          <div class="col-span-1 flex items-center justify-center">
             @if($plant->main_photo)
-              <button type="button" onclick="openLightboxGlobal(0)" class="bg-transparent border-0 p-0 h-full flex items-center">
-                <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="max-h-full w-auto object-contain rounded">
+              <button type="button" onclick="openLightboxGlobal(0)" class="bg-transparent border-0 p-0 h-full w-full flex items-center justify-center">
+                <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="max-h-full max-w-full object-contain rounded-lg shadow-md">
               </button>
             @else
-              <div class="w-full h-full bg-gray-100 rounded flex items-center justify-center text-gray-400">
-                Aucune image
+              <div class="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                <div class="text-center">
+                  <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  Aucune image
+                </div>
               </div>
             @endif
           </div>
 
-          <!-- Informations -->
-          <aside class="space-y-4">
+          <!-- Informations - 2/3 de la largeur (col-span-2) -->
+          <aside class="col-span-2 space-y-5 overflow-y-auto pr-4">
             @if($plant->description)
-              <div>
-                <h3 class="text-sm font-medium text-gray-600">Description</h3>
-                <p class="mt-2 text-gray-700">{{ $plant->description }}</p>
+              <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-green-500">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Description</h3>
+                <p class="mt-2 text-gray-700 leading-relaxed">{{ $plant->description }}</p>
               </div>
             @endif
 
-            <div>
-              <h3 class="text-sm font-medium text-gray-600">Catégorie</h3>
-              <div class="mt-1 text-gray-800">{{ $plant->category->name ?? '—' }}</div>
+            <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
+              <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Catégorie</h3>
+              <div class="mt-2 text-gray-800 font-medium">{{ $plant->category->name ?? '—' }}</div>
             </div>
 
-            <div>
-              <h3 class="text-sm font-medium text-gray-600">Besoins</h3>
-              <div class="mt-1 text-gray-800">
-                Arrosage : {{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}<br>
-                Lumière : {{ \App\Models\Plant::$lightLabels[$plant->light_requirement] ?? $plant->light_requirement }}
+            <div class="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
+  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Besoins</h3>
+  <div class="mt-2 text-gray-800 space-y-2">
+    <div class="flex items-center gap-2">
+      <svg class="w-5 h-5 text-{{ \App\Models\Plant::$wateringColors[$plant->watering_frequency] }}">
+        <!-- Icône d'arrosage -->
+      </svg>
+      <span><strong>Arrosage :</strong> {{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] }}</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <svg class="w-5 h-5 text-{{ \App\Models\Plant::$lightColors[$plant->light_requirement] }}">
+        <!-- Icône de lumière -->
+      </svg>
+      <span><strong>Lumière :</strong> {{ \App\Models\Plant::$lightLabels[$plant->light_requirement] }}</span>
+    </div>
+  </div>
+</div>
+
+            @if($plant->notes)
+              <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Notes</h3>
+                <p class="mt-2 text-gray-700 leading-relaxed">{{ $plant->notes }}</p>
               </div>
-            </div>
+            @endif
+
+            @if($plant->temperature_min || $plant->temperature_max)
+              <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Température</h3>
+                <div class="mt-2 text-gray-800">
+                  @if($plant->temperature_min)
+                    <div><strong>Min :</strong> {{ $plant->temperature_min }}°C</div>
+                  @endif
+                  @if($plant->temperature_max)
+                    <div><strong>Max :</strong> {{ $plant->temperature_max }}°C</div>
+                  @endif
+                </div>
+              </div>
+            @endif
+
+            @if($plant->humidity_level)
+              <div class="bg-cyan-50 p-3 rounded-lg border-l-4 border-cyan-500">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Humidité</h3>
+                <div class="mt-2 text-gray-800 font-medium">{{ $plant->humidity_level }}%</div>
+              </div>
+            @endif
+
+            @if($plant->purchase_date)
+              <div class="bg-indigo-50 p-3 rounded-lg border-l-4 border-indigo-500">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
+                <div class="mt-2 text-gray-800 font-medium">{{ $plant->purchase_date->format('d/m/Y') }}</div>
+              </div>
+            @endif
           </aside>
         </div>
       </div>
@@ -67,14 +119,14 @@
       <!-- Galerie - occupe le 1/3 inférieur -->
       @php $lightboxStart = $plant->main_photo ? 1 : 0; @endphp
       @if($plant->photos->count())
-        <div class="border-t p-4" style="height: 34%;">
-          <h2 class="text-lg font-semibold mb-2">Galerie</h2>
-          <div class="overflow-auto h-[calc(100%-2rem)]">
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div class="border-t p-4 bg-gray-50" style="height: 34%;">
+          <h2 class="text-lg font-semibold mb-3 text-gray-800">Galerie ({{ $plant->photos->count() }} photo{{ $plant->photos->count() > 1 ? 's' : '' }})</h2>
+          <div class="overflow-auto h-[calc(100%-2.5rem)]">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               @foreach($plant->photos as $i => $photo)
-                <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" class="bg-transparent border-0 p-0">
-                  <div class="w-full h-40 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
-                    <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" class="h-full w-auto object-contain">
+                <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" class="bg-transparent border-0 p-0 hover:opacity-80 transition">
+                  <div class="w-full aspect-square flex items-center justify-center bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition border border-gray-200">
+                    <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" class="h-full w-full object-cover">
                   </div>
                 </button>
               @endforeach
@@ -86,13 +138,12 @@
   </div>
 
   <script>
-    // tableau d'images global utilisé par la lightbox incluse via partial
     window.globalLightboxImages = [
       @if($plant->main_photo)
-        { url: {!! json_encode(Storage::url($plant->main_photo)) !!}, caption: {!! json_encode($plant->name) !!} }@if($plant->photos->count()),@endif
+        { url: {!! json_encode(Storage::url($plant->main_photo)) !!}, caption: {!! json_encode($plant->name) !!} }{{ $plant->photos->count() ? ',' : '' }}
       @endif
       @foreach($plant->photos as $photo)
-        { url: {!! json_encode(Storage::url($photo->filename)) !!}, caption: {!! json_encode($photo->description ?? '') !!} }@if(!$loop->last),@endif
+        { url: {!! json_encode(Storage::url($photo->filename)) !!}, caption: {!! json_encode($photo->description ?? '') !!} }{{ !$loop->last ? ',' : '' }}
       @endforeach
     ];
   </script>
