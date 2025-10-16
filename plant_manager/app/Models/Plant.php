@@ -104,23 +104,23 @@ class Plant extends Model
     ];
 
     /**
-     * Icônes pour la fréquence d'arrosage.
+     * Icônes Lucide pour la fréquence d'arrosage.
      */
     public static array $wateringIcons = [
-        1 => 'droplet-slash',
-        2 => 'droplet',
-        3 => 'droplets',
-        4 => 'droplets',
-        5 => 'waves',
+        1 => 'droplet',      // Très rare
+        2 => 'droplet',      // Rare
+        3 => 'droplets',     // Moyen
+        4 => 'droplets',     // Fréquent
+        5 => 'waves',        // Quotidien
     ];
 
     /**
      * Couleurs pour la fréquence d'arrosage.
      */
     public static array $wateringColors = [
-        1 => 'gray',
-        2 => 'blue',
-        3 => 'cyan',
+        1 => 'gray-400',
+        2 => 'blue-400',
+        3 => 'blue-500',
         4 => 'blue-600',
         5 => 'blue-700',
     ];
@@ -137,23 +137,23 @@ class Plant extends Model
     ];
 
     /**
-     * Icônes pour les besoins en lumière.
+     * Icônes Lucide pour les besoins en lumière.
      */
     public static array $lightIcons = [
-        1 => 'moon',
-        2 => 'cloud',
-        3 => 'sun',
-        4 => 'sun-bright',
-        5 => 'sun-bright',
+        1 => 'moon',         // Faible lumière
+        2 => 'cloud',        // Lumière modérée
+        3 => 'sun',          // Lumière moyenne
+        4 => 'sun',          // Bonne lumière
+        5 => 'sun',          // Soleil direct
     ];
 
     /**
      * Couleurs pour les besoins en lumière.
      */
     public static array $lightColors = [
-        1 => 'gray',
-        2 => 'yellow-200',
-        3 => 'yellow',
+        1 => 'gray-600',
+        2 => 'yellow-400',
+        3 => 'yellow-500',
         4 => 'yellow-600',
         5 => 'orange-600',
     ];
