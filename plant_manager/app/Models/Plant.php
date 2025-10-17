@@ -165,4 +165,28 @@ class Plant extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    /**
+     * Historique d'arrosage
+     */
+    public function wateringHistories()
+    {
+        return $this->hasMany(WateringHistory::class);
+    }
+
+    /**
+     * Historique de fertilisation
+     */
+    public function fertilizingHistories()
+    {
+        return $this->hasMany(FertilizingHistory::class);
+    }
+
+    /**
+     * Historique de rempotage
+     */
+    public function reppotingHistories()
+    {
+        return $this->hasMany(ReppotingHistory::class);
+    }
 }

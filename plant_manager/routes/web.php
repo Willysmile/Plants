@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\WateringHistoryController;
+use App\Http\Controllers\FertilizingHistoryController;
+use App\Http\Controllers\ReppotingHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +30,8 @@ Route::patch('plants/{plant}/photos/{photo}', [PhotoController::class, 'update']
 // suppression d'une photo dans la galerie
 Route::delete('plants/{plant}/photos/{photo}', [PhotoController::class, 'destroy'])
     ->name('plants.photos.destroy');
+
+// Routes imbriquées pour les historiques
+Route::resource('plants.watering-history', WateringHistoryController::class);
+Route::resource('plants.fertilizing-history', FertilizingHistoryController::class);
+Route::resource('plants.repotting-history', ReppotingHistoryController::class);

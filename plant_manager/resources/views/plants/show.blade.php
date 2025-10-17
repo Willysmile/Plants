@@ -170,24 +170,86 @@
         </div>
       </div>
 
-      <!-- Galerie - occupe le 1/3 inférieur -->
-      @php $lightboxStart = $plant->main_photo ? 1 : 0; @endphp
-      @if($plant->photos->count())
-        <div class="border-t p-4 bg-gray-50" style="height: 34%;">
-          <h2 class="text-lg font-semibold mb-3 text-gray-800">Galerie ({{ $plant->photos->count() }} photo{{ $plant->photos->count() > 1 ? 's' : '' }})</h2>
-          <div class="overflow-auto h-[calc(100%-2.5rem)]">
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              @foreach($plant->photos as $i => $photo)
-                <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" class="bg-transparent border-0 p-0 hover:opacity-80 transition">
-                  <div class="w-full aspect-square flex items-center justify-center bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition border border-gray-200">
-                    <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" class="h-full w-full object-cover">
-                  </div>
-                </button>
-              @endforeach
+      <!-- Historiques - section avec onglets -->
+      <div class="border-t p-4 bg-gray-50" style="height: 34%;">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-lg font-semibold text-gray-800">Historiques de soins</h2>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 h-full">
+          <!-- Historique d'arrosage -->
+          <div class="bg-blue-50 rounded-lg border border-blue-200 p-4 flex flex-col overflow-hidden">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="droplet" class="w-5 h-5 text-blue-600"></i>
+              <h3 class="font-semibold text-blue-900">Arrosage</h3>
             </div>
+            @if($plant->wateringHistories->count())
+              <p class="text-sm text-blue-700 mb-3">{{ $plant->wateringHistories->count() }} enregistrement{{ $plant->wateringHistories->count() > 1 ? 's' : '' }}</p>
+              <div class="text-xs text-blue-600 mb-3 flex-grow overflow-y-auto">
+                @foreach($plant->wateringHistories()->latest()->take(3)->get() as $history)
+                  <div class="mb-2 pb-2 border-b border-blue-100">
+                    <div class="font-medium">{{ $history->watering_date->format('d/m/Y H:i') }}</div>
+                    <div class="text-gray-600">Quantité: {{ $history->amount }}</div>
+                  </div>
+                @endforeach
+              </div>
+            @else
+              <p class="text-sm text-blue-600 flex-grow flex items-center">Aucun enregistrement</p>
+            @endif
+            <a href="{{ route('plants.watering-history.index', $plant) }}" class="mt-auto bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded text-center transition">
+              Gérer
+            </a>
+          </div>
+
+          <!-- Historique de fertilisation -->
+          <div class="bg-green-50 rounded-lg border border-green-200 p-4 flex flex-col overflow-hidden">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="leaf" class="w-5 h-5 text-green-600"></i>
+              <h3 class="font-semibold text-green-900">Fertilisation</h3>
+            </div>
+            @if($plant->fertilizingHistories->count())
+              <p class="text-sm text-green-700 mb-3">{{ $plant->fertilizingHistories->count() }} enregistrement{{ $plant->fertilizingHistories->count() > 1 ? 's' : '' }}</p>
+              <div class="text-xs text-green-600 mb-3 flex-grow overflow-y-auto">
+                @foreach($plant->fertilizingHistories()->latest()->take(3)->get() as $history)
+                  <div class="mb-2 pb-2 border-b border-green-100">
+                    <div class="font-medium">{{ $history->fertilizing_date->format('d/m/Y H:i') }}</div>
+                    <div class="text-gray-600">Type: {{ $history->fertilizer_type }}</div>
+                  </div>
+                @endforeach
+              </div>
+            @else
+              <p class="text-sm text-green-600 flex-grow flex items-center">Aucun enregistrement</p>
+            @endif
+            <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="mt-auto bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded text-center transition">
+              Gérer
+            </a>
+          </div>
+
+          <!-- Historique de rempotage -->
+          <div class="bg-amber-50 rounded-lg border border-amber-200 p-4 flex flex-col overflow-hidden">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="flower-pot" class="w-5 h-5 text-amber-600"></i>
+              <h3 class="font-semibold text-amber-900">Rempotage</h3>
+            </div>
+            @if($plant->reppotingHistories->count())
+              <p class="text-sm text-amber-700 mb-3">{{ $plant->reppotingHistories->count() }} enregistrement{{ $plant->reppotingHistories->count() > 1 ? 's' : '' }}</p>
+              <div class="text-xs text-amber-600 mb-3 flex-grow overflow-y-auto">
+                @foreach($plant->reppotingHistories()->latest()->take(3)->get() as $history)
+                  <div class="mb-2 pb-2 border-b border-amber-100">
+                    <div class="font-medium">{{ $history->repotting_date->format('d/m/Y H:i') }}</div>
+                    <div class="text-gray-600">{{ $history->old_pot_size }} → {{ $history->new_pot_size }}</div>
+                  </div>
+                @endforeach
+              </div>
+            @else
+              <p class="text-sm text-amber-600 flex-grow flex items-center">Aucun enregistrement</p>
+            @endif
+            <a href="{{ route('plants.repotting-history.index', $plant) }}" class="mt-auto bg-amber-500 hover:bg-amber-600 text-white text-sm px-3 py-2 rounded text-center transition">
+              Gérer
+            </a>
           </div>
         </div>
-      @endif
+      </div>
     </div>
   </div>
 
