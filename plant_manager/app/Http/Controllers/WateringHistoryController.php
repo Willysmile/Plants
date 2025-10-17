@@ -48,7 +48,7 @@ class WateringHistoryController extends Controller
 
         // Update the plant's last watering date (convert to proper datetime)
         $plant->update([
-            'last_watering_date' => Carbon::createFromFormat('Y-m-d\TH:i', $request->validated()['watering_date']),
+            'last_watering_date' => Carbon::createFromFormat('Y-m-d\TH:i', $validated['watering_date']),
         ]);
 
         return redirect()->route('plants.watering-history.index', $plant)
