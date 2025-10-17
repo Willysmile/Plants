@@ -51,6 +51,18 @@ class Plant extends Model
     ];
 
     /**
+     * Convertir les dates en instances Carbon
+     */
+    protected $casts = [
+        'purchase_date' => 'datetime',
+        'last_watering_date' => 'datetime',
+        'last_fertilizing_date' => 'datetime',
+        'last_repotting_date' => 'datetime',
+        'next_repotting_date' => 'datetime',
+        'archived_date' => 'datetime',
+    ];
+
+    /**
      * Les tags associés à cette plante.
      */
     public function tags()
