@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\WateringHistory;
 use App\Models\Plant;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class WateringHistoryController extends Controller
 {
@@ -32,16 +33,22 @@ class WateringHistoryController extends Controller
     {
         $validated = $request->validate([
             'watering_date' => 'required|date_format:Y-m-d\TH:i',
-            'amount' => 'nullable|string|max:255',
+            'amount' => 'nullable|numeric',
             'notes' => 'nullable|string',
         ]);
 
         $validated['plant_id'] = $plant->id;
+        
+        // Add 'ml' unit if amount is provided
+        if (!empty($validated['amount'])) {
+            $validated['amount'] = $validated['amount'] . ' ml';
+        }
+        
         WateringHistory::create($validated);
 
-        // Update the plant's last watering date
+        // Update the plant's last watering date (convert to proper datetime)
         $plant->update([
-            'last_watering_date' => $validated['watering_date'],
+            'last_watering_date' => Carbon::createFromFormat('Y-m-d\TH:i', $request->validated()['watering_date']),
         ]);
 
         return redirect()->route('plants.watering-history.index', $plant)

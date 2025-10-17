@@ -289,7 +289,10 @@
           <label class="block text-gray-700 font-medium mb-2" for="quickWateringAmount">
             Quantité
           </label>
-          <input type="text" id="quickWateringAmount" name="amount" placeholder="ex: 500ml, 1L..." class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+          <div class="flex items-center gap-2">
+            <input type="number" id="quickWateringAmount" name="amount" placeholder="500" step="50" class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+            <span class="text-gray-600 font-medium">ml</span>
+          </div>
         </div>
 
         <div class="flex justify-end gap-3">
