@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ $plant->name }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 <body class="bg-gray-50 text-gray-900 h-screen">
   <div class="h-[98vh] max-w-6xl mx-auto px-4 py-2 flex flex-col">
@@ -145,111 +146,76 @@
 
               <!-- Cartes colonne droite -->
               <div class="space-y-4">
-                @if($plant->notes)
-                  <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
-                    <div class="text-center">
-                      <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Notes</h3>
-                      <p class="text-xs text-gray-500 mt-1">Observations personnelles</p>
+                <!-- Historique d'arrosage (petit) -->
+                <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
+                      <h3 class="text-sm font-semibold text-blue-900">Arrosage</h3>
                     </div>
-                    <p class="mt-2 text-gray-700 leading-relaxed text-sm">{{ $plant->notes }}</p>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" id="quickWateringCheckbox" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="openQuickWateringModal()">
+                    </label>
                   </div>
-                @endif
+                  @if($plant->last_watering_date)
+                    <p class="text-xs text-blue-600 mt-2">Dernier : {{ $plant->last_watering_date->format('d/m/Y H:i') }}</p>
+                  @else
+                    <p class="text-xs text-blue-600 mt-2">Aucun enregistrement</p>
+                  @endif
+                  <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-xs text-blue-500 hover:text-blue-700 mt-1 inline-block">Gérer →</a>
+                </div>
 
-                @if($plant->purchase_date)
-                  <div class="bg-indigo-50 p-3 rounded-lg border-l-4 border-indigo-500">
-                    <div class="text-center">
-                      <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
-                      <p class="text-xs text-gray-500 mt-1">Historique d'acquisition</p>
-                    </div>
-                    <div class="mt-2 text-gray-800 font-medium text-sm text-center">{{ $plant->purchase_date->format('d/m/Y') }}</div>
+                <!-- Historique de fertilisation (petit) -->
+                <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="leaf" class="w-4 h-4 text-green-600"></i>
+                    <h3 class="text-sm font-semibold text-green-900">Fertilisation</h3>
                   </div>
-                @endif
+                  @if($plant->last_fertilizing_date)
+                    <p class="text-xs text-green-600 mt-2">Dernier : {{ $plant->last_fertilizing_date->format('d/m/Y H:i') }}</p>
+                  @else
+                    <p class="text-xs text-green-600 mt-2">Aucun enregistrement</p>
+                  @endif
+                  <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-xs text-green-500 hover:text-green-700 mt-1 inline-block">Gérer →</a>
+                </div>
+
+                <!-- Historique de rempotage (petit) -->
+                <div class="bg-amber-50 p-3 rounded-lg border-l-4 border-amber-500">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="flower-pot" class="w-4 h-4 text-amber-600"></i>
+                    <h3 class="text-sm font-semibold text-amber-900">Rempotage</h3>
+                  </div>
+                  @if($plant->last_repotting_date)
+                    <p class="text-xs text-amber-600 mt-2">Dernier : {{ $plant->last_repotting_date->format('d/m/Y H:i') }}</p>
+                  @else
+                    <p class="text-xs text-amber-600 mt-2">Aucun enregistrement</p>
+                  @endif
+                  <a href="{{ route('plants.repotting-history.index', $plant) }}" class="text-xs text-amber-500 hover:text-amber-700 mt-1 inline-block">Gérer →</a>
+                </div>
               </div>
             </div>
           </aside>
         </div>
       </div>
 
-      <!-- Historiques - section avec onglets -->
-      <div class="border-t p-4 bg-gray-50" style="height: 34%;">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="text-lg font-semibold text-gray-800">Historiques de soins</h2>
-        </div>
-
-        <div class="grid grid-cols-3 gap-4 h-full">
-          <!-- Historique d'arrosage -->
-          <div class="bg-blue-50 rounded-lg border border-blue-200 p-4 flex flex-col overflow-hidden">
-            <div class="flex items-center gap-2 mb-3">
-              <i data-lucide="droplet" class="w-5 h-5 text-blue-600"></i>
-              <h3 class="font-semibold text-blue-900">Arrosage</h3>
-            </div>
-            @if($plant->wateringHistories->count())
-              <p class="text-sm text-blue-700 mb-3">{{ $plant->wateringHistories->count() }} enregistrement{{ $plant->wateringHistories->count() > 1 ? 's' : '' }}</p>
-              <div class="text-xs text-blue-600 mb-3 flex-grow overflow-y-auto">
-                @foreach($plant->wateringHistories()->latest()->take(3)->get() as $history)
-                  <div class="mb-2 pb-2 border-b border-blue-100">
-                    <div class="font-medium">{{ $history->watering_date->format('d/m/Y H:i') }}</div>
-                    <div class="text-gray-600">Quantité: {{ $history->amount }}</div>
+      <!-- Galerie - occupe le 1/3 inférieur -->
+      @php $lightboxStart = $plant->main_photo ? 1 : 0; @endphp
+      @if($plant->photos->count())
+        <div class="border-t p-4 bg-gray-50" style="height: 34%;">
+          <h2 class="text-lg font-semibold mb-3 text-gray-800">Galerie ({{ $plant->photos->count() }} photo{{ $plant->photos->count() > 1 ? 's' : '' }})</h2>
+          <div class="overflow-auto h-[calc(100%-2.5rem)]">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              @foreach($plant->photos as $i => $photo)
+                <button type="button" onclick="openLightboxGlobal({{ $lightboxStart + $i }})" class="bg-transparent border-0 p-0 hover:opacity-80 transition">
+                  <div class="w-full aspect-square flex items-center justify-center bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition border border-gray-200">
+                    <img src="{{ Storage::url($photo->filename) }}" alt="{{ $photo->description ?? $plant->name }}" class="h-full w-full object-cover">
                   </div>
-                @endforeach
-              </div>
-            @else
-              <p class="text-sm text-blue-600 flex-grow flex items-center">Aucun enregistrement</p>
-            @endif
-            <a href="{{ route('plants.watering-history.index', $plant) }}" class="mt-auto bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-2 rounded text-center transition">
-              Gérer
-            </a>
-          </div>
-
-          <!-- Historique de fertilisation -->
-          <div class="bg-green-50 rounded-lg border border-green-200 p-4 flex flex-col overflow-hidden">
-            <div class="flex items-center gap-2 mb-3">
-              <i data-lucide="leaf" class="w-5 h-5 text-green-600"></i>
-              <h3 class="font-semibold text-green-900">Fertilisation</h3>
+                </button>
+              @endforeach
             </div>
-            @if($plant->fertilizingHistories->count())
-              <p class="text-sm text-green-700 mb-3">{{ $plant->fertilizingHistories->count() }} enregistrement{{ $plant->fertilizingHistories->count() > 1 ? 's' : '' }}</p>
-              <div class="text-xs text-green-600 mb-3 flex-grow overflow-y-auto">
-                @foreach($plant->fertilizingHistories()->latest()->take(3)->get() as $history)
-                  <div class="mb-2 pb-2 border-b border-green-100">
-                    <div class="font-medium">{{ $history->fertilizing_date->format('d/m/Y H:i') }}</div>
-                    <div class="text-gray-600">Type: {{ $history->fertilizer_type }}</div>
-                  </div>
-                @endforeach
-              </div>
-            @else
-              <p class="text-sm text-green-600 flex-grow flex items-center">Aucun enregistrement</p>
-            @endif
-            <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="mt-auto bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-2 rounded text-center transition">
-              Gérer
-            </a>
-          </div>
-
-          <!-- Historique de rempotage -->
-          <div class="bg-amber-50 rounded-lg border border-amber-200 p-4 flex flex-col overflow-hidden">
-            <div class="flex items-center gap-2 mb-3">
-              <i data-lucide="flower-pot" class="w-5 h-5 text-amber-600"></i>
-              <h3 class="font-semibold text-amber-900">Rempotage</h3>
-            </div>
-            @if($plant->reppotingHistories->count())
-              <p class="text-sm text-amber-700 mb-3">{{ $plant->reppotingHistories->count() }} enregistrement{{ $plant->reppotingHistories->count() > 1 ? 's' : '' }}</p>
-              <div class="text-xs text-amber-600 mb-3 flex-grow overflow-y-auto">
-                @foreach($plant->reppotingHistories()->latest()->take(3)->get() as $history)
-                  <div class="mb-2 pb-2 border-b border-amber-100">
-                    <div class="font-medium">{{ $history->repotting_date->format('d/m/Y H:i') }}</div>
-                    <div class="text-gray-600">{{ $history->old_pot_size }} → {{ $history->new_pot_size }}</div>
-                  </div>
-                @endforeach
-              </div>
-            @else
-              <p class="text-sm text-amber-600 flex-grow flex items-center">Aucun enregistrement</p>
-            @endif
-            <a href="{{ route('plants.repotting-history.index', $plant) }}" class="mt-auto bg-amber-500 hover:bg-amber-600 text-white text-sm px-3 py-2 rounded text-center transition">
-              Gérer
-            </a>
           </div>
         </div>
-      </div>
+      @endif
     </div>
   </div>
 
@@ -262,7 +228,81 @@
         { url: {!! json_encode(Storage::url($photo->filename)) !!}, caption: {!! json_encode($photo->description ?? '') !!} }{{ !$loop->last ? ',' : '' }}
       @endforeach
     ];
+
+    // Quick watering modal functions
+    function openQuickWateringModal() {
+      const checkbox = document.getElementById('quickWateringCheckbox');
+      if (checkbox.checked) {
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0, 16);
+        document.getElementById('quickWateringDate').value = dateStr;
+        document.getElementById('quickWateringModal').classList.remove('hidden');
+        document.getElementById('quickWateringModal').classList.add('flex');
+      } else {
+        closeQuickWateringModal();
+      }
+    }
+
+    function closeQuickWateringModal() {
+      document.getElementById('quickWateringCheckbox').checked = false;
+      document.getElementById('quickWateringModal').classList.add('hidden');
+      document.getElementById('quickWateringModal').classList.remove('flex');
+    }
+
+    function submitQuickWatering() {
+      const form = document.getElementById('quickWateringForm');
+      form.submit();
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('quickWateringModal');
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeQuickWateringModal();
+        }
+      });
+    });
   </script>
+
+  <!-- Quick Watering Modal -->
+  <div id="quickWateringModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Arrosage rapide</h2>
+        <button type="button" onclick="closeQuickWateringModal()" class="text-gray-500 hover:text-gray-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="quickWateringForm" action="{{ route('plants.watering-history.store', $plant) }}" method="POST">
+        @csrf
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2" for="quickWateringDate">
+            Date et heure <span class="text-red-500">*</span>
+          </label>
+          <input type="datetime-local" id="quickWateringDate" name="watering_date" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-gray-700 font-medium mb-2" for="quickWateringAmount">
+            Quantité
+          </label>
+          <input type="text" id="quickWateringAmount" name="amount" placeholder="ex: 500ml, 1L..." class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button type="button" onclick="closeQuickWateringModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded transition">
+            Annuler
+          </button>
+          <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
     <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
