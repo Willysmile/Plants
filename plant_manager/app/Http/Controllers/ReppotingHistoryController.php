@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ReppotingHistory;
 use App\Models\Plant;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReppotingHistoryController extends Controller
 {
@@ -41,9 +42,9 @@ class ReppotingHistoryController extends Controller
         $validated['plant_id'] = $plant->id;
         ReppotingHistory::create($validated);
 
-        // Update the plant's last repotting date
+        // Update the plant's last repotting date (convert to proper datetime)
         $plant->update([
-            'last_repotting_date' => $validated['repotting_date'],
+            'last_repotting_date' => Carbon::createFromFormat('Y-m-d\TH:i', $validated['repotting_date']),
         ]);
 
         return redirect()->route('plants.repotting-history.index', $plant)

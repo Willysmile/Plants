@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FertilizingHistory;
 use App\Models\Plant;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class FertilizingHistoryController extends Controller
 {
@@ -40,9 +41,9 @@ class FertilizingHistoryController extends Controller
         $validated['plant_id'] = $plant->id;
         FertilizingHistory::create($validated);
 
-        // Update the plant's last fertilizing date
+        // Update the plant's last fertilizing date (convert to proper datetime)
         $plant->update([
-            'last_fertilizing_date' => $validated['fertilizing_date'],
+            'last_fertilizing_date' => Carbon::createFromFormat('Y-m-d\TH:i', $validated['fertilizing_date']),
         ]);
 
         return redirect()->route('plants.fertilizing-history.index', $plant)
