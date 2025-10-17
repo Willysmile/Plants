@@ -194,6 +194,19 @@
               <div class="mt-2 text-center text-xs font-medium text-gray-800">{{ $plant->purchase_date->format('d/m/Y') }}</div>
             </div>
           @endif
+
+          <!-- Historiques (affichage modale) -->
+          <div class="col-span-2">
+            @include('plants.partials.watering-history-modal')
+          </div>
+
+          <div class="col-span-2">
+            @include('plants.partials.fertilizing-history-modal')
+          </div>
+
+          <div class="col-span-2">
+            @include('plants.partials.repotting-history-modal')
+          </div>
         </div>
       </div>
     </div>
