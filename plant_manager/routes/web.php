@@ -35,6 +35,9 @@ Route::get('plants/{plant}/modal', [PlantController::class, 'modal'])->name('pla
 // route AJAX pour recharger les historiques dans la modal
 Route::get('plants/{plant}/histories', [PlantController::class, 'histories'])->name('plants.histories');
 
+// route AJAX pour générer une référence incrémentée
+Route::post('plants/generate-reference', [PlantController::class, 'generateReferenceAPI'])->name('plants.generate-reference');
+
 // route AJAX pour créer un nouveau type d'engrais
 Route::post('fertilizer-types', [FertilizerTypeController::class, 'store'])->name('fertilizer-types.store');
 

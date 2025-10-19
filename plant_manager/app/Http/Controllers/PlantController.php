@@ -236,4 +236,23 @@ class PlantController extends Controller
 
         return redirect()->route('plants.show', $plant)->with('success', 'Plante restaurée avec succès.');
     }
+
+    /**
+     * Génère une référence incrémentée via API
+     */
+    public function generateReferenceAPI(Request $request)
+    {
+        $family = $request->input('family');
+        
+        if (!$family) {
+            return response()->json(['error' => 'Family is required'], 400);
+        }
+
+        // Créer une instance temporaire pour utiliser la méthode generateReference
+        $plant = new Plant();
+        $plant->family = $family;
+        $reference = $plant->generateReference();
+
+        return response()->json(['reference' => $reference]);
+    }
 }
