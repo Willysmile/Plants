@@ -44,7 +44,10 @@
           @if($plant->description)
             <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-green-500">
               <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Description</h3>
-              <p class="mt-2 text-gray-700 leading-relaxed text-sm">{{ $plant->description }}</p>
+              <p class="mt-2 text-gray-700 leading-relaxed text-sm line-clamp-3" data-description-full>{{ $plant->description }}</p>
+              @if(str_word_count($plant->description) > 50)
+                <button type="button" onclick="document.querySelector('[data-description-full]').classList.remove('line-clamp-3'); this.style.display='none';" class="text-xs text-green-600 hover:text-green-800 mt-2 font-semibold">Lire plus →</button>
+              @endif
             </div>
           @endif
         </div>
