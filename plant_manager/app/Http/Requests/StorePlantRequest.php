@@ -37,6 +37,7 @@ class StorePlantRequest extends FormRequest
             'variety' => 'nullable|string|max:255',
             'cultivar' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:200',
+            'reference' => 'nullable|string|max:50|unique:plants,reference',
             
             // Informations d'achat - Accepte "dd/mm/yyyy" ou "mm/yyyy"
             'purchase_date' => ['nullable', 'string', new \App\Rules\FlexibleDate],

@@ -88,6 +88,32 @@
       </div>
     @endif
 
+    <!-- Référence (éditable manuellement) -->
+    <div class="md:col-span-2">
+      <div class="flex justify-between items-center mb-1">
+        <label class="block text-sm font-medium text-gray-700">Référence</label>
+        @if($plant && $plant->reference)
+          <span class="text-xs text-gray-500">Actuelle: <code class="bg-gray-100 px-2 py-1 rounded">{{ $plant->reference }}</code></span>
+        @endif
+      </div>
+      <div class="flex gap-2">
+        <input type="text" 
+               name="reference" 
+               value="{{ old('reference', $plant->reference ?? '') }}" 
+               placeholder="Ex: FAM-001"
+               class="flex-1 border rounded p-2 @error('reference') border-red-500 @enderror">
+        @if($plant)
+          <button type="button" 
+                  onclick="regenerateReference()" 
+                  class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded transition">
+            🔄 Régénérer
+          </button>
+        @endif
+      </div>
+      <p class="text-xs text-gray-500 mt-1">Format: FAMILLE-NUM (ex: Orchidaceae-001). Laissez vide pour auto-génération.</p>
+      @error('reference') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
     <!-- Description -->
     <div class="md:col-span-2">
       <div class="flex justify-between items-center mb-1">
@@ -271,5 +297,30 @@ document.addEventListener('DOMContentLoaded', function() {
   textarea.addEventListener('input', updateCharCount);
   textarea.addEventListener('keyup', updateCharCount);
 });
+
+// Fonction pour régénérer la référence
+window.regenerateReference = function() {
+  const family = document.querySelector('input[name="family"]').value || 'UNK';
+  const familyPrefix = family.substring(0, 3).toUpperCase();
+  
+  // Créer une référence temporaire
+  const newReference = familyPrefix + '-' + Math.floor(Math.random() * 9000 + 1000);
+  
+  // Mettre à jour le champ
+  document.querySelector('input[name="reference"]').value = newReference;
+  
+  // Afficher une notification
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.textContent = '✓ Régénérée!';
+  btn.classList.add('bg-green-500', 'hover:bg-green-600');
+  btn.classList.remove('bg-gray-400', 'hover:bg-gray-500');
+  
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+    btn.classList.add('bg-gray-400', 'hover:bg-gray-500');
+  }, 2000);
+};
 </script>
 @endpush
