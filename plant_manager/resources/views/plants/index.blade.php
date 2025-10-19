@@ -3,8 +3,8 @@
 @section('title', 'Plantes')
 
 @section('content')
-  <div class="max-w-7xl mx-auto p-6">
-    <header class="flex items-center justify-between mb-6">
+  <div class="h-[100vh] max-w-7xl mx-auto flex flex-col">
+    <header class="flex items-center justify-between p-6 border-b flex-shrink-0">
       <h1 class="text-2xl font-semibold">Plantes</h1>
       <div class="flex items-center gap-3">
         <a href="{{ route('settings.index') }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition">⚙️ Paramètres</a>
@@ -12,14 +12,16 @@
       </div>
     </header>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-      @foreach($plants as $plant)
-        <x-plant-card :plant="$plant" />
-      @endforeach
-    </div>
+    <div class="flex-1 overflow-y-auto p-6">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        @foreach($plants as $plant)
+          <x-plant-card :plant="$plant" />
+        @endforeach
+      </div>
 
-    <div class="mt-6">
-      {{ $plants->links() }}
+      <div class="mt-6">
+        {{ $plants->links() }}
+      </div>
     </div>
   </div>
 
