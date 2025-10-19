@@ -18,7 +18,18 @@ const FormValidator = {
   setupForm(form) {
     // Valider lors de la soumission
     form.addEventListener('submit', (e) => {
-      if (!form.checkValidity()) {
+      // Vérifier validité HTML5 ET règles personnalisées
+      let isValid = form.checkValidity();
+      
+      // Vérifier aussi les règles personnalisées
+      const inputs = form.querySelectorAll('input, textarea, select');
+      inputs.forEach(input => {
+        if (!this.validateCustomRules(input)) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
         e.preventDefault();
         e.stopPropagation();
         this.displayErrors(form);
@@ -175,6 +186,11 @@ const FormValidator = {
     const inputs = form.querySelectorAll('input, textarea, select');
     let hasError = false;
 
+    // D'abord, nettoyer tous les messages d'erreur précédents
+    form.querySelectorAll('.error-message').forEach(msg => msg.remove());
+    form.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
+
+    // Ensuite, valider et afficher les erreurs
     inputs.forEach(input => {
       if (!input.checkValidity() || !this.validateCustomRules(input)) {
         this.showFieldError(input);
