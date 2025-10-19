@@ -5,10 +5,10 @@
     @endphp
     
     <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
+        <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="flex items-center gap-2 hover:opacity-75">
             <i data-lucide="leaf" class="w-4 h-4 text-green-600"></i>
             <span class="text-sm font-semibold text-green-900">Fertilisation</span>
-        </div>
+        </a>
     </div>
     
     @if($lastFertilizing)
@@ -24,5 +24,5 @@
     @else
         <p class="text-xs text-green-600 mb-2">Aucun enregistrement</p>
     @endif
-    <button type="button" onclick="openQuickFertilizingModalFromModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold">+ Créer →</button>
+    <button type="button" onclick="openQuickFertilizingModalFromModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold">Créer →</button>
 </div>

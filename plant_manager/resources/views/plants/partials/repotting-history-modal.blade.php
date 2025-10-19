@@ -5,10 +5,10 @@
     @endphp
     
     <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
+        <a href="{{ route('plants.repotting-history.index', $plant) }}" class="flex items-center gap-2 hover:opacity-75">
             <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
             <span class="text-sm font-semibold text-amber-900">Rempotage</span>
-        </div>
+        </a>
     </div>
     
     @if($lastRepotting)

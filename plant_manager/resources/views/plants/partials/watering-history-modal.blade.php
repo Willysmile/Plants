@@ -5,10 +5,10 @@
     @endphp
     
     <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-2">
+        <a href="{{ route('plants.watering-history.index', $plant) }}" class="flex items-center gap-2 hover:opacity-75">
             <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
             <span class="text-sm font-semibold text-blue-900">Arrosage</span>
-        </div>
+        </a>
     </div>
     
     @if($lastWatering)
@@ -21,5 +21,5 @@
     @else
         <p class="text-xs text-blue-600 mb-2">Aucun enregistrement</p>
     @endif
-    <button type="button" onclick="openQuickWateringModalFromModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold">+ Créer →</button>
+    <button type="button" onclick="openQuickWateringModalFromModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold">Créer →</button>
 </div>
