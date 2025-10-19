@@ -9,13 +9,11 @@
             <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
             <span class="text-sm font-semibold text-blue-900">Arrosage</span>
         </div>
-        <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="quickWateringCheckbox" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="openQuickWateringModalFromModal(this)">
-        </label>
+        <button type="button" onclick="openQuickWateringModalFromModal()" class="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">+</button>
     </div>
     
     @if($lastWatering)
-        <p class="text-xs text-blue-600 mb-2">Dernier : {{ $lastWatering->watering_date->format('d/m/Y H:i') }}</p>
+        <p class="text-xs text-blue-600 mb-2">Dernier : {{ $lastWatering->watering_date->format('d/m/Y') }}</p>
         <div class="grid grid-cols-2 gap-2">
             @if($lastWatering->amount)
                 <p class="text-xs text-gray-600">Quantité : {{ $lastWatering->amount }} ml</p>

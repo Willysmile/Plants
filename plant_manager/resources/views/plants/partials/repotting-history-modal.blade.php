@@ -9,13 +9,11 @@
             <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
             <span class="text-sm font-semibold text-amber-900">Rempotage</span>
         </div>
-        <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="quickRepottingCheckbox" class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500" onclick="openQuickRepottingModalFromModal(this)">
-        </label>
+        <button type="button" onclick="openQuickRepottingModalFromModal()" class="px-2 py-1 bg-amber-500 text-white rounded text-sm hover:bg-amber-600">+</button>
     </div>
     
     @if($lastRepotting)
-        <p class="text-xs text-amber-600 mb-2">Dernier : {{ $lastRepotting->repotting_date->format('d/m/Y H:i') }}</p>
+        <p class="text-xs text-amber-600 mb-2">Dernier : {{ $lastRepotting->repotting_date->format('d/m/Y') }}</p>
         <div class="grid grid-cols-2 gap-2">
             @if($lastRepotting->old_pot_size)
                 <p class="text-xs text-gray-600">De : {{ $lastRepotting->old_pot_size }} cm</p>
