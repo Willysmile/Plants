@@ -90,20 +90,8 @@
       @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Catégorie -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Catégorie</label>
-      <select name="category_id" class="mt-1 block w-full border rounded p-2 @error('category_id') border-red-500 @enderror">
-        <option value="">— Sélectionner —</option>
-        @foreach($categories as $cat)
-          <option value="{{ $cat->id }}" @selected(old('category_id', $plant->category_id ?? null)==$cat->id)>{{ $cat->name }}</option>
-        @endforeach
-      </select>
-      @error('category_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-    </div>
-
     <!-- Tags -->
-    <div>
+    <div class="md:col-span-2">
       <label class="block text-sm font-medium text-gray-700">Tags (Ctrl/Cmd pour multi)</label>
       <select name="tags[]" multiple class="mt-1 block w-full border rounded p-2 @error('tags') border-red-500 @enderror" style="padding: 8px 6px;">
         @php

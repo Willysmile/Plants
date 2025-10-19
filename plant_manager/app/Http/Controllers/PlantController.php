@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Plant;
 use App\Models\Tag;
-use App\Models\Category;
 use App\Models\Photo;
 use App\Services\PhotoService;
 use App\Http\Requests\StorePlantRequest;
@@ -22,7 +21,7 @@ class PlantController extends Controller
      */
     public function index(Request $request)
     {
-        $plants = Plant::with(['category', 'tags', 'photos'])
+        $plants = Plant::with(['tags', 'photos'])
             ->latest('created_at')
             ->paginate(12);
 
@@ -34,10 +33,9 @@ class PlantController extends Controller
      */
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
 
-        return view('plants.create', compact('categories', 'tags'));
+        return view('plants.create', compact('tags'));
     }
 
     /**
@@ -71,7 +69,7 @@ class PlantController extends Controller
      */
     public function show(\App\Models\Plant $plant)
 {
-    $plant->load(['category','tags','photos','parents','daughters']);
+    $plant->load(['tags','photos','parents','daughters']);
     return view('plants.show', compact('plant'));
 }
     /**
@@ -79,10 +77,9 @@ class PlantController extends Controller
      */
     public function edit(Plant $plant)
     {
-        $categories = Category::orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
 
-        return view('plants.edit', compact('plant','categories','tags'));
+        return view('plants.edit', compact('plant','tags'));
     }
 
     /**
@@ -171,7 +168,6 @@ class PlantController extends Controller
     public function modal(Plant $plant)
     {
         $plant->load([
-            'category',
             'tags',
             'photos',
             'parents',
@@ -187,7 +183,7 @@ class PlantController extends Controller
     public function histories(Plant $plant)
     {
         $plant->load([
-            'category',
+            'tags',
             'wateringHistories',
             'fertilizingHistories.fertilizerType',
             'repottingHistories',
