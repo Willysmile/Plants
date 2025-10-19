@@ -34,9 +34,9 @@
 
     <!-- Contenu principal - occupe les 2/3 supérieurs -->
     <div class="flex-grow overflow-hidden p-4" style="height: 66%;">
-      <div class="grid grid-cols-3 gap-6 h-full">
-        <!-- Image principale et description - 1/3 de la largeur (col-span-1) -->
-        <div class="col-span-1 flex flex-col gap-4 overflow-y-auto pr-4">
+      <div class="flex gap-6 h-full">
+        <!-- Image principale et description - 45% de la largeur -->
+        <div class="flex flex-col gap-4 overflow-y-auto pr-4" style="width: 45%; flex-shrink: 0;">
           <!-- Photo principale -->
           <x-photo-section :plant="$plant" />
 
@@ -49,8 +49,8 @@
           @endif
         </div>
 
-        <!-- Cartes à droite - 2/3 de la largeur (col-span-2) -->
-        <aside class="col-span-2 overflow-y-auto pr-4">
+        <!-- Cartes à droite - 55% de la largeur -->
+        <aside class="overflow-y-auto pr-4 flex-1">
           <div class="grid grid-cols-2 gap-4">
             <!-- Cartes colonne gauche -->
             <div class="space-y-4">
