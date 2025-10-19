@@ -1,109 +1,109 @@
-@props(['plant', 'type' => 'watering'])
+@props(['plant', 'type' => 'watering', 'context' => 'modal'])
 
 @php
   $config = match($type) {
     'watering' => [
-      'icon' => '💧',
-      'title' => 'Dernier arrosage',
-      'color' => 'blue',
-      'bgColor' => 'bg-blue-50',
-      'borderColor' => 'border-blue-400',
-      'textColor' => 'text-blue-900',
-      'route' => 'plants.watering-history.index',
-      'method' => 'wateringHistories',
-      'checkboxId' => 'quickWateringCheckboxModal',
-      'checkboxOnclick' => 'openQuickWateringModal()',
-      'checkboxColor' => 'text-blue-600',
-      'focusRing' => 'focus:ring-blue-500',
-      'fields' => ['amount' => 'Quantité', 'notes' => 'Notes'],
+      'bg' => 'blue-50',
+      'border' => 'blue-500',
+      'text' => 'blue-600',
+      'dark' => 'blue-900',
+      'icon' => 'droplet',
+      'label' => 'Arrosage',
     ],
     'fertilizing' => [
-      'icon' => '🌱',
-      'title' => 'Dernière fertilisation',
-      'color' => 'green',
-      'bgColor' => 'bg-green-50',
-      'borderColor' => 'border-green-400',
-      'textColor' => 'text-green-900',
-      'route' => 'plants.fertilizing-history.index',
-      'method' => 'fertilizingHistories',
-      'checkboxId' => 'quickFertilizingCheckboxModal',
-      'checkboxOnclick' => 'openQuickFertilizingModal()',
-      'checkboxColor' => 'text-green-600',
-      'focusRing' => 'focus:ring-green-500',
-      'fields' => ['fertilizer_type' => 'Type', 'amount' => 'Quantité'],
+      'bg' => 'green-50',
+      'border' => 'green-500',
+      'text' => 'green-600',
+      'dark' => 'green-900',
+      'icon' => 'leaf',
+      'label' => 'Fertilisation',
     ],
     'repotting' => [
-      'icon' => '🪴',
-      'title' => 'Dernier rempotage',
-      'color' => 'amber',
-      'bgColor' => 'bg-amber-50',
-      'borderColor' => 'border-amber-400',
-      'textColor' => 'text-amber-900',
-      'route' => 'plants.repotting-history.index',
-      'method' => 'reppotingHistories',
-      'checkboxId' => 'quickRepottingCheckboxModal',
-      'checkboxOnclick' => 'openQuickRepottingModal()',
-      'checkboxColor' => 'text-amber-600',
-      'focusRing' => 'focus:ring-amber-500',
-      'fields' => ['new_pot_size' => 'Nouveau pot', 'soil_type' => 'Terreau'],
+      'bg' => 'amber-50',
+      'border' => 'amber-500',
+      'text' => 'amber-600',
+      'dark' => 'amber-900',
+      'icon' => 'sprout',
+      'label' => 'Rempotage',
     ],
   };
   
-  $lastRecord = $plant->{$config['method']}()->latest(
-    match($type) {
-      'watering' => 'watering_date',
-      'fertilizing' => 'fertilizing_date',
-      'repotting' => 'repotting_date',
-    }
-  )->first();
+  // Get the last record
+  if ($type === 'watering') {
+    $last = $plant->wateringHistories()->latest('watering_date')->first();
+    $dateField = 'watering_date';
+    $route = route('plants.watering-history.index', $plant);
+  } elseif ($type === 'fertilizing') {
+    $last = $plant->fertilizingHistories()->latest('fertilizing_date')->first();
+    $dateField = 'fertilizing_date';
+    $route = route('plants.fertilizing-history.index', $plant);
+  } else {
+    $last = $plant->repottingHistories()->latest('repotting_date')->first();
+    $dateField = 'repotting_date';
+    $route = route('plants.repotting-history.index', $plant);
+  }
 @endphp
 
-<div class="{{ $config['bgColor'] }} p-3 rounded {{ $config['borderColor'] }} border-l-4">
-  <x-header-flex
-    :show-checkbox="true"
-    :checkbox-id="$config['checkboxId']"
-    :checkbox-class="$config['checkboxColor'] . ' ' . $config['focusRing']"
-    :checkbox-onclick="$config['checkboxOnclick']"
-  >
-    <a href="{{ route($config['route'], $plant) }}" class="text-sm font-semibold {{ $config['textColor'] }} hover:{{ $config['textColor'] }}/70 hover:underline flex-1">
-      {{ $config['icon'] }} {{ $config['title'] }}: 
-      @if($lastRecord)
-        {{ $lastRecord->{match($type) {
-          'watering' => 'watering_date',
-          'fertilizing' => 'fertilizing_date',
-          'repotting' => 'repotting_date',
-        }}->format('d/m/Y') }}
-      @else
-        —
-      @endif
+<div class="bg-{{ $config['bg'] }} p-3 rounded@if($context === 'modal') rounded-none@else-lg@endif border-l-4 border-{{ $config['border'] }}">
+  <div class="flex items-center gap-2">
+    <i data-lucide="{{ $config['icon'] }}" class="w-4 h-4 text-{{ $config['text'] }}"></i>
+    <a href="{{ $route }}" class="text-sm font-semibold text-{{ $config['dark'] }} hover:opacity-75">
+      {{ $config['label'] }}
     </a>
-  </x-header-flex>
+  </div>
   
-  @if($lastRecord)
-    <div class="grid grid-cols-2 gap-2">
-      @if($type === 'watering' && $lastRecord->amount)
-        <p class="text-xs text-gray-600">Quantité : {{ $lastRecord->amount }} ml</p>
-      @elseif($type === 'watering' && $lastRecord->notes)
-        <p class="text-xs text-gray-600 italic">{{ Str::limit($lastRecord->notes, 40) }}</p>
-      @endif
-      
-      @if($type === 'fertilizing' && $lastRecord->fertilizer_type)
-        <p class="text-xs text-gray-600">Type : {{ $lastRecord->fertilizer_type }}</p>
-      @elseif($type === 'fertilizing' && $lastRecord->amount)
-        <p class="text-xs text-gray-600">Quantité : {{ $lastRecord->amount }} ml</p>
-      @endif
-      
-      @if($type === 'repotting')
-        <p class="text-xs text-gray-600">
-          @if($lastRecord->old_pot_size)
-            {{ $lastRecord->old_pot_size }} → 
+  @if($last)
+    <p class="text-xs text-{{ $config['text'] }} mt-2">Dernier : {{ $last->{$dateField}->format('d/m/Y') }}</p>
+    
+    @if($context === 'show')
+      <div class="space-y-1">
+        @if($type === 'watering')
+          @if($last->amount)
+            <p class="text-xs text-gray-600">Quantité : {{ $last->amount }} ml</p>
           @endif
-          {{ $lastRecord->new_pot_size }}
-        </p>
-        @if($lastRecord->soil_type)
-          <p class="text-xs text-gray-600">Terreau : {{ $lastRecord->soil_type }}</p>
+          @if($last->notes)
+            <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+          @endif
+        @elseif($type === 'fertilizing')
+          @if($last->fertilizerType)
+            <p class="text-xs text-gray-600">Type : {{ $last->fertilizerType->name }}</p>
+          @endif
+          @if($last->amount)
+            <p class="text-xs text-gray-600">
+              Quantité : {{ $last->amount }}
+              @if($last->fertilizerType)
+                {{ $last->fertilizerType->unit === 'ml' ? 'ml' : ($last->fertilizerType->unit === 'g' ? 'g' : '') }}
+              @else
+                ml
+              @endif
+            </p>
+          @endif
+          @if($last->notes)
+            <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+          @endif
+        @elseif($type === 'repotting')
+          @if($last->old_pot_size || $last->new_pot_size)
+            <p class="text-xs text-gray-600">Pots : {{ $last->old_pot_size }} → {{ $last->new_pot_size }}</p>
+          @endif
+          @if($last->notes)
+            <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+          @endif
         @endif
-      @endif
+      </div>
+    @endif
+  @else
+    <p class="text-xs text-{{ $config['text'] }} mt-2">Aucun enregistrement</p>
+  @endif
+  
+  <button 
+    type="button" 
+    onclick="openQuick{{ ucfirst($type) }}Modal@if($context === 'modal')FromModal@endif()"
+    class="text-xs text-{{ $config['text'] }} hover:text-{{ $config['dark'] }} mt-2 inline-block font-semibold flex items-center gap-1"
+  >
+    <i data-lucide="plus-circle" class="w-3 h-3"></i>
+    Créer →
+  </button>
+</div>
     </div>
   @else
     <p class="text-xs text-gray-600">Aucun enregistrement</p>
