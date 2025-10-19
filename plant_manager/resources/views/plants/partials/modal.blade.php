@@ -241,6 +241,20 @@
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
+    
+    // Initialize form handlers for quick modals
+    console.log('[MODALS] Initializing form handlers');
+    
+    // Verify functions are available
+    if (typeof window.handleQuickWateringSubmit !== 'undefined') {
+      console.log('[MODALS] handleQuickWateringSubmit is available');
+    }
+    if (typeof window.handleQuickFertilizingSubmit !== 'undefined') {
+      console.log('[MODALS] handleQuickFertilizingSubmit is available');
+    }
+    if (typeof window.handleQuickRepottingSubmit !== 'undefined') {
+      console.log('[MODALS] handleQuickRepottingSubmit is available');
+    }
   </script>
 
 </div>
