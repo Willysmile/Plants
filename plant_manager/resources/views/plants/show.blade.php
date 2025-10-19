@@ -42,6 +42,18 @@
         <button type="button" onclick="refreshShowPage()" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2" title="Actualiser la page">
           <i data-lucide="refresh-cw" class="w-4 h-4"></i>
         </button>
+        @if(!$plant->is_archived)
+          <button type="button" onclick="confirmArchive()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition" title="Archiver cette plante">
+            📦 Archiver
+          </button>
+        @else
+          <form action="{{ route('plants.restore', $plant) }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition">
+              ↺ Restaurer
+            </button>
+          </form>
+        @endif
         <a href="{{ route('plants.edit', $plant) }}" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition">Modifier</a>
         <a href="{{ route('plants.index') }}" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition">Retour</a>
       </div>
@@ -296,6 +308,37 @@
 </div>
 
 @include('partials.lightbox')
+
+<!-- Formulaire caché pour l'archivage -->
+<form id="archiveForm" action="{{ route('plants.archive', $plant) }}" method="POST" style="display: none;">
+  @csrf
+  <input type="hidden" name="reason" id="reasonInput" value="">
+</form>
+
+<!-- Modale de confirmation d'archivage -->
+<div id="archiveModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+    <h3 class="text-lg font-bold text-gray-800 mb-2">Archiver cette plante ?</h3>
+    <p class="text-gray-600 mb-4">
+      La plante <strong>{{ $plant->name }}</strong> sera déplacée dans les archives.
+      Vous pourrez la restaurer à tout moment.
+    </p>
+    
+    <!-- Raison d'archivage optionnelle -->
+    <textarea id="archiveReason" class="w-full border border-gray-300 rounded p-2 mb-4 text-sm" 
+              placeholder="Raison optionnelle (ex: Plante morte, Donnée à un ami...)" rows="3"></textarea>
+    
+    <div class="flex gap-3">
+      <button type="button" onclick="cancelArchive()" class="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded transition">
+        Annuler
+      </button>
+      <button type="button" onclick="submitArchive()" class="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded transition">
+        Archiver
+      </button>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @section('extra-scripts')
@@ -315,6 +358,24 @@
       setTimeout(() => {
         location.reload();
       }, 500);
+    };
+    
+    // Modale d'archivage
+    window.confirmArchive = function() {
+      document.getElementById('archiveModal').classList.remove('hidden');
+    };
+    
+    window.cancelArchive = function() {
+      document.getElementById('archiveModal').classList.add('hidden');
+      document.getElementById('archiveReason').value = '';
+    };
+    
+    window.submitArchive = function() {
+      const reason = document.getElementById('archiveReason').value;
+      const form = document.getElementById('archiveForm');
+      const reasonInput = form.querySelector('input[name="reason"]');
+      reasonInput.value = reason;
+      form.submit();
     };
     
     // Initialiser le gestionnaire de galerie au chargement

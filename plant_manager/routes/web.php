@@ -15,6 +15,13 @@ use App\Http\Controllers\FertilizerTypeController;
 |--------------------------------------------------------------------------
 */
 
+// Route pour les plantes archivées
+Route::get('plants/archived', [PlantController::class, 'archived'])->name('plants.archived');
+
+// Routes pour archiver et restaurer les plantes
+Route::post('plants/{plant}/archive', [PlantController::class, 'archive'])->name('plants.archive');
+Route::post('plants/{plant}/restore', [PlantController::class, 'restore'])->name('plants.restore');
+
 Route::resource('plants', PlantController::class);
 
 // page d'accueil redirige vers l'index des plantes

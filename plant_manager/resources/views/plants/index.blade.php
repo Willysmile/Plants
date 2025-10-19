@@ -8,10 +8,9 @@
       <div class="flex items-center gap-3">
         <h1 class="text-2xl font-semibold">Plantes</h1>
         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200">{{ $plants->count() }}</span>
-        <label class="flex items-center gap-2 ml-4 text-sm text-gray-600">
-          <input type="checkbox" id="show-archived" class="rounded cursor-pointer">
-          <span>Afficher archivées</span>
-        </label>
+        <a href="{{ route('plants.archived') }}" class="ml-4 px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:bg-gray-50 transition">
+          📦 Archivées
+        </a>
       </div>
       <div class="flex items-center gap-3">
         <a href="{{ route('settings.index') }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition">⚙️ Paramètres</a>
@@ -53,20 +52,6 @@
   <script src="{{ asset('js/app.js') }}"></script>
   
   <script>
-    // Checkbox pour afficher/masquer les plantes archivées
-    const showArchivedCheckbox = document.getElementById('show-archived');
-    
-    showArchivedCheckbox.addEventListener('change', function() {
-      const cards = document.querySelectorAll('article');
-      cards.forEach(card => {
-        const isArchived = card.getAttribute('data-archived') === 'true';
-        if (isArchived) {
-          card.style.display = this.checked ? 'block' : 'none';
-          card.style.opacity = this.checked ? '1' : '0.5';
-        }
-      });
-    });
-
     // Pagination for plants grid
     const PLANTS_PER_PAGE = 15; // 5 columns × 3 rows
     let currentPage = 0;
@@ -88,14 +73,7 @@
       // Show cards for current page
       const start = currentPage * PLANTS_PER_PAGE;
       const end = start + PLANTS_PER_PAGE;
-      allCards.slice(start, end).forEach(card => {
-        const isArchived = card.getAttribute('data-archived') === 'true';
-        if (isArchived && !showArchivedCheckbox.checked) {
-          card.style.display = 'none';
-        } else {
-          card.style.display = 'block';
-        }
-      });
+      allCards.slice(start, end).forEach(card => card.style.display = 'block');
       
       // Update buttons
       prevBtn.disabled = currentPage === 0;
