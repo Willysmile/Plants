@@ -53,7 +53,8 @@ class FertilizingHistoryController extends Controller
             return response('OK', 200);
         }
 
-        return redirect()->route('plants.fertilizing-history.index', $plant)
+        // For normal requests, redirect to show page
+        return redirect()->route('plants.show', $plant)
             ->with('success', 'Fertilisation enregistrée avec succès.');
     }
 
