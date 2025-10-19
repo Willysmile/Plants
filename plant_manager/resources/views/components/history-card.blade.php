@@ -60,7 +60,7 @@
         @if($last->amount)
           <p class="text-xs text-gray-600">Quantité : {{ $last->amount }} ml</p>
         @endif
-        @if($last->notes)
+        @if($context === 'show' && $last->notes)
           <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
         @endif
       @elseif($type === 'fertilizing')
@@ -77,14 +77,14 @@
             @endif
           </p>
         @endif
-        @if($last->notes)
+        @if($context === 'show' && $last->notes)
           <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
         @endif
       @elseif($type === 'repotting')
         @if($last->old_pot_size || $last->new_pot_size)
           <p class="text-xs text-gray-600">Pots : {{ $last->old_pot_size }} → {{ $last->new_pot_size }}</p>
         @endif
-        @if($last->notes)
+        @if($context === 'show' && $last->notes)
           <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
         @endif
       @endif
@@ -98,9 +98,6 @@
     onclick="openQuick{{ ucfirst($type) }}Modal@if($context === 'modal')FromModal@endif()"
     class="text-xs text-{{ $config['text'] }} hover:text-{{ $config['dark'] }} mt-2 inline-block font-semibold flex items-center gap-1"
   >
-    @if($context === 'show')
-      <i data-lucide="plus-circle" class="w-3 h-3"></i>
-    @endif
     Créer →
   </button>
 </div>
