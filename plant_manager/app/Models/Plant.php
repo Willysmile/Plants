@@ -13,6 +13,7 @@ class Plant extends Model
     protected $fillable = [
         'name',
         'scientific_name',
+        'family',
         'genus',
         'species',
         'subspecies',
