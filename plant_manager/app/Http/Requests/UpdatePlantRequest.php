@@ -21,6 +21,13 @@ class UpdatePlantRequest extends FormRequest
      */
     public function rules(): array
     {
-        return (new StorePlantRequest())->rules(); // Réutiliser les mêmes règles
+        $rules = (new StorePlantRequest())->rules(); // Réutiliser les mêmes règles
+        
+        // Adapter la validation unique pour la référence (exclure l'ID courant)
+        if ($this->route('plant')) {
+            $rules['reference'] = 'nullable|string|max:50|unique:plants,reference,' . $this->route('plant')->id;
+        }
+        
+        return $rules;
     }
 }
