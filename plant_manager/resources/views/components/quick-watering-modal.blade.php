@@ -40,7 +40,7 @@ function handleQuickWateringSubmit(event) {
   const dateError = document.getElementById('quickWateringDateError');
   const today = new Date().toISOString().split('T')[0];
   
-  // Validate date is not in the future
+  // Validate date is not in the future (client-side)
   if (dateInput.value > today) {
     dateError.classList.remove('hidden');
     return false;
@@ -48,7 +48,7 @@ function handleQuickWateringSubmit(event) {
   
   dateError.classList.add('hidden');
   
-  // Submit form
+  // Submit form via AJAX
   const form = document.getElementById('quickWateringFormFromModal');
   const formData = new FormData(form);
   
@@ -61,11 +61,24 @@ function handleQuickWateringSubmit(event) {
     }
   })
   .then(response => {
-    if (response.ok) {
+    // Check if response is JSON
+    return response.json().then(data => ({ status: response.status, data }));
+  })
+  .then(({ status, data }) => {
+    if (status === 200 || status === 201) {
       alert('Arrosage effectué !!');
-      closeQuickWateringModalFromModal();
-      // Reset form
       form.reset();
+      dateError.classList.add('hidden');
+      closeQuickWateringModalFromModal();
+    } else if (status === 422) {
+      // Validation error from Laravel
+      const errors = data.errors || {};
+      if (errors.watering_date) {
+        dateError.textContent = errors.watering_date[0];
+        dateError.classList.remove('hidden');
+      } else {
+        alert('Erreur de validation: ' + JSON.stringify(errors));
+      }
     } else {
       alert('Erreur lors de l\'enregistrement');
     }

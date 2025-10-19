@@ -50,7 +50,7 @@ function handleQuickRepottingSubmit(event) {
   const dateError = document.getElementById('quickRepottingDateError');
   const today = new Date().toISOString().split('T')[0];
   
-  // Validate date is not in the future
+  // Validate date is not in the future (client-side)
   if (dateInput.value > today) {
     dateError.classList.remove('hidden');
     return false;
@@ -58,7 +58,7 @@ function handleQuickRepottingSubmit(event) {
   
   dateError.classList.add('hidden');
   
-  // Submit form
+  // Submit form via AJAX
   const form = document.getElementById('quickRepottingFormFromModal');
   const formData = new FormData(form);
   
@@ -71,11 +71,24 @@ function handleQuickRepottingSubmit(event) {
     }
   })
   .then(response => {
-    if (response.ok) {
+    // Check if response is JSON
+    return response.json().then(data => ({ status: response.status, data }));
+  })
+  .then(({ status, data }) => {
+    if (status === 200 || status === 201) {
       alert('Rempotage effectué !!');
-      closeQuickRepottingModalFromModal();
-      // Reset form
       form.reset();
+      dateError.classList.add('hidden');
+      closeQuickRepottingModalFromModal();
+    } else if (status === 422) {
+      // Validation error from Laravel
+      const errors = data.errors || {};
+      if (errors.repotting_date) {
+        dateError.textContent = errors.repotting_date[0];
+        dateError.classList.remove('hidden');
+      } else {
+        alert('Erreur de validation: ' + JSON.stringify(errors));
+      }
     } else {
       alert('Erreur lors de l\'enregistrement');
     }
