@@ -13,6 +13,7 @@ class Plant extends Model
     protected $fillable = [
         'name',
         'scientific_name',
+        'reference',
         'family',
         'subfamily',
         'genus',
@@ -38,6 +39,7 @@ class Plant extends Model
         'location',
         'pot_size',
         'health_status',
+        'is_archived',
         'last_fertilizing_date',
         'fertilizing_frequency',
         'last_repotting_date',
@@ -286,4 +288,29 @@ class Plant extends Model
     {
         return $this->hasMany(RepottingHistory::class);
     }
+
+    /**
+     * Générer une référence automatique basée sur la famille
+     * Format: "ORCHI-001" (5 premières lettres de la famille + numéro séquentiel)
+     */
+    public function generateReference(): string
+    {
+        // Obtenir les 5 premières lettres de la famille en majuscules
+        $familyPrefix = strtoupper(substr($this->family ?? 'UNKWN', 0, 5));
+        
+        // Compter combien de références existent déjà pour cette famille
+        $lastNumber = Plant::where('reference', 'like', $familyPrefix . '-%')
+            ->orderByRaw('CAST(SUBSTRING_INDEX(reference, "-", -1) AS UNSIGNED) DESC')
+            ->value('reference');
+        
+        // Extraire le numéro et l'incrémenter
+        $number = 1;
+        if ($lastNumber) {
+            $number = (int) substr($lastNumber, -3) + 1;
+        }
+        
+        // Retourner la référence formatée (ex: "ORCHI-001")
+        return $familyPrefix . '-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+    }
 }
+
