@@ -2,10 +2,6 @@
 
 @section('title', $plant->name)
 
-@section('extra-head')
-  <link rel="stylesheet" href="https://unpkg.com/lightbox2@2.11.4/dist/css/lightbox.min.css">
-@endsection
-
 @section('content')
 <div class="h-[98vh] max-w-6xl mx-auto flex flex-col">
   <div class="bg-white rounded-lg shadow flex flex-col flex-grow overflow-hidden">
@@ -281,36 +277,13 @@
 @endsection
 
 @section('extra-scripts')
-  <script src="https://unpkg.com/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
+  <script src="{{ asset('js/gallery-manager.js') }}"></script>
   <script>
-    // Gestionnaire pour les miniatures de la galerie
+    // Initialiser le gestionnaire de galerie au chargement
     document.addEventListener('DOMContentLoaded', function() {
-      document.addEventListener('click', function(e) {
-        // Si c'est un bouton avec data-type="thumbnail", échanger avec la photo principale
-        if (e.target.closest('[data-type="thumbnail"]')) {
-          const btn = e.target.closest('[data-type="thumbnail"]');
-          const mainPhoto = document.querySelector('[data-type="main-photo"]');
-          
-          if (!mainPhoto) return;
-          
-          const thumbImg = btn.querySelector('img');
-          if (!thumbImg) return;
-          
-          // Échanger les src
-          const mainSrc = mainPhoto.src;
-          const thumbSrc = thumbImg.src;
-          
-          mainPhoto.src = thumbSrc;
-          thumbImg.src = mainSrc;
-          
-          // Échanger aussi data-original-src
-          const mainOrig = mainPhoto.getAttribute('data-original-src');
-          const thumbOrig = btn.getAttribute('data-original-src');
-          
-          if (mainOrig) mainPhoto.setAttribute('data-original-src', thumbOrig);
-          if (thumbOrig) btn.setAttribute('data-original-src', mainOrig);
-        }
-      });
+      if (typeof GalleryManager !== 'undefined') {
+        GalleryManager.init();
+      }
     });
   </script>
 @endsection
