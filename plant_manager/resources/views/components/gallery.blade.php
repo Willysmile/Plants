@@ -16,7 +16,7 @@
         <button type="button" 
                class="gallery-thumbnail"
                data-type="thumbnail"
-               data-index="{{ $i }}"
+               data-index="{{ $i + 1 }}"
                data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
                style="aspect-ratio:1/1; width:70px; height:70px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;" 
                aria-label="Échanger avec la photo principale">
