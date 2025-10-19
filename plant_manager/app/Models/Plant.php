@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; 
 
 class Plant extends Model
 {
@@ -22,7 +21,6 @@ class Plant extends Model
         'purchase_date',
         'purchase_place',
         'purchase_price',
-        'category_id',
         'description',
         'watering_frequency',
         'last_watering_date',
@@ -262,14 +260,6 @@ class Plant extends Model
         4 => 'yellow-600',
         5 => 'orange-600',
     ];
-
-    /**
-     * Relation avec la catégorie
-     */
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     /**
      * Historique d'arrosage

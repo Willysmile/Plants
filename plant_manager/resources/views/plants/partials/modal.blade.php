@@ -9,10 +9,6 @@
             <div class="text-sm italic text-gray-500">{{ $plant->scientific_name }}</div>
           @endif
         </div>
-        <!-- Catégorie à côté du titre -->
-        <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium border border-blue-200">
-          {{ $plant->category->name ?? '—' }}
-        </span>
       </div>
       <div class="flex items-center gap-2">
         <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm hover:bg-gray-200 transition">Voir</a>

@@ -18,7 +18,6 @@
 
   <div class="p-3">
     <h3 class="text-sm font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
-    <p class="text-xs text-gray-500 mt-1 truncate">{{ $plant->category->name ?? '—' }}</p>
     <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
       <span>Arrosage: {{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}</span>
       <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline">Détails</a>
