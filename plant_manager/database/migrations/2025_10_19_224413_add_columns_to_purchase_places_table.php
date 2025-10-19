@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('plants', function (Blueprint $table) {
-            if (!Schema::hasColumn('plants', 'reference')) {
-                $table->string('reference')->nullable()->unique()->after('id')->comment('Reference code (e.g., ORCHI-001)');
+        Schema::table('purchase_places', function (Blueprint $table) {
+            if (!Schema::hasColumn('purchase_places', 'name')) {
+                $table->string('name')->unique();
             }
         });
     }
@@ -23,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('plants', function (Blueprint $table) {
-            $table->dropColumn('reference');
+        Schema::table('purchase_places', function (Blueprint $table) {
+            if (Schema::hasColumn('purchase_places', 'name')) {
+                $table->dropColumn('name');
+            }
         });
     }
 };

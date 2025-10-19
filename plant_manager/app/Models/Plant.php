@@ -26,8 +26,10 @@ class Plant extends Model
         'purchase_price',
         'description',
         'watering_frequency',
+        'watering_frequency_id',
         'last_watering_date',
         'light_requirement',
+        'light_requirement_id',
         'temperature_min',
         'temperature_max',
         'humidity_level',
@@ -197,6 +199,22 @@ class Plant extends Model
             'daughter_id',
             'parent_id'
         )->withPivot('method','propagation_date')->withTimestamps();
+    }
+
+    /**
+     * Fréquence d'arrosage (relation vers watering_frequencies)
+     */
+    public function wateringFrequencyData()
+    {
+        return $this->belongsTo(WateringFrequency::class, 'watering_frequency_id');
+    }
+
+    /**
+     * Besoin en lumière (relation vers light_requirements)
+     */
+    public function lightRequirementData()
+    {
+        return $this->belongsTo(LightRequirement::class, 'light_requirement_id');
     }
 
     /**

@@ -50,3 +50,4 @@ Route::resource('fertilizer-types', FertilizerTypeController::class);
 // Routes pour les paramètres
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
 Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+Route::get('settings/references', [SettingsController::class, 'references'])->name('settings.references');

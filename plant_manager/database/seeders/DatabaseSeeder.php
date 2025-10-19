@@ -13,14 +13,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Créer un utilisateur de test seulement s'il n'existe pas
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            ]
+        );
 
         $this->call([
+            WateringFrequencySeeder::class,
+            LightRequirementSeeder::class,
+            PurchasePlaceSeeder::class,
+            LocationSeeder::class,
             FertilizerTypeSeeder::class,
             TagSeeder::class,
         ]);
