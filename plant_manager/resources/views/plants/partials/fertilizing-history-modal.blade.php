@@ -18,7 +18,7 @@
                 <p class="text-xs text-gray-600">Type : {{ $lastFertilizing->fertilizer_type }}</p>
             @endif
             @if($lastFertilizing->amount)
-                <p class="text-xs text-gray-600">Quantité : {{ $lastFertilizing->amount }} ml</p>
+                <p class="text-xs text-gray-600">Quantité : {{ $lastFertilizing->amount }}</p>
             @endif
         </div>
     @else
