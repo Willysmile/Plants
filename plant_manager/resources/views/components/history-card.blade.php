@@ -100,7 +100,9 @@
     onclick="openQuick{{ ucfirst($type) }}Modal@if($context === 'modal')FromModal@endif()"
     class="text-xs text-{{ $config['text'] }} hover:text-{{ $config['dark'] }} mt-2 inline-block font-semibold flex items-center gap-1"
   >
-    <i data-lucide="plus-circle" class="w-3 h-3"></i>
+    @if($context === 'show')
+      <i data-lucide="plus-circle" class="w-3 h-3"></i>
+    @endif
     Créer →
   </button>
 </div>
