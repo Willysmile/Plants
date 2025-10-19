@@ -50,7 +50,7 @@
   $functionName = 'openQuick' . $config['functionName'] . 'Modal' . ($context === 'modal' ? 'FromModal' : '') . '()';
 @endphp
 
-<div class="bg-{{ $config['bg'] }} p-3 rounded@if($context === 'modal') rounded-none@else-lg@endif border-l-4 border-{{ $config['border'] }}">
+<div class="bg-{{ $config['bg'] }} p-3 border-l-4 border-{{ $config['border'] }}">
   <div class="flex items-center gap-2">
     <i data-lucide="{{ $config['icon'] }}" class="w-4 h-4 text-{{ $config['text'] }}"></i>
     <a href="{{ $route }}" class="text-sm font-semibold text-{{ $config['dark'] }} hover:opacity-75">
