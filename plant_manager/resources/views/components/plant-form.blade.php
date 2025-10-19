@@ -106,14 +106,14 @@
 
     <!-- Humidité -->
     <div>
-      <label class="block text-sm font-medium text-gray-700">Humidité (%)</label>
-      <input type="number" step="1" name="humidity_level" value="{{ old('humidity_level', $plant->humidity_level ?? '') }}" class="mt-1 block w-full border rounded p-2 @error('humidity_level') border-red-500 @enderror">
+      <label class="block text-sm font-medium text-gray-700">Humidité (%) - Max 100%</label>
+      <input type="number" step="1" min="0" max="100" name="humidity_level" value="{{ old('humidity_level', $plant->humidity_level ?? '') }}" class="mt-1 block w-full border rounded p-2 @error('humidity_level') border-red-500 @enderror">
       @error('humidity_level') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
     <!-- Date d'achat -->
     <div>
-      <label class="block text-sm font-medium text-gray-700">Date d'achat</label>
+      <label class="block text-sm font-medium text-gray-700">Date d'achat (pas future)</label>
       <input type="date" name="purchase_date" value="{{ old('purchase_date', $plant?->purchase_date?->format('Y-m-d') ?? '') }}" class="mt-1 block w-full border rounded p-2 @error('purchase_date') border-red-500 @enderror">
       @error('purchase_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>

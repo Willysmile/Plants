@@ -50,12 +50,73 @@ const FormValidator = {
     }
 
     // Vérifier la validité
-    if (!field.checkValidity()) {
+    if (!field.checkValidity() || !this.validateCustomRules(field)) {
       this.showFieldError(field);
       field.classList.add('is-invalid');
     } else {
       field.classList.remove('is-invalid');
     }
+  },
+
+  /**
+   * Valide les règles personnalisées
+   */
+  validateCustomRules(field) {
+    // Validation 1: Date d'achat ne doit pas être future
+    if (field.name === 'purchase_date' && field.value) {
+      const purchaseDate = new Date(field.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (purchaseDate > today) {
+        field.dataset.customError = 'La date d\'achat ne peut pas être future';
+        return false;
+      }
+    }
+
+    // Validation 2: Humidité ne doit pas dépasser 100%
+    if (field.name === 'humidity_level' && field.value) {
+      const humidity = parseFloat(field.value);
+      if (humidity > 100) {
+        field.dataset.customError = 'L\'humidité ne peut pas dépasser 100%';
+        return false;
+      }
+      if (humidity < 0) {
+        field.dataset.customError = 'L\'humidité ne peut pas être négative';
+        return false;
+      }
+    }
+
+    // Validation 3: Température min/max - min ne doit pas être > max
+    if (field.name === 'temperature_min' && field.value) {
+      const form = field.closest('form');
+      const tempMaxField = form.querySelector('input[name="temperature_max"]');
+      if (tempMaxField && tempMaxField.value) {
+        const tempMin = parseFloat(field.value);
+        const tempMax = parseFloat(tempMaxField.value);
+        if (tempMin > tempMax) {
+          field.dataset.customError = 'La température min ne peut pas dépasser la température max';
+          return false;
+        }
+      }
+    }
+
+    // Validation 3b: Température max ne doit pas être < min
+    if (field.name === 'temperature_max' && field.value) {
+      const form = field.closest('form');
+      const tempMinField = form.querySelector('input[name="temperature_min"]');
+      if (tempMinField && tempMinField.value) {
+        const tempMin = parseFloat(tempMinField.value);
+        const tempMax = parseFloat(field.value);
+        if (tempMax < tempMin) {
+          field.dataset.customError = 'La température max ne peut pas être inférieure à la température min';
+          return false;
+        }
+      }
+    }
+
+    delete field.dataset.customError;
+    return true;
   },
 
   /**
@@ -75,6 +136,11 @@ const FormValidator = {
    * Retourne le message d'erreur approprié
    */
   getErrorMessage(field) {
+    // Vérifier les erreurs personnalisées d'abord
+    if (field.dataset.customError) {
+      return field.dataset.customError;
+    }
+
     if (!field.validity) {
       return 'Champ invalide';
     }
@@ -110,7 +176,7 @@ const FormValidator = {
     let hasError = false;
 
     inputs.forEach(input => {
-      if (!input.checkValidity()) {
+      if (!input.checkValidity() || !this.validateCustomRules(input)) {
         this.showFieldError(input);
         input.classList.add('is-invalid');
         hasError = true;

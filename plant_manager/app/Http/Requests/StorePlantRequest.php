@@ -32,15 +32,15 @@ class StorePlantRequest extends FormRequest
             'scientific_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             
-            // Informations d'achat
-            'purchase_date' => 'nullable|date',
+            // Informations d'achat - VALIDATION: date pas future
+            'purchase_date' => 'nullable|date|before_or_equal:today',
             'purchase_place' => 'nullable|string|max:255',
             'purchase_price' => 'nullable|numeric|min:0',
             
-            // Conditions de culture
-            'temperature_min' => 'nullable|numeric',
-            'temperature_max' => 'nullable|numeric',
-            'humidity_level' => 'nullable|string|max:255',
+            // Conditions de culture - VALIDATION: humidité max 100%, temp min < max
+            'temperature_min' => 'nullable|numeric|lt:temperature_max',
+            'temperature_max' => 'nullable|numeric|gt:temperature_min',
+            'humidity_level' => 'nullable|numeric|min:0|max:100',
             'soil_humidity' => 'nullable|string|max:255',
             'soil_ideal_ph' => 'nullable|numeric|between:0,14',
             'soil_type' => 'nullable|string|max:255',
@@ -95,6 +95,18 @@ class StorePlantRequest extends FormRequest
             'name.required' => 'Le nom de la plante est obligatoire.',
             'watering_frequency.required' => 'La fréquence d\'arrosage est obligatoire.',
             'light_requirement.required' => 'Le besoin en lumière est obligatoire.',
+            
+            // Validations - Date d'achat
+            'purchase_date.before_or_equal' => 'La date d\'achat ne peut pas être future.',
+            
+            // Validations - Humidité et Température
+            'humidity_level.max' => 'L\'humidité ne peut pas dépasser 100%.',
+            'humidity_level.min' => 'L\'humidité ne peut pas être négative.',
+            'humidity_level.numeric' => 'L\'humidité doit être une valeur numérique.',
+            'temperature_min.lt' => 'La température minimum doit être inférieure à la température maximum.',
+            'temperature_max.gt' => 'La température maximum doit être supérieure à la température minimum.',
+            
+            // Autres
             'next_repotting_date.after_or_equal' => 'La date du prochain rempotage doit être postérieure au dernier rempotage.',
             'main_photo.image' => 'Le fichier doit être une image (jpeg, png, bmp, gif, svg, ou webp).',
             'main_photo.max' => 'La photo ne doit pas dépasser 5 Mo.',
