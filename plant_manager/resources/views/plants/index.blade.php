@@ -3,7 +3,7 @@
 @section('title', 'Plantes')
 
 @section('content')
-  <div class="h-[100vh] max-w-full mx-auto flex flex-col overflow-hidden">
+  <div class="h-[100vh] max-w-7xl mx-auto flex flex-col overflow-hidden">
     <header class="flex items-center justify-between px-6 py-3 border-b flex-shrink-0">
       <h1 class="text-2xl font-semibold">Plantes</h1>
       <div class="flex items-center gap-3">
@@ -13,7 +13,7 @@
     </header>
 
     <div class="flex-1 overflow-y-auto px-6 py-3">
-      <div class="grid grid-cols-6 gap-4">
+      <div class="grid grid-cols-5 gap-4">
         @foreach($plants as $plant)
           <x-plant-card :plant="$plant" />
         @endforeach

@@ -23,7 +23,7 @@
     @endif
     <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
       <span></span>
-      <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline">Détails</a>
+      <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline font-medium">→ Détails</a>
     </div>
   </div>
 </article>
