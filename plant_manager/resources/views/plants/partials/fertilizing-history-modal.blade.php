@@ -13,9 +13,9 @@
                 —
             @endif
         </a>
-        <label class="flex items-center cursor-pointer ml-2">
-            <input type="checkbox" id="quickFertilizingCheckboxModal" class="w-4 h-4 text-green-600 rounded focus:ring-green-500" onclick="openQuickFertilizingModal()">
-        </label>
+        <a href="{{ route('plants.fertilizing-history.create', $plant) }}" class="text-xs font-semibold text-green-600 hover:text-green-800 hover:underline ml-2 px-2 py-1 rounded hover:bg-green-100 transition">
+            + Fertiliser
+        </a>
     </div>
     
     @if($lastFertilizing)
