@@ -14,8 +14,8 @@
     @if($lastFertilizing)
         <p class="text-xs text-green-600 mb-2">Dernier : {{ $lastFertilizing->fertilizing_date->format('d/m/Y') }}</p>
         <div class="space-y-1">
-            @if($lastFertilizing->fertilizer_type)
-                <p class="text-xs text-gray-600">Type : {{ $lastFertilizing->fertilizer_type }}</p>
+            @if($lastFertilizing->fertilizerType)
+                <p class="text-xs text-gray-600">Type : {{ $lastFertilizing->fertilizerType->name }}</p>
             @endif
             @if($lastFertilizing->amount)
                 <p class="text-xs text-gray-600">Quantité : {{ $lastFertilizing->amount }} ml</p>

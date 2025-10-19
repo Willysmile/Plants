@@ -11,7 +11,7 @@
       <h1 class="text-3xl font-bold text-gray-900 ml-4">Nouvelle fertilisation</h1>
     </div>
 
-    <x-history-form :plant="$plant" type="fertilizing" />
+    <x-history-form :plant="$plant" type="fertilizing" :fertilizerTypes="$fertilizerTypes" />
   </div>
 @endsection
 <!DOCTYPE html>

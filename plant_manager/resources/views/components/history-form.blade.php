@@ -1,7 +1,12 @@
-@props(['plant', 'history' => null, 'type' => 'watering'])
+@props(['plant', 'history' => null, 'type' => 'watering', 'fertilizerTypes' => null])
 
 @php
   $isEdit = $history !== null;
+  
+  // Get fertilizer types if not provided
+  if ($type === 'fertilizing' && $fertilizerTypes === null) {
+    $fertilizerTypes = \App\Models\FertilizerType::all();
+  }
   
   $config = match($type) {
     'watering' => [
@@ -24,7 +29,7 @@
       'date_field' => 'fertilizing_date',
       'fields' => [
         'fertilizing_date' => ['label' => 'Date de fertilisation', 'type' => 'date', 'required' => true],
-        'fertilizer_type' => ['label' => 'Type d\'engrais', 'type' => 'text', 'grid' => 'col'],
+        'fertilizer_type_id' => ['label' => 'Type d\'engrais', 'type' => 'select', 'grid' => 'col'],
         'amount' => ['label' => 'Quantité', 'type' => 'number', 'suffix' => 'ml', 'grid' => 'col'],
         'notes' => ['label' => 'Notes', 'type' => 'textarea'],
       ],
@@ -96,6 +101,15 @@
           id="{{ $fieldName }}" 
           name="{{ $fieldName }}" 
           rows="4">{{ old($fieldName, $history?->{$fieldName} ?? '') }}</textarea>
+      @elseif($fieldConfig['type'] === 'select')
+        <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
+          id="{{ $fieldName }}" 
+          name="{{ $fieldName }}">
+          <option value="">-- Sélectionner --</option>
+          @foreach($fertilizerTypes as $ftype)
+            <option value="{{ $ftype->id }}" @selected(old($fieldName, $history?->fertilizer_type_id ?? '') == $ftype->id)>{{ $ftype->name }}</option>
+          @endforeach
+        </select>
       @elseif($fieldConfig['type'] === 'number')
         <div class="flex items-center gap-2">
           <input class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
