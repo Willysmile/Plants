@@ -49,9 +49,9 @@ class RepottingHistoryController extends Controller
             'last_repotting_date' => $validated['repotting_date'],
         ]);
 
-        // Return JSON for AJAX requests
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true], 200);
+        // Return empty response for AJAX requests (no redirect)
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response('OK', 200);
         }
 
         return redirect()->route('plants.repotting-history.index', $plant)

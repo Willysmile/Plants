@@ -1,8 +1,8 @@
 <!-- Quick Repotting Modal -->
 <div id="quickRepottingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-96" onclick="event.stopPropagation();">
     <h3 class="text-lg font-semibold mb-4 text-amber-900">Rempotage</h3>
-    <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST" onsubmit="handleQuickRepottingSubmit(event)">
+    <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST" onsubmit="return handleQuickRepottingSubmit(event)">
       @csrf
       <div class="mb-3">
         <label for="quickRepottingDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -39,12 +39,15 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Set max date to today
   const dateInput = document.getElementById('quickRepottingDateFromModal');
-  const today = new Date().toISOString().split('T')[0];
-  dateInput.max = today;
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.max = today;
+  }
 });
 
 function handleQuickRepottingSubmit(event) {
   event.preventDefault();
+  event.stopPropagation();
   
   const dateInput = document.getElementById('quickRepottingDateFromModal');
   const dateError = document.getElementById('quickRepottingDateError');
@@ -52,6 +55,7 @@ function handleQuickRepottingSubmit(event) {
   
   // Validate date is not in the future (client-side)
   if (dateInput.value > today) {
+    dateError.textContent = 'La date ne peut pas être dans le futur';
     dateError.classList.remove('hidden');
     return false;
   }
@@ -67,31 +71,22 @@ function handleQuickRepottingSubmit(event) {
     body: formData,
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
-      'Accept': 'application/json'
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
     }
   })
   .then(response => {
-    // Check if response is JSON
-    return response.json().then(data => ({ status: response.status, data }));
-  })
-  .then(({ status, data }) => {
-    if (status === 200 || status === 201) {
-      alert('Rempotage effectué !!');
-      form.reset();
-      dateError.classList.add('hidden');
-      closeQuickRepottingModalFromModal();
-    } else if (status === 422) {
-      // Validation error from Laravel
-      const errors = data.errors || {};
-      if (errors.repotting_date) {
-        dateError.textContent = errors.repotting_date[0];
-        dateError.classList.remove('hidden');
-      } else {
-        alert('Erreur de validation: ' + JSON.stringify(errors));
-      }
-    } else {
-      alert('Erreur lors de l\'enregistrement');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    return response.text();
+  })
+  .then(data => {
+    alert('Rempotage effectué !!');
+    form.reset();
+    dateError.classList.add('hidden');
+    closeQuickRepottingModalFromModal();
+    // Reload the page to refresh history
+    location.reload();
   })
   .catch(error => {
     console.error('Error:', error);

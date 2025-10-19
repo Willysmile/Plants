@@ -48,9 +48,9 @@ class WateringHistoryController extends Controller
             'last_watering_date' => $validated['watering_date'],
         ]);
 
-        // Return JSON for AJAX requests
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true], 200);
+        // Return empty response for AJAX requests (no redirect)
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response('OK', 200);
         }
 
         return redirect()->route('plants.watering-history.index', $plant)

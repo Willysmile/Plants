@@ -48,9 +48,9 @@ class FertilizingHistoryController extends Controller
             'last_fertilizing_date' => $validated['fertilizing_date'],
         ]);
 
-        // Return JSON for AJAX requests
-        if ($request->expectsJson()) {
-            return response()->json(['success' => true], 200);
+        // Return empty response for AJAX requests (no redirect)
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response('OK', 200);
         }
 
         return redirect()->route('plants.fertilizing-history.index', $plant)
