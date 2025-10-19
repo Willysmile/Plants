@@ -39,9 +39,8 @@
       </div>
 
       <div class="flex items-center gap-2 ml-4">
-        <button type="button" onclick="refreshShowPage()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2" title="Actualiser la page">
+        <button type="button" onclick="refreshShowPage()" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2" title="Actualiser la page">
           <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-          Actualiser
         </button>
         <a href="{{ route('plants.edit', $plant) }}" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition">Modifier</a>
         <a href="{{ route('plants.index') }}" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition">Retour</a>
@@ -80,8 +79,8 @@
         </div>
 
         <!-- Cartes à droite - 55% de la largeur -->
-        <aside class="overflow-y-auto pr-4 flex-1">
-          <div class="space-y-4">
+        <aside class="overflow-y-auto pr-4 flex-1 flex flex-col">
+          <div class="space-y-4 flex-1">
             <!-- Besoins et Température sur la même ligne -->
             <div class="grid grid-cols-2 gap-3">
               <!-- Besoins en arrosage et lumière -->
@@ -162,9 +161,10 @@
               <x-history-card :plant="$plant" type="fertilizing" context="show" />
               <x-history-card :plant="$plant" type="repotting" context="show" />
             </div>
+            </div>
 
             <!-- Localisation (Emplacement, Date, Lieu d'achat) EN BAS -->
-            <div class="grid gap-2 text-xs" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">
+            <div class="grid gap-2 text-xs mt-auto pt-4" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">
               @if($plant->location)
                 <div class="bg-green-50 p-2 rounded border border-green-200">
                   <p class="text-gray-600 font-medium text-xs">Emplacement</p>
