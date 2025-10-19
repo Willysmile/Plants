@@ -7,7 +7,7 @@
   $submitText = $isEdit ? 'Modifier' : 'Créer';
 @endphp
 
-<form action="{{ $action }}" method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6 space-y-6">
+<form id="plant-form" action="{{ $action }}" method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow p-6 space-y-6">
   @csrf
   @if($isEdit) @method($method) @endif
 
