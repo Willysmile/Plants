@@ -21,7 +21,7 @@
       </div>
 
       <!-- Emplacement et Date d'achat à droite du titre -->
-      <div class="flex flex-col gap-2 ml-4 text-right">
+      <div class="flex gap-2 ml-4">
         @if($plant->location)
           <div class="bg-green-50 px-3 py-2 rounded border border-green-200">
             <p class="text-xs text-gray-600 font-medium">Emplacement</p>
