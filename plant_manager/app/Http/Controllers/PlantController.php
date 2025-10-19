@@ -23,7 +23,7 @@ class PlantController extends Controller
     {
         $plants = Plant::with(['tags', 'photos'])
             ->latest('created_at')
-            ->paginate(12);
+            ->get();
 
         return view('plants.index', compact('plants'));
     }
