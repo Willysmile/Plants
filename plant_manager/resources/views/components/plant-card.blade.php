@@ -1,6 +1,6 @@
 @props(['plant'])
 
-<article class="bg-white rounded-lg shadow overflow-hidden">
+<article class="bg-white rounded-lg shadow overflow-hidden" data-archived="{{ $plant->is_archived ? 'true' : 'false' }}">
   <div class="w-full h-40 bg-gray-100 overflow-hidden flex items-center justify-center">
     <button
       type="button"
@@ -22,7 +22,11 @@
     @endif
     <h3 class="text-xs font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
     <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
-      <span></span>
+      @if($plant->reference)
+        <span class="font-mono text-gray-600 font-semibold">{{ $plant->reference }}</span>
+      @else
+        <span></span>
+      @endif
       <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline font-medium">→ Détails</a>
     </div>
   </div>
