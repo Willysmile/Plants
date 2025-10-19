@@ -7,20 +7,12 @@
     <header class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Modifier la plante</h1>
       <div class="flex gap-2">
-        <button type="button"
-                @click="tagsModalOpen = true"
-                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium relative">
-          Tags
-          @if($plant->tags->count() > 0)
-            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">{{ $plant->tags->count() }}</span>
-          @endif
-        </button>
         <button type="submit" form="plant-form" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Modifier</button>
         <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Retour fiche</a>
       </div>
     </header>
 
-    <x-plant-form :plant="$plant" :tags="$tags" />
+    <x-plant-form :plant="$plant" :tags="$tags" :tagsModalOpen="'tagsModalOpen'" />
 
     <!-- Modal Tags -->
     <div x-show="tagsModalOpen" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
