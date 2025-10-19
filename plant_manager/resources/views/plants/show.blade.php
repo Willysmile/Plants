@@ -164,7 +164,7 @@
               <!-- Historique de rempotage (petit) -->
               <div class="bg-amber-50 p-3 rounded-lg border-l-4 border-amber-500">
                 <div class="flex items-center gap-2">
-                  <i data-lucide="flower-pot" class="w-4 h-4 text-amber-600"></i>
+                  <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
                   <h3 class="text-sm font-semibold text-amber-900">Rempotage</h3>
                 </div>
                 @if($plant->last_repotting_date)

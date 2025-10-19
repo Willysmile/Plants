@@ -6,7 +6,7 @@
     
     <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
-            <i data-lucide="flower-pot" class="w-4 h-4 text-amber-600"></i>
+            <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
             <span class="text-sm font-semibold text-amber-900">Rempotage</span>
         </div>
         <label class="flex items-center gap-2 cursor-pointer">
