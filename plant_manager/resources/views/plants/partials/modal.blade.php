@@ -332,19 +332,22 @@
 
     // Quick Watering Modal Functions
     function openQuickWateringModalFromModal(checkbox) {
+      console.log('openQuickWateringModalFromModal called', checkbox.checked);
       if (checkbox.checked) {
         const now = new Date();
         const dateStr = now.toISOString().slice(0, 16);
         document.getElementById('quickWateringDateFromModal').value = dateStr;
         document.getElementById('quickWateringModalFromModal').classList.remove('hidden');
         document.getElementById('quickWateringModalFromModal').classList.add('flex');
+        console.log('Watering modal opened');
       } else {
         closeQuickWateringModalFromModal();
       }
     }
 
     function closeQuickWateringModalFromModal() {
-      document.getElementById('quickWateringCheckbox')?.checked && (document.getElementById('quickWateringCheckbox').checked = false);
+      const checkbox = document.getElementById('quickWateringCheckbox');
+      if (checkbox) checkbox.checked = false;
       document.getElementById('quickWateringModalFromModal').classList.add('hidden');
       document.getElementById('quickWateringModalFromModal').classList.remove('flex');
     }
@@ -363,7 +366,8 @@
     }
 
     function closeQuickFertilizingModalFromModal() {
-      document.getElementById('quickFertilizingCheckbox')?.checked && (document.getElementById('quickFertilizingCheckbox').checked = false);
+      const checkbox = document.getElementById('quickFertilizingCheckbox');
+      if (checkbox) checkbox.checked = false;
       document.getElementById('quickFertilizingModalFromModal').classList.add('hidden');
       document.getElementById('quickFertilizingModalFromModal').classList.remove('flex');
     }
@@ -382,13 +386,19 @@
     }
 
     function closeQuickRepottingModalFromModal() {
-      document.getElementById('quickRepottingCheckbox')?.checked && (document.getElementById('quickRepottingCheckbox').checked = false);
+      const checkbox = document.getElementById('quickRepottingCheckbox');
+      if (checkbox) checkbox.checked = false;
       document.getElementById('quickRepottingModalFromModal').classList.add('hidden');
       document.getElementById('quickRepottingModalFromModal').classList.remove('flex');
     }
 
     // Thumbnail click handler for gallery
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('Modal DOMContentLoaded - checking functions');
+      console.log('openQuickWateringModalFromModal:', typeof openQuickWateringModalFromModal);
+      console.log('openQuickFertilizingModalFromModal:', typeof openQuickFertilizingModalFromModal);
+      console.log('openQuickRepottingModalFromModal:', typeof openQuickRepottingModalFromModal);
+      
       const thumbnails = document.querySelectorAll('[data-type="thumbnail"]');
       thumbnails.forEach(thumbnail => {
         thumbnail.addEventListener('click', function() {
