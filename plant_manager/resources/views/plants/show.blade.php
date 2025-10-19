@@ -28,26 +28,12 @@
         </div>
       </div>
 
-      <!-- Emplacement et Date d'achat à droite du titre -->
+      <!-- Référence badge réduit -->
       <div class="flex gap-2 ml-4">
         @if($plant->reference)
           <div class="bg-purple-50 px-3 py-2 rounded border border-purple-200">
             <p class="text-xs text-gray-600 font-medium">Référence</p>
             <p class="text-sm text-purple-700 font-mono font-semibold">{{ $plant->reference }}</p>
-          </div>
-        @endif
-        
-        @if($plant->location)
-          <div class="bg-green-50 px-3 py-2 rounded border border-green-200">
-            <p class="text-xs text-gray-600 font-medium">Emplacement</p>
-            <p class="text-sm text-green-700 font-semibold">{{ $plant->location }}</p>
-          </div>
-        @endif
-        
-        @if($plant->purchase_date)
-          <div class="bg-blue-50 px-3 py-2 rounded border border-blue-200">
-            <p class="text-xs text-gray-600 font-medium">Date d'achat</p>
-            <p class="text-sm text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
           </div>
         @endif
       </div>
@@ -77,6 +63,30 @@
               <p class="mt-2 text-gray-700 leading-relaxed text-sm break-words">{{ $plant->description }}</p>
             </div>
           @endif
+
+          <!-- Localisation (Emplacement, Date, Lieu d'achat) SOUS la description -->
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            @if($plant->location)
+              <div class="bg-green-50 p-2 rounded border border-green-200">
+                <p class="text-gray-600 font-medium text-xs">Emplacement</p>
+                <p class="text-green-700 font-semibold">{{ $plant->location }}</p>
+              </div>
+            @endif
+            
+            @if($plant->purchase_date)
+              <div class="bg-blue-50 p-2 rounded border border-blue-200">
+                <p class="text-gray-600 font-medium text-xs">Date d'achat</p>
+                <p class="text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
+              </div>
+            @endif
+            
+            @if($plant->purchase_place)
+              <div class="bg-orange-50 p-2 rounded border border-orange-200">
+                <p class="text-gray-600 font-medium text-xs">Lieu d'achat</p>
+                <p class="text-orange-700 font-semibold">{{ $plant->purchase_place }}</p>
+              </div>
+            @endif
+          </div>
 
           <!-- Tags -->
           @if($plant->tags->count() > 0)

@@ -21,26 +21,12 @@
         </div>
       </div>
 
-      <!-- Emplacement et Date d'achat -->
+      <!-- Référence badge réduit -->
       <div class="flex gap-2">
         @if($plant->reference)
           <div class="bg-purple-50 px-2 py-1 rounded border border-purple-200 text-xs">
             <p class="text-gray-600 font-medium">Référence</p>
             <p class="text-purple-700 font-mono font-semibold">{{ $plant->reference }}</p>
-          </div>
-        @endif
-        
-        @if($plant->location)
-          <div class="bg-green-50 px-2 py-1 rounded border border-green-200 text-xs">
-            <p class="text-gray-600 font-medium">Emplacement</p>
-            <p class="text-green-700 font-semibold">{{ $plant->location }}</p>
-          </div>
-        @endif
-        
-        @if($plant->purchase_date)
-          <div class="bg-blue-50 px-2 py-1 rounded border border-blue-200 text-xs">
-            <p class="text-gray-600 font-medium">Date d'achat</p>
-            <p class="text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
           </div>
         @endif
       </div>
@@ -61,6 +47,30 @@
     <div class="flex-1 overflow-hidden flex p-3 gap-4">
       <!-- Colonne gauche (1/2) : Photo + Description + Galerie -->
       <div class="w-1/2 flex flex-col gap-3 overflow-y-auto pr-2">
+        <!-- Localisation (Emplacement, Date, Lieu d'achat) AU-DESSUS de la photo -->
+        <div class="grid grid-cols-3 gap-2 text-xs">
+          @if($plant->location)
+            <div class="bg-green-50 p-2 rounded border border-green-200">
+              <p class="text-gray-600 font-medium text-xs">Emplacement</p>
+              <p class="text-green-700 font-semibold">{{ $plant->location }}</p>
+            </div>
+          @endif
+          
+          @if($plant->purchase_date)
+            <div class="bg-blue-50 p-2 rounded border border-blue-200">
+              <p class="text-gray-600 font-medium text-xs">Date d'achat</p>
+              <p class="text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
+            </div>
+          @endif
+          
+          @if($plant->purchase_place)
+            <div class="bg-orange-50 p-2 rounded border border-orange-200">
+              <p class="text-gray-600 font-medium text-xs">Lieu d'achat</p>
+              <p class="text-orange-700 font-semibold">{{ $plant->purchase_place }}</p>
+            </div>
+          @endif
+        </div>
+
         <!-- Photo principale -->
         <x-photo-section :plant="$plant" :aspectRatio="'4/3'" :clickable="true" height="280px" />
 
