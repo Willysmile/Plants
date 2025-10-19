@@ -1,5 +1,7 @@
 <!-- Quick Repotting Modal -->
 <script>
+console.log('[REPOTTING COMPONENT] Script loaded');
+
 // Define validation function in global scope so it's available when form submits
 window.handleQuickRepottingSubmit = function(event) {
   event.preventDefault();
