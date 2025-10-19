@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:750px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:525px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
   <div class="h-full flex flex-col">
     <!-- En-tête -->
     <div class="flex items-center justify-between p-3 border-b">
