@@ -5,20 +5,17 @@
     @endphp
     
     <div class="flex items-center justify-between mb-2">
-        <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-sm font-semibold text-blue-900 hover:text-blue-700 hover:underline flex-1">
-            💧 Dernier arrosage : 
-            @if($lastWatering)
-                {{ $lastWatering->watering_date->format('d/m/Y') }}
-            @else
-                —
-            @endif
-        </a>
-        <a href="{{ route('plants.watering-history.create', $plant) }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline ml-2 px-2 py-1 rounded hover:bg-blue-100 transition">
-            + Arroser
-        </a>
+        <div class="flex items-center gap-2">
+            <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
+            <span class="text-sm font-semibold text-blue-900">Arrosage</span>
+        </div>
+        <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="quickWateringCheckbox" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="openQuickWateringModalFromModal(this)">
+        </label>
     </div>
     
     @if($lastWatering)
+        <p class="text-xs text-blue-600 mb-2">Dernier : {{ $lastWatering->watering_date->format('d/m/Y H:i') }}</p>
         <div class="grid grid-cols-2 gap-2">
             @if($lastWatering->amount)
                 <p class="text-xs text-gray-600">Quantité : {{ $lastWatering->amount }} ml</p>
@@ -28,6 +25,7 @@
             @endif
         </div>
     @else
-        <p class="text-xs text-gray-600">Aucun enregistrement</p>
+        <p class="text-xs text-blue-600 mb-2">Aucun enregistrement</p>
     @endif
+    <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-xs text-blue-500 hover:text-blue-700 mt-1 inline-block">Gérer →</a>
 </div>
