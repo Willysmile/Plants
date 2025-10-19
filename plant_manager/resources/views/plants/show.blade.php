@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="h-[98vh] max-w-6xl mx-auto flex flex-col">
-  <div class="bg-white rounded-lg shadow flex flex-col flex-grow overflow-hidden">
+  <div class="bg-white rounded-lg shadow flex flex-col flex-grow overflow-hidden" data-modal-plant-id="{{ $plant->id }}">
     <!-- En-tête avec titre et boutons d'action -->
     <div class="flex items-start justify-between p-4 border-b">
       <div class="flex-1">
