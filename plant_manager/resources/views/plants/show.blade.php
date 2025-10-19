@@ -47,7 +47,7 @@
               @php
                 $maxChars = 150;
                 $showReadMore = strlen($plant->description) > $maxChars;
-                $displayText = $showReadMore ? substr($plant->description, 0, $maxChars) . '...' : $plant->description;
+                $displayText = Str::limit($plant->description, $maxChars, '...');
               @endphp
               <p class="mt-2 text-gray-700 leading-relaxed text-sm" data-description-full>{{ $displayText }}</p>
               @if($showReadMore)
