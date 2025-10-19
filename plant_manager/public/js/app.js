@@ -9,9 +9,24 @@ const App = {
    */
   init() {
     this.setupCloseModalHandler();
-    ModalManager.init();
-    GalleryManager.init();
-    FormValidator.init();
+    
+    if (typeof ModalManager !== 'undefined') {
+      ModalManager.init();
+    } else {
+      console.warn('ModalManager not loaded');
+    }
+    
+    if (typeof GalleryManager !== 'undefined') {
+      GalleryManager.init();
+    } else {
+      console.warn('GalleryManager not loaded');
+    }
+    
+    if (typeof FormValidator !== 'undefined') {
+      FormValidator.init();
+    } else {
+      console.warn('FormValidator not loaded');
+    }
   },
 
   /**
