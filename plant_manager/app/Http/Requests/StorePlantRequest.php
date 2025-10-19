@@ -24,12 +24,18 @@ class StorePlantRequest extends FormRequest
         return [
             // Champs obligatoires
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
             'watering_frequency' => 'required|integer|min:1|max:5',
             'light_requirement' => 'required|integer|min:1|max:5',
             
             // Informations générales
             'scientific_name' => 'nullable|string|max:255',
+            'family' => 'nullable|string|max:255',
+            'subfamily' => 'nullable|string|max:255',
+            'genus' => 'nullable|string|max:255',
+            'species' => 'nullable|string|max:255',
+            'subspecies' => 'nullable|string|max:255',
+            'variety' => 'nullable|string|max:255',
+            'cultivar' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:200',
             
             // Informations d'achat - Accepte "dd/mm/yyyy" ou "mm/yyyy"
@@ -90,8 +96,6 @@ class StorePlantRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'category_id.required' => 'La catégorie est obligatoire.',
-            'category_id.exists' => 'La catégorie sélectionnée n\'existe pas.',
             'name.required' => 'Le nom de la plante est obligatoire.',
             'watering_frequency.required' => 'La fréquence d\'arrosage est obligatoire.',
             'light_requirement.required' => 'Le besoin en lumière est obligatoire.',
