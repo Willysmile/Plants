@@ -1,6 +1,6 @@
-@props(['plant', 'clickable' => true, 'aspectRatio' => '4/3'])
+@props(['plant', 'clickable' => true, 'aspectRatio' => '4/3', 'height' => null])
 
-<div class="rounded overflow-hidden flex-shrink-0" style="aspect-ratio:{{ $aspectRatio }}; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;">
+<div class="rounded overflow-hidden flex-shrink-0" style="@if($height)height:{{ $height }};@else aspect-ratio:{{ $aspectRatio }};@endif display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;">
   @if($plant->main_photo)
     @if($clickable)
       <button type="button" onclick="openLightboxGlobal(0)" class="bg-transparent border-0 p-0 w-full flex items-center justify-center">
