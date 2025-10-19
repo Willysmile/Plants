@@ -24,5 +24,5 @@
     @else
         <p class="text-xs text-green-600 mb-2">Aucun enregistrement</p>
     @endif
-    <button type="button" onclick="openQuickFertilizingModalFromModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold">Créer →</button>
+    <button type="button" onclick="event.stopPropagation(); openQuickFertilizingModalFromModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold">Créer →</button>
 </div>

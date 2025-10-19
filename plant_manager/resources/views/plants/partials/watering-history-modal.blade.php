@@ -21,5 +21,5 @@
     @else
         <p class="text-xs text-blue-600 mb-2">Aucun enregistrement</p>
     @endif
-    <button type="button" onclick="openQuickWateringModalFromModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold">Créer →</button>
+    <button type="button" onclick="event.stopPropagation(); openQuickWateringModalFromModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold">Créer →</button>
 </div>
