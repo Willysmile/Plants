@@ -22,6 +22,7 @@
       <p class="text-xs italic text-gray-600 truncate" title="{{ $plant->scientific_name }}">{{ $plant->scientific_name }}</p>
     @endif
     <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
+      <span></span>
       <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline">Détails</a>
     </div>
   </div>
