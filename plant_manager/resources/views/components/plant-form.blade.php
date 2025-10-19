@@ -38,8 +38,17 @@
 
     <!-- Description -->
     <div class="md:col-span-2">
-      <label class="block text-sm font-medium text-gray-700">Description</label>
-      <textarea name="description" rows="4" class="mt-1 block w-full border rounded p-2 @error('description') border-red-500 @enderror">{{ old('description', $plant->description ?? '') }}</textarea>
+      <div class="flex justify-between items-center mb-1">
+        <label class="block text-sm font-medium text-gray-700">Description</label>
+        <span id="char-count" class="text-sm text-gray-500">0/200</span>
+      </div>
+      <textarea 
+        id="description-input"
+        name="description" 
+        rows="4" 
+        maxlength="200"
+        class="mt-1 block w-full border rounded p-2 @error('description') border-red-500 @enderror"
+      >{{ old('description', $plant->description ?? '') }}</textarea>
       @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
@@ -161,3 +170,37 @@
     <a href="{{ $isEdit ? route('plants.show', $plant) : route('plants.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Annuler</a>
   </div>
 </form>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const textarea = document.getElementById('description-input');
+  const charCount = document.getElementById('char-count');
+  
+  // Initialiser le compteur avec le contenu existant
+  function updateCharCount() {
+    const count = textarea.value.length;
+    charCount.textContent = count + '/200';
+    
+    // Changer la couleur en fonction du nombre de caractères
+    if (count > 180) {
+      charCount.classList.remove('text-gray-500');
+      charCount.classList.add('text-red-500', 'font-medium');
+    } else if (count > 150) {
+      charCount.classList.remove('text-gray-500', 'text-red-500');
+      charCount.classList.add('text-orange-500');
+    } else {
+      charCount.classList.remove('text-orange-500', 'text-red-500', 'font-medium');
+      charCount.classList.add('text-gray-500');
+    }
+  }
+  
+  // Mettre à jour le compteur au chargement
+  updateCharCount();
+  
+  // Mettre à jour le compteur à chaque changement
+  textarea.addEventListener('input', updateCharCount);
+  textarea.addEventListener('keyup', updateCharCount);
+});
+</script>
+@endpush
