@@ -22,6 +22,7 @@ class PlantController extends Controller
     public function index(Request $request)
     {
         $plants = Plant::with(['tags', 'photos'])
+            ->where('is_archived', '!=', true)
             ->latest('created_at')
             ->get();
 
