@@ -1,5 +1,7 @@
 <!-- Quick Watering Modal -->
 <script>
+console.log('[WATERING COMPONENT] Script loaded');
+
 // Define validation function in global scope so it's available when form submits
 window.handleQuickWateringSubmit = function(event) {
   event.preventDefault();

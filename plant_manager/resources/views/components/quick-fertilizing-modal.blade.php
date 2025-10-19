@@ -1,5 +1,7 @@
 <!-- Quick Fertilizing Modal -->
 <script>
+console.log('[FERTILIZING COMPONENT] Script loaded');
+
 // Define validation function in global scope so it's available when form submits
 window.handleQuickFertilizingSubmit = function(event) {
   event.preventDefault();
