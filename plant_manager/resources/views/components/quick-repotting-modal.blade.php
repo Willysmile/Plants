@@ -9,7 +9,7 @@
         </svg>
       </button>
     </div>
-    <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST" onsubmit="return handleQuickRepottingSubmit(event)">
+    <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST">
       @csrf
       <input type="hidden" name="_ajax" value="1">
       <div class="mb-3">
