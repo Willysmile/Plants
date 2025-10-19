@@ -11,7 +11,7 @@
       <h1 class="text-3xl font-bold text-gray-900 ml-4">Éditer le rempotage</h1>
     </div>
 
-    <x-history-form :plant="$plant" :history="$reppotingHistory" type="repotting" />
+    <x-history-form :plant="$plant" :history="$repottingHistory" type="repotting" />
   </div>
 @endsection
 
