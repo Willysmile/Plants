@@ -178,6 +178,17 @@
       @error('purchase_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
+    <!-- Emplacement actuel -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Emplacement actuel</label>
+      <input type="text" 
+             name="location" 
+             value="{{ old('location', $plant?->location ?? '') }}" 
+             placeholder="Ex: Fenêtre salon, Salle de bain..."
+             class="mt-1 block w-full border rounded p-2 @error('location') border-red-500 @enderror">
+      @error('location') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
     <!-- Notes -->
     <div class="md:col-span-2">
       <label class="block text-sm font-medium text-gray-700">Notes</label>
