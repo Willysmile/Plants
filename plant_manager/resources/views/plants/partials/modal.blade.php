@@ -4,15 +4,19 @@
     <div class="flex items-center justify-between p-3 border-b">
       <div class="flex items-center gap-3">
         <div>
-          <h2 class="text-lg font-semibold">{{ $plant->name }}</h2>
-          @if($plant->family)
-            <div class="text-xs uppercase font-bold text-gray-400 tracking-wide">{{ $plant->family }}</div>
-          @endif
-          @if($plant->subfamily)
-            <div class="text-xs font-medium text-gray-500">{{ $plant->subfamily }}</div>
-          @endif
           @if($plant->scientific_name)
-            <div class="text-sm italic text-gray-500">{{ $plant->scientific_name }}</div>
+            <h2 class="text-lg font-semibold italic text-green-700">{{ $plant->scientific_name }}</h2>
+          @endif
+          <div class="flex gap-2 mt-1 items-center">
+            @if($plant->family)
+              <span class="text-xs uppercase font-bold text-gray-400 tracking-wide">{{ $plant->family }}</span>
+              @if($plant->subfamily)
+                <span class="text-xs font-medium text-gray-500">{{ $plant->subfamily }}</span>
+              @endif
+            @endif
+          </div>
+          @if($plant->name)
+            <p class="text-sm text-gray-700 mt-1">{{ $plant->name }}</p>
           @endif
         </div>
       </div>
