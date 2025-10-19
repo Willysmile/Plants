@@ -43,9 +43,19 @@ const GalleryManager = {
 
       if (currentSwapState === thumbIndex) {
         // Déjà swappée avec cette miniature - annuler le swap
-        // Simplement retirer l'état pour qu'elle soit considérée comme "originale"
         delete this.swapStates[plantId];
-        // Retourner pour ne pas re-swapper
+        
+        // 🔧 IMPORTANT: Réinitialiser l'array lightbox à l'ordre original
+        // Charger le script JSON embarqué pour remettre l'ordre original
+        const dataScript = modal.querySelector('script[data-lightbox-images]');
+        if (dataScript) {
+          try {
+            window.globalLightboxImages = JSON.parse(dataScript.textContent);
+          } catch (e) {
+            console.error('Erreur réinitialisation lightbox:', e);
+          }
+        }
+        
         return;
       }
 
