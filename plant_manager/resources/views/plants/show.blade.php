@@ -10,17 +10,19 @@
       <div class="flex-1">
         <div class="flex items-start gap-4">
           <div>
-            @if($plant->family)
-              <p class="text-xs uppercase font-bold text-gray-500 tracking-wide mb-1">{{ $plant->family }}</p>
-            @endif
-            @if($plant->subfamily)
-              <p class="text-xs font-medium text-gray-600 mb-2">{{ $plant->subfamily }}</p>
-            @endif
             @if($plant->scientific_name)
               <h1 class="text-3xl font-semibold italic text-green-700">{{ $plant->scientific_name }}</h1>
+            @endif
+            <div class="flex gap-2 mt-2 items-center">
+              @if($plant->family)
+                <p class="text-xs uppercase font-bold text-gray-500 tracking-wide">{{ $plant->family }}</p>
+                @if($plant->subfamily)
+                  <p class="text-xs font-medium text-gray-600">{{ $plant->subfamily }}</p>
+                @endif
+              @endif
+            </div>
+            @if($plant->name)
               <p class="text-base text-gray-700 mt-2">{{ $plant->name }}</p>
-            @else
-              <h1 class="text-3xl font-semibold">{{ $plant->name }}</h1>
             @endif
           </div>
         </div>
