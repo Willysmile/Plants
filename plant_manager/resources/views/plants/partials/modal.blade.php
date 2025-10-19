@@ -160,7 +160,7 @@
         </div>
 
         <!-- Localisation (Emplacement, Date, Lieu d'achat) AU-DESSUS de la galerie -->
-        <div class="grid grid-cols-3 gap-2 text-xs">
+        <div class="grid gap-2 text-xs" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">
           @if($plant->location)
             <div class="bg-green-50 p-2 rounded border border-green-200">
               <p class="text-gray-600 font-medium text-xs">Emplacement</p>
