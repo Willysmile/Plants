@@ -43,19 +43,15 @@ const GalleryManager = {
 
       // 🔧 FIX: Si on clique sur un thumbnail différent du swap actuel, restaurer d'abord
       if (currentSwapState && currentSwapState !== thumbIndex) {
-        console.log('🔄 Restauration du swap précédent avant nouveau swap');
         delete this.swapStates[plantId];
         
         // Trouver le thumbnail du swap précédent et le remettre en place
         const previousThumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${currentSwapState}"]`);
-        console.log('previousThumbBtn trouvé:', previousThumbBtn);
         if (previousThumbBtn) {
           const previousThumbImg = previousThumbBtn.querySelector('img');
-          console.log('previousThumbImg trouvé:', previousThumbImg);
           if (previousThumbImg) {
             // Restaurer les images visuellement
             this.swapImages(mainPhoto, previousThumbImg);
-            console.log('Images du swap précédent restaurées');
           }
         }
         
@@ -63,48 +59,38 @@ const GalleryManager = {
         const dataScript = modal.querySelector('script[data-lightbox-images]');
         if (dataScript) {
           window.globalLightboxImages = JSON.parse(dataScript.textContent);
-          console.log('Array lightbox restauré depuis modal JSON (restauration swap');
         } else if (window.globalLightboxImagesOriginal) {
           window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
-          console.log('Array lightbox restauré depuis globalLightboxImagesOriginal (restauration swap)');
         }
       }
 
       if (currentSwapState === thumbIndex) {
         // Déswap: restaurer l'ordre original
-        console.log('🔧 DESWAP détecté pour plantId:', plantId, 'thumbIndex:', thumbIndex);
         delete this.swapStates[plantId];
         
         // Échanger les images visuellement pour les remettre en place
         this.swapImages(mainPhoto, thumbnailImg);
-        console.log('Images swappées visuellement');
         
         // Restaurer l'array Lightbox à partir du JSON dans la modal ou de la variable globale
         const dataScript = modal.querySelector('script[data-lightbox-images]');
         if (dataScript) {
           window.globalLightboxImages = JSON.parse(dataScript.textContent);
-          console.log('Array lightbox restauré depuis modal JSON');
         }
         // Fallback: utiliser l'array original sauvegardé (pour show.blade.php)
         else if (window.globalLightboxImagesOriginal) {
           window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
-          console.log('Array lightbox restauré depuis globalLightboxImagesOriginal');
         }
-        console.log('Array après déswap:', window.globalLightboxImages);
         return;
       }
 
       // Échanger les images
       this.swapImages(mainPhoto, thumbnailImg);
-      console.log('Images swappées pour thumbIndex:', thumbIndex);
 
       // Mettre à jour l'array lightbox global pour que le lightbox ouvre la bonne image
       this.updateLightboxArray(modal, thumbIndex);
-      console.log('Array lightbox après swap:', window.globalLightboxImages);
 
       // 🔧 FIX: Sauvegarder l'état de l'échange pour cette plante
       this.swapStates[plantId] = thumbIndex;
-      console.log('État swap sauvegardé pour plantId:', plantId, 'thumbIndex:', thumbIndex);
 
       // Marquer cette miniature comme active
       modal.setAttribute('data-active-thumb', thumbIndex);
@@ -124,8 +110,6 @@ const GalleryManager = {
       if (!modal) return;
 
       // Ouvrir le lightbox avec l'index 0 (photo principale est toujours la 1ère)
-      console.log('Clic sur photo principale, ouverture lightbox à index 0');
-      console.log('globalLightboxImages:', window.globalLightboxImages);
       if (typeof window.openLightboxGlobal === 'function') {
         window.openLightboxGlobal(0);
       }
