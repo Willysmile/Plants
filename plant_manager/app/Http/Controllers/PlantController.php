@@ -6,6 +6,7 @@ use App\Models\Plant;
 use App\Models\Tag;
 use App\Models\Category;
 use App\Models\Photo;
+use App\Services\PhotoService;
 use App\Http\Requests\StorePlantRequest;
 use App\Http\Requests\UpdatePlantRequest;
 use Illuminate\Http\Request;
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Storage;
 
 class PlantController extends Controller
 {
+    public function __construct(
+        private PhotoService $photoService
+    ) {}
     /**
      * Liste paginée des plantes.
      */
@@ -44,34 +48,17 @@ class PlantController extends Controller
         $data = $request->validated();
         $plant = Plant::create($data);
 
-        // photo principale (optionnelle)
+        // Attacher photo principale
         if ($request->hasFile('main_photo')) {
-            $file = $request->file('main_photo');
-            $path = $file->store("plants/{$plant->id}", 'public');
-            $plant->update(['main_photo' => $path]);
-
-            $plant->photos()->create([
-                'filename' => $path,
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-                'is_main' => true,
-            ]);
+            $this->photoService->attachMainPhoto($plant, $request->file('main_photo'));
         }
 
-        // galerie multiple
+        // Attacher galerie multiple
         if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $file) {
-                $path = $file->store("plants/{$plant->id}", 'public');
-                $plant->photos()->create([
-                    'filename' => $path,
-                    'mime_type' => $file->getClientMimeType(),
-                    'size' => $file->getSize(),
-                    'is_main' => false,
-                ]);
-            }
+            $this->photoService->attachPhotos($plant, $request->file('photos'));
         }
 
-        // tags
+        // Tags
         if ($request->filled('tags')) {
             $plant->tags()->sync($request->input('tags'));
         }
