@@ -4,6 +4,9 @@
  */
 
 const GalleryManager = {
+  // 🔧 FIX: Stocker l'état des échanges par modal pour restauration
+  swapStates: {},  // { plantId: currentMainPhotoIndex, ... }
+
   /**
    * Initialise le gestionnaire de galerie
    */
@@ -38,6 +41,10 @@ const GalleryManager = {
 
       // Mettre à jour l'array lightbox global pour que le lightbox ouvre la bonne image
       this.updateLightboxArray(modal, thumbIndex);
+
+      // 🔧 FIX: Sauvegarder l'état de l'échange pour cette plante
+      const plantId = modal.getAttribute('data-modal-plant-id');
+      this.swapStates[plantId] = thumbIndex;
 
       // Marquer cette miniature comme active
       modal.setAttribute('data-active-thumb', thumbIndex);
@@ -104,6 +111,46 @@ const GalleryManager = {
 
     // Mettre à jour l'array global
     window.globalLightboxImages = reordered;
+  },
+
+  /**
+   * 🔧 FIX: Restaure l'état des échanges quand le modal se réouvre
+   * @param {HTMLElement} modal - Élément modal
+   */
+  restoreSwapState(modal) {
+    const plantId = modal.getAttribute('data-modal-plant-id');
+    const savedThumbIndex = this.swapStates[plantId];
+
+    if (!savedThumbIndex || savedThumbIndex === 0) return;
+
+    // Récupérer les éléments
+    const mainPhoto = modal.querySelector('#main-photo-display');
+    const thumbnailBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${savedThumbIndex}"]`);
+
+    if (!mainPhoto || !thumbnailBtn) return;
+
+    const thumbnailImg = thumbnailBtn.querySelector('img');
+    if (!thumbnailImg) return;
+
+    // Reappliquer l'échange visuel
+    const mainSrc = mainPhoto.src;
+    const thumbSrc = thumbnailImg.src;
+    mainPhoto.src = thumbSrc;
+    thumbnailImg.src = mainSrc;
+
+    // Reappliquer l'échange data-*
+    const mainDataSrc = mainPhoto.getAttribute('data-original-src');
+    const thumbDataSrc = thumbnailBtn.getAttribute('data-original-src');
+    if (mainDataSrc && thumbDataSrc) {
+      mainPhoto.setAttribute('data-original-src', thumbDataSrc);
+      thumbnailBtn.setAttribute('data-original-src', mainDataSrc);
+    }
+
+    // Réorganiser l'array lightbox
+    this.updateLightboxArray(modal, savedThumbIndex);
+
+    // Marquer comme actif
+    modal.setAttribute('data-active-thumb', savedThumbIndex);
   },
 
   /**

@@ -82,6 +82,14 @@ const ModalManager = {
     // Charger les images lightbox
     this.loadLightboxImages();
 
+    // 🔧 FIX: Restaurer l'état des échanges si une photo avait été changée
+    if (typeof GalleryManager !== 'undefined') {
+      const modal = this.modalContent.querySelector('[data-modal-plant-id]');
+      if (modal) {
+        GalleryManager.restoreSwapState(modal);
+      }
+    }
+
     // Réinitialiser les icônes Lucide
     if (typeof lucide !== 'undefined') {
       setTimeout(() => {
