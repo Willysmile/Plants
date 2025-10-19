@@ -38,7 +38,7 @@
       <div class="bg-white rounded-lg shadow-md p-4">
         <div class="flex justify-between items-start">
           <div class="flex-1">
-            <p class="text-sm text-gray-500">{{ $history->{$config['date_field']}->format('d/m/Y à H:i') }}</p>
+            <p class="text-sm text-gray-500">{{ $history->{$config['date_field']}->format('d/m/Y') }}</p>
             
             @foreach($config['fields'] as $field)
               @if($history->{$field} ?? null)

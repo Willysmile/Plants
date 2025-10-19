@@ -1,12 +1,13 @@
 <!-- Quick Repotting Modal -->
 <div id="quickRepottingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-    <h3 class="text-lg font-semibold mb-4 text-amber-900">Rempotage rapide</h3>
-    <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST">
+    <h3 class="text-lg font-semibold mb-4 text-amber-900">Rempotage</h3>
+    <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST" onsubmit="handleQuickRepottingSubmit(event)">
       @csrf
       <div class="mb-3">
         <label for="quickRepottingDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-        <input type="date" id="quickRepottingDateFromModal" name="repotting_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+        <input type="date" id="quickRepottingDateFromModal" name="repotting_date" required max="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+        <p id="quickRepottingDateError" class="text-xs text-red-600 mt-1 hidden">La date ne peut pas être dans le futur</p>
       </div>
       <div class="grid grid-cols-2 gap-3 mb-3">
         <div>
@@ -33,3 +34,57 @@
     </form>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Set max date to today
+  const dateInput = document.getElementById('quickRepottingDateFromModal');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.max = today;
+});
+
+function handleQuickRepottingSubmit(event) {
+  event.preventDefault();
+  
+  const dateInput = document.getElementById('quickRepottingDateFromModal');
+  const dateError = document.getElementById('quickRepottingDateError');
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Validate date is not in the future
+  if (dateInput.value > today) {
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  dateError.classList.add('hidden');
+  
+  // Submit form
+  const form = document.getElementById('quickRepottingFormFromModal');
+  const formData = new FormData(form);
+  
+  fetch(form.action, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      alert('Rempotage effectué !!');
+      closeQuickRepottingModalFromModal();
+      // Reset form
+      form.reset();
+    } else {
+      alert('Erreur lors de l\'enregistrement');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Erreur lors de l\'enregistrement');
+  });
+  
+  return false;
+}
+</script>
