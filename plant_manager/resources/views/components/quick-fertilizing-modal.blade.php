@@ -54,15 +54,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function handleQuickFertilizingSubmit(event) {
-  console.log('handleQuickFertilizingSubmit called!!!');
-  
   event.preventDefault();
   event.stopPropagation();
   
   const dateInput = document.getElementById('quickFertilizingDateFromModal');
   const dateError = document.getElementById('quickFertilizingDateError');
+  const form = document.getElementById('quickFertilizingFormFromModal');
   
-  if (!dateInput || !dateError) {
+  if (!dateInput || !dateError || !form) {
     console.error('Elements not found!');
     return false;
   }
@@ -70,12 +69,7 @@ function handleQuickFertilizingSubmit(event) {
   const enteredDate = dateInput.value;
   const today = new Date().toISOString().split('T')[0];
   
-  console.log('=== VALIDATION ===');
-  console.log('Entered date:', enteredDate);
-  console.log('Today:', today);
-  console.log('Is future?', enteredDate > today);
-  
-  // Validate date is not in the future
+  // Validate date is not in the future (client-side)
   if (!enteredDate) {
     dateError.textContent = 'La date est requise';
     dateError.classList.remove('hidden');
@@ -85,16 +79,45 @@ function handleQuickFertilizingSubmit(event) {
   if (enteredDate > today) {
     dateError.textContent = 'La date ne peut pas être dans le futur';
     dateError.classList.remove('hidden');
-    console.log('ERROR: Future date rejected');
     return false;
   }
   
-  // Date is valid - hide error and submit
+  // Date is valid - hide error and submit via AJAX
   dateError.classList.add('hidden');
-  console.log('Date valid - submitting');
   
-  const form = document.getElementById('quickFertilizingFormFromModal');
-  form.submit();
+  // Collect form data
+  const formData = new FormData(form);
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+  
+  // Submit via fetch (AJAX)
+  fetch(form.action, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': csrfToken,
+    },
+    body: formData
+  })
+  .then(response => {
+    if (response.ok) {
+      // Success - show message and close modal
+      alert('Fertilisation enregistrée !');
+      closeQuickFertilizingModalFromModal();
+      
+      // Refresh plant history cards if they exist
+      location.reload();
+    } else {
+      // Server validation failed
+      return response.text().then(text => {
+        throw new Error(text);
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    dateError.textContent = 'Erreur lors de l\'enregistrement';
+    dateError.classList.remove('hidden');
+  });
   
   return false;
 }
