@@ -216,6 +216,99 @@
         </div>
       </div>
     </div>
+
+    <!-- Quick Entry Modals -->
+    <!-- Quick Watering Modal -->
+    <div id="quickWateringModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+        <h3 class="text-lg font-semibold mb-4 text-blue-900">Arrosage rapide</h3>
+        <form id="quickWateringFormFromModal" action="{{ route('plants.watering-history.store', $plant) }}" method="POST">
+          @csrf
+          <div class="mb-3">
+            <label for="quickWateringDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date et heure</label>
+            <input type="datetime-local" id="quickWateringDateFromModal" name="watering_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500">
+          </div>
+          <div class="mb-3">
+            <label for="quickWateringAmountFromModal" class="block text-sm font-medium text-gray-700 mb-1">Quantité (ml)</label>
+            <input type="number" id="quickWateringAmountFromModal" name="amount" placeholder="500" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500">
+          </div>
+          <div class="mb-4">
+            <label for="quickWateringNotesFromModal" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea id="quickWateringNotesFromModal" name="notes" placeholder="Remarques..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500" rows="2"></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button type="submit" class="flex-1 bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700">Enregistrer</button>
+            <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickWateringModalFromModal()">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Quick Fertilizing Modal -->
+    <div id="quickFertilizingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+        <h3 class="text-lg font-semibold mb-4 text-green-900">Fertilisation rapide</h3>
+        <form id="quickFertilizingFormFromModal" action="{{ route('plants.fertilizing-history.store', $plant) }}" method="POST">
+          @csrf
+          <div class="mb-3">
+            <label for="quickFertilizingDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date et heure</label>
+            <input type="datetime-local" id="quickFertilizingDateFromModal" name="fertilizing_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500">
+          </div>
+          <div class="mb-3">
+            <label for="quickFertilizingTypeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Type de fertilisant</label>
+            <input type="text" id="quickFertilizingTypeFromModal" name="fertilizer_type" placeholder="Ex: Engrais liquide..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500">
+          </div>
+          <div class="mb-3">
+            <label for="quickFertilizingAmountFromModal" class="block text-sm font-medium text-gray-700 mb-1">Quantité (ml)</label>
+            <input type="number" id="quickFertilizingAmountFromModal" name="amount" placeholder="50" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500">
+          </div>
+          <div class="mb-4">
+            <label for="quickFertilizingNotesFromModal" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea id="quickFertilizingNotesFromModal" name="notes" placeholder="Remarques..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500" rows="2"></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button type="submit" class="flex-1 bg-green-600 text-white font-medium py-2 rounded hover:bg-green-700">Enregistrer</button>
+            <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickFertilizingModalFromModal()">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Quick Repotting Modal -->
+    <div id="quickRepottingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+        <h3 class="text-lg font-semibold mb-4 text-amber-900">Rempotage rapide</h3>
+        <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST">
+          @csrf
+          <div class="mb-3">
+            <label for="quickRepottingDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date et heure</label>
+            <input type="datetime-local" id="quickRepottingDateFromModal" name="repotting_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+          </div>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <label for="quickRepottingOldSizeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Ancien pot (cm)</label>
+              <input type="number" id="quickRepottingOldSizeFromModal" name="old_pot_size" placeholder="10" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+            </div>
+            <div>
+              <label for="quickRepottingNewSizeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Nouveau pot (cm)</label>
+              <input type="number" id="quickRepottingNewSizeFromModal" name="new_pot_size" placeholder="12" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="quickRepottingSoilFromModal" class="block text-sm font-medium text-gray-700 mb-1">Type de terre</label>
+            <input type="text" id="quickRepottingSoilFromModal" name="soil_type" placeholder="Ex: Terreau spécialisé..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+          </div>
+          <div class="mb-4">
+            <label for="quickRepottingNotesFromModal" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea id="quickRepottingNotesFromModal" name="notes" placeholder="Remarques..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500" rows="2"></textarea>
+          </div>
+          <div class="flex gap-2">
+            <button type="submit" class="flex-1 bg-amber-600 text-white font-medium py-2 rounded hover:bg-amber-700">Enregistrer</button>
+            <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickRepottingModalFromModal()">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script type="application/json" data-lightbox-images>
@@ -229,99 +322,6 @@
 ]
   </script>
   
-  <!-- Quick Entry Modals -->
-  <!-- Quick Watering Modal -->
-  <div id="quickWateringModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-      <h3 class="text-lg font-semibold mb-4 text-blue-900">Arrosage rapide</h3>
-      <form id="quickWateringFormFromModal" action="{{ route('plants.watering-history.store', $plant) }}" method="POST">
-        @csrf
-        <div class="mb-3">
-          <label for="quickWateringDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date et heure</label>
-          <input type="datetime-local" id="quickWateringDateFromModal" name="watering_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500">
-        </div>
-        <div class="mb-3">
-          <label for="quickWateringAmountFromModal" class="block text-sm font-medium text-gray-700 mb-1">Quantité (ml)</label>
-          <input type="number" id="quickWateringAmountFromModal" name="amount" placeholder="500" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500">
-        </div>
-        <div class="mb-4">
-          <label for="quickWateringNotesFromModal" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea id="quickWateringNotesFromModal" name="notes" placeholder="Remarques..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500" rows="2"></textarea>
-        </div>
-        <div class="flex gap-2">
-          <button type="submit" class="flex-1 bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700">Enregistrer</button>
-          <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickWateringModalFromModal()">Annuler</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Quick Fertilizing Modal -->
-  <div id="quickFertilizingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-      <h3 class="text-lg font-semibold mb-4 text-green-900">Fertilisation rapide</h3>
-      <form id="quickFertilizingFormFromModal" action="{{ route('plants.fertilizing-history.store', $plant) }}" method="POST">
-        @csrf
-        <div class="mb-3">
-          <label for="quickFertilizingDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date et heure</label>
-          <input type="datetime-local" id="quickFertilizingDateFromModal" name="fertilizing_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500">
-        </div>
-        <div class="mb-3">
-          <label for="quickFertilizingTypeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Type de fertilisant</label>
-          <input type="text" id="quickFertilizingTypeFromModal" name="fertilizer_type" placeholder="Ex: Engrais liquide..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500">
-        </div>
-        <div class="mb-3">
-          <label for="quickFertilizingAmountFromModal" class="block text-sm font-medium text-gray-700 mb-1">Quantité (ml)</label>
-          <input type="number" id="quickFertilizingAmountFromModal" name="amount" placeholder="50" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500">
-        </div>
-        <div class="mb-4">
-          <label for="quickFertilizingNotesFromModal" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea id="quickFertilizingNotesFromModal" name="notes" placeholder="Remarques..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500" rows="2"></textarea>
-        </div>
-        <div class="flex gap-2">
-          <button type="submit" class="flex-1 bg-green-600 text-white font-medium py-2 rounded hover:bg-green-700">Enregistrer</button>
-          <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickFertilizingModalFromModal()">Annuler</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Quick Repotting Modal -->
-  <div id="quickRepottingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-96">
-      <h3 class="text-lg font-semibold mb-4 text-amber-900">Rempotage rapide</h3>
-      <form id="quickRepottingFormFromModal" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST">
-        @csrf
-        <div class="mb-3">
-          <label for="quickRepottingDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date et heure</label>
-          <input type="datetime-local" id="quickRepottingDateFromModal" name="repotting_date" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
-        </div>
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div>
-            <label for="quickRepottingOldSizeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Ancien pot (cm)</label>
-            <input type="number" id="quickRepottingOldSizeFromModal" name="old_pot_size" placeholder="10" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
-          </div>
-          <div>
-            <label for="quickRepottingNewSizeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Nouveau pot (cm)</label>
-            <input type="number" id="quickRepottingNewSizeFromModal" name="new_pot_size" placeholder="12" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="quickRepottingSoilFromModal" class="block text-sm font-medium text-gray-700 mb-1">Type de terre</label>
-          <input type="text" id="quickRepottingSoilFromModal" name="soil_type" placeholder="Ex: Terreau spécialisé..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
-        </div>
-        <div class="mb-4">
-          <label for="quickRepottingNotesFromModal" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea id="quickRepottingNotesFromModal" name="notes" placeholder="Remarques..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500" rows="2"></textarea>
-        </div>
-        <div class="flex gap-2">
-          <button type="submit" class="flex-1 bg-amber-600 text-white font-medium py-2 rounded hover:bg-amber-700">Enregistrer</button>
-          <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickRepottingModalFromModal()">Annuler</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -403,4 +403,5 @@
     });
   </script>
 
+</div>
 </div>
