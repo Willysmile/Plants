@@ -194,6 +194,9 @@
       { url: {!! json_encode(Storage::url($photo->filename)) !!}, caption: {!! json_encode($photo->description ?? '') !!} }{{ !$loop->last ? ',' : '' }}
     @endforeach
   ];
+  
+  // 🔧 FIX: Sauvegarder l'array original pour pouvoir le restaurer lors du déswap
+  window.globalLightboxImagesOriginal = JSON.parse(JSON.stringify(window.globalLightboxImages));
 
   // Quick watering modal functions
   function openQuickWateringModal() {
