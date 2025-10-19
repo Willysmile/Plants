@@ -23,7 +23,8 @@ class FertilizingHistoryController extends Controller
      */
     public function create(Plant $plant)
     {
-        return view('plants.fertilizing-history.create', compact('plant'));
+        $fertilizerTypes = \App\Models\FertilizerType::all();
+        return view('plants.fertilizing-history.create', compact('plant', 'fertilizerTypes'));
     }
 
     /**
@@ -33,7 +34,7 @@ class FertilizingHistoryController extends Controller
     {
         $validated = $request->validate([
             'fertilizing_date' => 'required|date_format:Y-m-d|before_or_equal:today',
-            'fertilizer_type' => 'nullable|string|max:255',
+            'fertilizer_type_id' => 'nullable|exists:fertilizer_types,id',
             'amount' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ], [
@@ -63,7 +64,8 @@ class FertilizingHistoryController extends Controller
      */
     public function edit(Plant $plant, FertilizingHistory $fertilizingHistory)
     {
-        return view('plants.fertilizing-history.edit', compact('plant', 'fertilizingHistory'));
+        $fertilizerTypes = \App\Models\FertilizerType::all();
+        return view('plants.fertilizing-history.edit', compact('plant', 'fertilizingHistory', 'fertilizerTypes'));
     }
 
     /**
@@ -72,8 +74,8 @@ class FertilizingHistoryController extends Controller
     public function update(Request $request, Plant $plant, FertilizingHistory $fertilizingHistory)
     {
         $validated = $request->validate([
-            'fertilizing_date' => 'required|date_format:Y-m-d\TH:i',
-            'fertilizer_type' => 'nullable|string|max:255',
+            'fertilizing_date' => 'required|date_format:Y-m-d',
+            'fertilizer_type_id' => 'nullable|exists:fertilizer_types,id',
             'amount' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);

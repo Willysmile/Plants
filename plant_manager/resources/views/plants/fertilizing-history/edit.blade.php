@@ -11,6 +11,6 @@
       <h1 class="text-3xl font-bold text-gray-900 ml-4">Éditer la fertilisation</h1>
     </div>
 
-    <x-history-form :plant="$plant" :history="$fertilizingHistory" type="fertilizing" />
+    <x-history-form :plant="$plant" :history="$fertilizingHistory" type="fertilizing" :fertilizerTypes="$fertilizerTypes" />
   </div>
 @endsection

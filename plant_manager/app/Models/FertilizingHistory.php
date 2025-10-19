@@ -12,7 +12,7 @@ class FertilizingHistory extends Model
     protected $fillable = [
         'plant_id',
         'fertilizing_date',
-        'fertilizer_type',
+        'fertilizer_type_id',
         'amount',
         'notes',
     ];
@@ -27,5 +27,13 @@ class FertilizingHistory extends Model
     public function plant(): BelongsTo
     {
         return $this->belongsTo(Plant::class);
+    }
+
+    /**
+     * Le type d'engrais.
+     */
+    public function fertilizerType(): BelongsTo
+    {
+        return $this->belongsTo(FertilizerType::class);
     }
 }

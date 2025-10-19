@@ -219,7 +219,7 @@
 
     <!-- Quick Entry Modals (extracted to separate components) -->
     <x-quick-watering-modal :plant="$plant" />
-    <x-quick-fertilizing-modal :plant="$plant" />
+    <x-quick-fertilizing-modal :plant="$plant" :fertilizerTypes="$fertilizerTypes ?? \App\Models\FertilizerType::all()" />
     <x-quick-repotting-modal :plant="$plant" />
   </div>
 

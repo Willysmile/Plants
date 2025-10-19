@@ -170,14 +170,28 @@ class PlantController extends Controller
     }
     public function modal(Plant $plant)
     {
-        $plant->load(['category','tags','photos','parents','daughters']);
+        $plant->load([
+            'category',
+            'tags',
+            'photos',
+            'parents',
+            'daughters',
+            'wateringHistories',
+            'fertilizingHistories.fertilizerType',
+            'repottingHistories',
+        ]);
         // renvoie le partial HTML (non-layout) attendu par le JS
         return view('plants.partials.modal', compact('plant'));
     }
 
     public function histories(Plant $plant)
     {
-        $plant->load('category');
+        $plant->load([
+            'category',
+            'wateringHistories',
+            'fertilizingHistories.fertilizerType',
+            'repottingHistories',
+        ]);
         // retourne le HTML des 3 cartes d'historiques
         return view('plants.partials.histories', compact('plant'));
     }
