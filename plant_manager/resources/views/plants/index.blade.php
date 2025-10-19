@@ -4,7 +4,7 @@
 
 @section('content')
   <div class="h-[100vh] max-w-7xl mx-auto flex flex-col overflow-hidden">
-    <header class="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
+    <header class="flex items-center justify-between px-6 py-3 border-b flex-shrink-0">
       <h1 class="text-2xl font-semibold">Plantes</h1>
       <div class="flex items-center gap-3">
         <a href="{{ route('settings.index') }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition">⚙️ Paramètres</a>
@@ -12,8 +12,8 @@
       </div>
     </header>
 
-    <div class="flex-1 overflow-hidden px-6 py-4">
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 h-full auto-rows-max">
+    <div class="flex-1 overflow-hidden px-4 py-3">
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 h-full auto-rows-max">
         @foreach($plants as $plant)
           <x-plant-card :plant="$plant" />
         @endforeach
