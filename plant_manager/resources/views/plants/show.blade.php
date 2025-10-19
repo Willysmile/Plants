@@ -134,12 +134,26 @@
                   <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
                   <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-sm font-semibold text-blue-900 hover:opacity-75">Arrosage</a>
                 </div>
-                @if($plant->last_watering_date)
-                  <p class="text-xs text-blue-600 mt-2">Dernier : {{ $plant->last_watering_date->format('d/m/Y') }}</p>
+                @php
+                  $lastWatering = $plant->wateringHistories()->latest('watering_date')->first();
+                @endphp
+                @if($lastWatering)
+                  <p class="text-xs text-blue-600 mt-2">Dernier : {{ $lastWatering->watering_date->format('d/m/Y') }}</p>
+                  <div class="space-y-1">
+                    @if($lastWatering->amount)
+                      <p class="text-xs text-gray-600">Quantité : {{ $lastWatering->amount }} ml</p>
+                    @endif
+                    @if($lastWatering->notes)
+                      <p class="text-xs text-gray-600">Notes : {{ $lastWatering->notes }}</p>
+                    @endif
+                  </div>
                 @else
                   <p class="text-xs text-blue-600 mt-2">Aucun enregistrement</p>
                 @endif
-                <button type="button" onclick="openQuickWateringModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold">+ Créer →</button>
+                <button type="button" onclick="openQuickWateringModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold flex items-center gap-1">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                  Créer →
+                </button>
               </div>
 
               <!-- Historique de fertilisation (petit) -->
@@ -148,12 +162,36 @@
                   <i data-lucide="leaf" class="w-4 h-4 text-green-600"></i>
                   <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-sm font-semibold text-green-900 hover:opacity-75">Fertilisation</a>
                 </div>
-                @if($plant->last_fertilizing_date)
-                  <p class="text-xs text-green-600 mt-2">Dernier : {{ $plant->last_fertilizing_date->format('d/m/Y') }}</p>
+                @php
+                  $lastFertilizing = $plant->fertilizingHistories()->latest('fertilizing_date')->first();
+                @endphp
+                @if($lastFertilizing)
+                  <p class="text-xs text-green-600 mt-2">Dernier : {{ $lastFertilizing->fertilizing_date->format('d/m/Y') }}</p>
+                  <div class="space-y-1">
+                    @if($lastFertilizing->fertilizerType)
+                      <p class="text-xs text-gray-600">Type : {{ $lastFertilizing->fertilizerType->name }}</p>
+                    @endif
+                    @if($lastFertilizing->amount)
+                      <p class="text-xs text-gray-600">
+                        Quantité : {{ $lastFertilizing->amount }}
+                        @if($lastFertilizing->fertilizerType)
+                          {{ $lastFertilizing->fertilizerType->unit === 'ml' ? 'ml' : ($lastFertilizing->fertilizerType->unit === 'g' ? 'g' : '') }}
+                        @else
+                          ml
+                        @endif
+                      </p>
+                    @endif
+                    @if($lastFertilizing->notes)
+                      <p class="text-xs text-gray-600">Notes : {{ $lastFertilizing->notes }}</p>
+                    @endif
+                  </div>
                 @else
                   <p class="text-xs text-green-600 mt-2">Aucun enregistrement</p>
                 @endif
-                <button type="button" onclick="openQuickFertilizingModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold">+ Créer →</button>
+                <button type="button" onclick="openQuickFertilizingModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold flex items-center gap-1">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                  Créer →
+                </button>
               </div>
 
               <!-- Historique de rempotage (petit) -->
@@ -162,12 +200,26 @@
                   <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
                   <a href="{{ route('plants.repotting-history.index', $plant) }}" class="text-sm font-semibold text-amber-900 hover:opacity-75">Rempotage</a>
                 </div>
-                @if($plant->last_repotting_date)
-                  <p class="text-xs text-amber-600 mt-2">Dernier : {{ $plant->last_repotting_date->format('d/m/Y') }}</p>
+                @php
+                  $lastRepotting = $plant->repottingHistories()->latest('repotting_date')->first();
+                @endphp
+                @if($lastRepotting)
+                  <p class="text-xs text-amber-600 mt-2">Dernier : {{ $lastRepotting->repotting_date->format('d/m/Y') }}</p>
+                  <div class="space-y-1">
+                    @if($lastRepotting->old_pot_size || $lastRepotting->new_pot_size)
+                      <p class="text-xs text-gray-600">Pots : {{ $lastRepotting->old_pot_size }} → {{ $lastRepotting->new_pot_size }}</p>
+                    @endif
+                    @if($lastRepotting->notes)
+                      <p class="text-xs text-gray-600">Notes : {{ $lastRepotting->notes }}</p>
+                    @endif
+                  </div>
                 @else
                   <p class="text-xs text-amber-600 mt-2">Aucun enregistrement</p>
                 @endif
-                <button type="button" onclick="openQuickRepottingModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">+ Créer →</button>
+                <button type="button" onclick="openQuickRepottingModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold flex items-center gap-1">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                  Créer →
+                </button>
               </div>
             </div>
           </div>
