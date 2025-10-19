@@ -1,4 +1,4 @@
-@props(['plant' => null, 'categories' => [], 'tags' => []])
+@props(['plant' => null, 'categories' => [], 'tags' => [], 'tagsModalOpen' => null])
 
 @php
   $isEdit = $plant !== null;
@@ -21,7 +21,7 @@
     </div>
   @endif
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ tagsModalOpen: @json($tagsModalOpen) }">
     <!-- Nom -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Nom *</label>
@@ -112,6 +112,36 @@
       </div>
       <p class="text-xs text-gray-500 mt-1">Format: FAMILLE-NUM (ex: Orchidaceae-001). Laissez vide pour auto-génération.</p>
       @error('reference') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
+    <!-- Tags -->
+    <div class="md:col-span-2">
+      @php
+        $selectedTagIds = old('tags', $plant?->tags?->pluck('id')->toArray() ?? []);
+      @endphp
+      @if($isEdit && $plant->tags->count() > 0)
+        <div class="flex items-center gap-3">
+          <label class="text-sm font-medium text-gray-700">Tags:</label>
+          <div class="flex flex-wrap gap-2">
+            @foreach($plant->tags as $tag)
+              <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                {{ $tag->name }}
+              </span>
+            @endforeach
+          </div>
+          <button type="button"
+                  @click="tagsModalOpen = true"
+                  class="ml-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-medium">
+            Modifier
+          </button>
+        </div>
+      @else
+        <button type="button"
+                @click="tagsModalOpen = true"
+                class="text-sm text-blue-600 hover:text-blue-700 underline">
+          + Ajouter des tags
+        </button>
+      @endif
     </div>
 
     <!-- Description -->

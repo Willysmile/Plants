@@ -4,16 +4,9 @@
 
 @section('content')
   <div class="bg-white p-6 rounded shadow" x-data="{ tagsModalOpen: false }">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-xl font-bold">Ajouter une plante</h1>
-      <button type="button"
-              @click="tagsModalOpen = true"
-              class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-sm">
-        Tags
-      </button>
-    </div>
+    <h1 class="text-xl font-bold mb-6">Ajouter une plante</h1>
 
-    <x-plant-form :tags="$tags" />
+    <x-plant-form :tags="$tags" :tagsModalOpen="'tagsModalOpen'" />
 
     <!-- Modal Tags -->
     <div x-show="tagsModalOpen" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
