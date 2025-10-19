@@ -18,11 +18,11 @@
                data-type="thumbnail"
                data-index="{{ $i + 1 }}"
                data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
-               style="aspect-ratio:1/1; width:80px; height:80px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#fff; border-radius:8px;" 
+               style="aspect-ratio:1/1; width:120px; height:120px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#fff;" 
                aria-label="Échanger avec la photo principale">
           <img src="{{ Storage::url($gallery[$i]->filename) }}" 
                alt="{{ $gallery[$i]->description ?? $plant->name }}" 
-               style="max-width:100%; max-height:100%; object-fit:cover; border-radius:6px;">
+               style="max-width:100%; max-height:100%; object-fit:cover;">
         </button>
       @endfor
     </div>
