@@ -45,6 +45,47 @@
   <script>
     console.log('[INDEX] Defining global form handlers for quick modals');
     
+    // Reload histories in modal via AJAX
+    window.reloadHistoriesInModal = function() {
+      const modal = document.getElementById('plant-modal-content');
+      if (!modal) return;
+      
+      const plantModalEl = modal.querySelector('[data-modal-plant-id]');
+      if (!plantModalEl) {
+        console.warn('[RELOAD] No plant modal found');
+        return;
+      }
+      
+      const plantId = plantModalEl.getAttribute('data-modal-plant-id');
+      if (!plantId) {
+        console.warn('[RELOAD] No plant ID found');
+        return;
+      }
+      
+      const container = modal.querySelector(`#modal-histories-container-${plantId}`);
+      if (!container) {
+        console.warn('[RELOAD] No histories container found');
+        return;
+      }
+      
+      // Fetch the new histories HTML
+      fetch(`/plants/${plantId}/histories`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => response.text())
+      .then(html => {
+        container.innerHTML = html;
+        console.log('[RELOAD] Histories reloaded successfully');
+        
+        // Reinitialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      })
+      .catch(error => console.error('[RELOAD] Error reloading histories:', error));
+    };
+    
+    
     // WATERING VALIDATION
     window.handleQuickWateringSubmit = function(event) {
       event.preventDefault();
@@ -97,6 +138,7 @@
         if (response.ok) {
           alert('Arrosage enregistré !');
           closeQuickWateringModalFromModal();
+          reloadHistoriesInModal();
           const plantsModal = document.getElementById('quickPlantsModalFromModal');
           if (plantsModal) {
             plantsModal.classList.remove('hidden');
@@ -168,6 +210,7 @@
         if (response.ok) {
           alert('Fertilisation enregistrée !');
           closeQuickFertilizingModalFromModal();
+          reloadHistoriesInModal();
           const plantsModal = document.getElementById('quickPlantsModalFromModal');
           if (plantsModal) {
             plantsModal.classList.remove('hidden');
@@ -239,6 +282,7 @@
         if (response.ok) {
           alert('Rempotage enregistré !');
           closeQuickRepottingModalFromModal();
+          reloadHistoriesInModal();
           const plantsModal = document.getElementById('quickPlantsModalFromModal');
           if (plantsModal) {
             plantsModal.classList.remove('hidden');

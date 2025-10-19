@@ -55,7 +55,7 @@
         @endif
 
         <!-- Historiques (3 cartes) - Affichées horizontalement -->
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-3 gap-2" id="modal-histories-container-{{ $plant->id }}">
           @include('plants.partials.watering-history-modal')
           @include('plants.partials.fertilizing-history-modal')
           @include('plants.partials.repotting-history-modal')

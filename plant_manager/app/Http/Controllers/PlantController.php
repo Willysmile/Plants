@@ -174,4 +174,11 @@ class PlantController extends Controller
         // renvoie le partial HTML (non-layout) attendu par le JS
         return view('plants.partials.modal', compact('plant'));
     }
+
+    public function histories(Plant $plant)
+    {
+        $plant->load('category');
+        // retourne le HTML des 3 cartes d'historiques
+        return view('plants.partials.histories', compact('plant'));
+    }
 }
