@@ -17,15 +17,26 @@
               <h1 class="text-3xl font-semibold">{{ $plant->name }}</h1>
             @endif
           </div>
-
-          <!-- catégorie à côté du titre -->
-          <div class="ml-2 self-center">
-            <span class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium border border-blue-200">
-              {{ $plant->category->name ?? '—' }}
-            </span>
-          </div>
         </div>
       </div>
+
+      <!-- Emplacement et Date d'achat à droite du titre -->
+      <div class="flex flex-col gap-2 ml-4 text-right">
+        @if($plant->location)
+          <div class="bg-green-50 px-3 py-2 rounded border border-green-200">
+            <p class="text-xs text-gray-600 font-medium">Emplacement</p>
+            <p class="text-sm text-green-700 font-semibold">{{ $plant->location }}</p>
+          </div>
+        @endif
+        
+        @if($plant->purchase_date)
+          <div class="bg-blue-50 px-3 py-2 rounded border border-blue-200">
+            <p class="text-xs text-gray-600 font-medium">Date d'achat</p>
+            <p class="text-sm text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
+          </div>
+        @endif
+      </div>
+
       <div class="flex items-center gap-2 ml-4">
         <a href="{{ route('plants.edit', $plant) }}" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition">Modifier</a>
         <a href="{{ route('plants.index') }}" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition">Retour</a>
@@ -61,23 +72,6 @@
               </div>
             </div>
           @endif
-
-          <!-- Date d'achat et Emplacement -->
-          <div class="grid grid-cols-1 gap-3">
-            @if($plant->purchase_date)
-              <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
-                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
-                <p class="mt-2 text-gray-700 text-sm font-medium">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
-              </div>
-            @endif
-
-            @if($plant->location)
-              <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-600">
-                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Emplacement actuel</h3>
-                <p class="mt-2 text-gray-700 text-sm font-medium">{{ $plant->location }}</p>
-              </div>
-            @endif
-          </div>
         </div>
 
         <!-- Cartes à droite - 55% de la largeur -->
