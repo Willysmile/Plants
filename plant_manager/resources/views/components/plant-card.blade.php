@@ -11,7 +11,7 @@
       @if($plant->main_photo)
         <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="w-full h-full object-cover">
       @else
-        <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
+        <x-empty-state message="Pas d'image" height="h-48" />
       @endif
     </button>
   </div>
