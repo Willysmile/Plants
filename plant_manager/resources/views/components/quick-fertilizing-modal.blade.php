@@ -39,17 +39,23 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('[FERTILIZING] DOMContentLoaded triggered');
+  
   // Set max date to today
   const dateInput = document.getElementById('quickFertilizingDateFromModal');
   if (dateInput) {
     const today = new Date().toISOString().split('T')[0];
     dateInput.max = today;
+    console.log('[FERTILIZING] Max date set to:', today);
   }
   
   // Attach form submit handler
   const form = document.getElementById('quickFertilizingFormFromModal');
   if (form) {
+    console.log('[FERTILIZING] Form found, attaching listener');
     form.addEventListener('submit', handleQuickFertilizingSubmit);
+  } else {
+    console.error('[FERTILIZING] Form NOT found!');
   }
 });
 
