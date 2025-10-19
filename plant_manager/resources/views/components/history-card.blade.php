@@ -59,7 +59,12 @@
 @endphp
 
 <div class="{{ $config['bgColor'] }} p-3 rounded {{ $config['borderColor'] }} border-l-4">
-  <div class="flex items-center justify-between mb-2">
+  <x-header-flex
+    :show-checkbox="true"
+    :checkbox-id="$config['checkboxId']"
+    :checkbox-class="$config['checkboxColor'] . ' ' . $config['focusRing']"
+    :checkbox-onclick="$config['checkboxOnclick']"
+  >
     <a href="{{ route($config['route'], $plant) }}" class="text-sm font-semibold {{ $config['textColor'] }} hover:{{ $config['textColor'] }}/70 hover:underline flex-1">
       {{ $config['icon'] }} {{ $config['title'] }}: 
       @if($lastRecord)
@@ -72,10 +77,7 @@
         —
       @endif
     </a>
-    <label class="flex items-center cursor-pointer ml-2">
-      <input type="checkbox" id="{{ $config['checkboxId'] }}" class="w-4 h-4 {{ $config['checkboxColor'] }} rounded {{ $config['focusRing'] }}" onclick="{{ $config['checkboxOnclick'] }}">
-    </label>
-  </div>
+  </x-header-flex>
   
   @if($lastRecord)
     <div class="grid grid-cols-2 gap-2">
