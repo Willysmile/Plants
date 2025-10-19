@@ -13,7 +13,5 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
+        // Créer un utilisateur de test seulement s'il n'existe pas
+        User::firstOrCreate(
