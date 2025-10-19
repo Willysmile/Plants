@@ -186,7 +186,6 @@
               </div>
             @endif
           </div>
-          </div>
         </aside>
       </div>
     </div>
@@ -250,6 +249,14 @@
       if (e.target === modal) {
         closeQuickWateringModal();
       }
+    });
+
+    // Gallery thumbnail click handler
+    document.querySelectorAll('.gallery-thumbnail').forEach(function(btn, index) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        openLightbox(index + 1);
+      });
     });
   });
 </script>
