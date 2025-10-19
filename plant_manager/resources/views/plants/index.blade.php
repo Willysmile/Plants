@@ -3,8 +3,8 @@
 @section('title', 'Plantes')
 
 @section('content')
-  <div class="h-[100vh] max-w-7xl mx-auto flex flex-col overflow-hidden">
-    <header class="flex items-center justify-between px-6 py-3 border-b flex-shrink-0">
+  <div class="max-w-7xl mx-auto p-6">
+    <header class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Plantes</h1>
       <div class="flex items-center gap-3">
         <a href="{{ route('settings.index') }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition">⚙️ Paramètres</a>
@@ -12,14 +12,78 @@
       </div>
     </header>
 
-    <div class="flex-1 overflow-hidden px-4 py-2">
-      <div class="grid grid-cols-6 gap-2 h-full">
-        @foreach($plants as $plant)
-          <x-plant-card :plant="$plant" />
-        @endforeach
-      </div>
+    <!-- Navigation -->
+    <div class="flex items-center justify-center gap-4 mb-6">
+      <button id="prev-btn" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded disabled:opacity-50 disabled:cursor-not-allowed transition">← Précédent</button>
+      <span id="page-info" class="text-sm font-medium text-gray-700">Page 1 / 2</span>
+      <button id="next-btn" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded disabled:opacity-50 disabled:cursor-not-allowed transition">Suivant →</button>
+    </div>
+
+    <!-- Grille de plantes -->
+    <div id="plants-grid" class="grid grid-cols-6 gap-4">
+      @foreach($plants as $plant)
+        <x-plant-card :plant="$plant" />
+      @endforeach
     </div>
   </div>
+
+  <!-- Modal container -->
+  <div id="plant-modal-root" x-data x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" @click="closeModal()"></div>
+    <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
+  </div>
+
+  @include('partials.lightbox')
+@endsection
+
+@section('extra-scripts')
+  <!-- External JS Modules -->
+  <script src="{{ asset('js/modal-manager.js') }}"></script>
+  <script src="{{ asset('js/gallery-manager.js') }}"></script>
+  <script src="{{ asset('js/quick-modals-manager.js') }}"></script>
+  <script src="{{ asset('js/form-validation.js') }}"></script>
+  <script src="{{ asset('js/file-preview.js') }}"></script>
+  <script src="{{ asset('js/app.js') }}"></script>
+  
+  <script>
+    // Pagination for plants grid
+    const PLANTS_PER_PAGE = 18; // 6 columns × 3 rows
+    let currentPage = 0;
+    
+    const gridContainer = document.getElementById('plants-grid');
+    const allCards = Array.from(gridContainer.querySelectorAll('article'));
+    const totalPages = Math.ceil(allCards.length / PLANTS_PER_PAGE);
+    
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const pageInfo = document.getElementById('page-info');
+    
+    function showPage(page) {
+      currentPage = Math.max(0, Math.min(page, totalPages - 1));
+      
+      // Hide all cards
+      allCards.forEach(card => card.style.display = 'none');
+      
+      // Show cards for current page
+      const start = currentPage * PLANTS_PER_PAGE;
+      const end = start + PLANTS_PER_PAGE;
+      allCards.slice(start, end).forEach(card => card.style.display = 'block');
+      
+      // Update buttons
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = currentPage === totalPages - 1;
+      
+      // Update page info
+      pageInfo.textContent = `Page ${currentPage + 1} / ${totalPages}`;
+    }
+    
+    prevBtn.addEventListener('click', () => showPage(currentPage - 1));
+    nextBtn.addEventListener('click', () => showPage(currentPage + 1));
+    
+    // Initial display
+    showPage(0);
+  </script>
+@endsection
 
   <!-- Modal container -->
   <div id="plant-modal-root" x-data x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
