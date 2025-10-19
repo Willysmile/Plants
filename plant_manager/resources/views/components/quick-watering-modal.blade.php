@@ -11,6 +11,7 @@
     </div>
     <form id="quickWateringFormFromModal" action="{{ route('plants.watering-history.store', $plant) }}" method="POST" onsubmit="return handleQuickWateringSubmit(event)">
       @csrf
+      <input type="hidden" name="_ajax" value="1">
       <div class="mb-3">
         <label for="quickWateringDateFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
         <input type="date" id="quickWateringDateFromModal" name="watering_date" required max="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500">
@@ -46,22 +47,31 @@ function handleQuickWateringSubmit(event) {
   event.preventDefault();
   event.stopPropagation();
   
+  console.log('handleQuickWateringSubmit called');
+  
   const dateInput = document.getElementById('quickWateringDateFromModal');
   const dateError = document.getElementById('quickWateringDateError');
   const today = new Date().toISOString().split('T')[0];
+  
+  console.log('Date input value:', dateInput.value);
+  console.log('Today:', today);
   
   // Validate date is not in the future (client-side)
   if (dateInput.value > today) {
     dateError.textContent = 'La date ne peut pas être dans le futur';
     dateError.classList.remove('hidden');
+    console.log('Date validation failed');
     return false;
   }
   
   dateError.classList.add('hidden');
+  console.log('Date validation passed');
   
   // Submit form via AJAX
   const form = document.getElementById('quickWateringFormFromModal');
   const formData = new FormData(form);
+  
+  console.log('Submitting form...');
   
   fetch(form.action, {
     method: 'POST',
@@ -72,18 +82,19 @@ function handleQuickWateringSubmit(event) {
     }
   })
   .then(response => {
+    console.log('Response status:', response.status);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
     return response.text();
   })
   .then(data => {
+    console.log('Success response:', data);
     alert('Arrosage effectué !!');
     form.reset();
     dateError.classList.add('hidden');
     closeQuickWateringModalFromModal();
-    // Reload the page to refresh history
-    location.reload();
+    // Note: History will be updated when modal is reopened
   })
   .catch(error => {
     console.error('Error:', error);

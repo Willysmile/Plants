@@ -49,7 +49,7 @@ class WateringHistoryController extends Controller
         ]);
 
         // Return empty response for AJAX requests (no redirect)
-        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest' || $request->input('_ajax')) {
             return response('OK', 200);
         }
 

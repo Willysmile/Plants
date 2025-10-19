@@ -30,5 +30,5 @@
     @else
         <p class="text-xs text-amber-600 mb-2">Aucun enregistrement</p>
     @endif
-    <button type="button" onclick="openQuickRepottingModalFromModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">Créer →</button>
+    <button type="button" onclick="event.stopPropagation(); openQuickRepottingModalFromModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">Créer →</button>
 </div>
