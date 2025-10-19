@@ -114,7 +114,13 @@
     <!-- Date d'achat -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Date d'achat (pas future)</label>
-      <input type="date" name="purchase_date" value="{{ old('purchase_date', $plant?->purchase_date?->format('Y-m-d') ?? '') }}" class="mt-1 block w-full border rounded p-2 @error('purchase_date') border-red-500 @enderror">
+      <input type="text" 
+             name="purchase_date" 
+             value="{{ old('purchase_date', $plant?->purchase_date ?? '') }}" 
+             placeholder="jj/mm/aaaa ou mm/aaaa"
+             class="mt-1 block w-full border rounded p-2 @error('purchase_date') border-red-500 @enderror"
+             id="purchaseDateInput">
+      <p class="text-xs text-gray-500 mt-1">Format: jj/mm/aaaa (ex: 15/07/2021) ou mm/aaaa (ex: 07/2021)</p>
       @error('purchase_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 

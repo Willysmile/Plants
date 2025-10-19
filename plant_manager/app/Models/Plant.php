@@ -54,13 +54,51 @@ class Plant extends Model
      * Convertir les dates en instances Carbon
      */
     protected $casts = [
-        'purchase_date' => 'datetime',
+        // purchase_date est maintenant un string (accepte "dd/mm/yyyy" ou "mm/yyyy")
         'last_watering_date' => 'datetime',
         'last_fertilizing_date' => 'datetime',
         'last_repotting_date' => 'datetime',
         'next_repotting_date' => 'datetime',
         'archived_date' => 'datetime',
     ];
+
+    /**
+     * Accessor: Formate la date d'achat pour l'affichage
+     * "dd/mm/yyyy" → "15 Septembre 2021"
+     * "mm/yyyy" → "Septembre 2021"
+     */
+    public function getFormattedPurchaseDateAttribute(): ?string
+    {
+        if (empty($this->purchase_date)) {
+            return null;
+        }
+
+        $dateStr = $this->purchase_date;
+        $parts = explode('/', $dateStr);
+
+        $mois_fr = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+
+        // Format: dd/mm/yyyy
+        if (count($parts) === 3) {
+            $day = (int) $parts[0];
+            $month = (int) $parts[1];
+            $year = (int) $parts[2];
+            return "$day " . $mois_fr[$month] . " $year";
+        }
+        
+        // Format: mm/yyyy
+        elseif (count($parts) === 2) {
+            $month = (int) $parts[0];
+            $year = (int) $parts[1];
+            return $mois_fr[$month] . " $year";
+        }
+
+        return $dateStr; // Fallback
+    }
 
     /**
      * Les tags associés à cette plante.
