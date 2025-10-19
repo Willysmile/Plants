@@ -57,32 +57,41 @@ function handleQuickRepottingSubmit(event) {
   event.preventDefault();
   event.stopPropagation();
   
-  console.log('handleQuickRepottingSubmit called');
-  
   const dateInput = document.getElementById('quickRepottingDateFromModal');
   const dateError = document.getElementById('quickRepottingDateError');
-  const today = new Date().toISOString().split('T')[0];
   
-  console.log('Date input value:', dateInput.value);
-  console.log('Today:', today);
-  
-  // Validate date is not in the future (client-side)
-  if (dateInput.value > today) {
-    dateError.textContent = 'La date ne peut pas être dans le futur';
-    dateError.classList.remove('hidden');
-    console.log('Date validation failed');
+  if (!dateInput || !dateError) {
+    console.error('Elements not found!');
     return false;
   }
   
+  const enteredDate = dateInput.value;
+  const today = new Date().toISOString().split('T')[0];
+  
+  console.log('=== VALIDATION ===');
+  console.log('Entered date:', enteredDate);
+  console.log('Today:', today);
+  console.log('Is future?', enteredDate > today);
+  
+  // Validate date is not in the future
+  if (!enteredDate) {
+    dateError.textContent = 'La date est requise';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  if (enteredDate > today) {
+    dateError.textContent = 'La date ne peut pas être dans le futur';
+    dateError.classList.remove('hidden');
+    console.log('ERROR: Future date rejected');
+    return false;
+  }
+  
+  // Date is valid - hide error and submit
   dateError.classList.add('hidden');
-  console.log('Date validation passed');
+  console.log('Date valid - submitting');
   
-  // Submit form via standard form submission
   const form = document.getElementById('quickRepottingFormFromModal');
-  
-  console.log('Submitting form normally...');
-  
-  // We'll submit the form normally which will POST to server
   form.submit();
   
   return false;
