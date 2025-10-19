@@ -23,6 +23,13 @@
 
       <!-- Emplacement et Date d'achat -->
       <div class="flex gap-2">
+        @if($plant->reference)
+          <div class="bg-purple-50 px-2 py-1 rounded border border-purple-200 text-xs">
+            <p class="text-gray-600 font-medium">Référence</p>
+            <p class="text-purple-700 font-mono font-semibold">{{ $plant->reference }}</p>
+          </div>
+        @endif
+        
         @if($plant->location)
           <div class="bg-green-50 px-2 py-1 rounded border border-green-200 text-xs">
             <p class="text-gray-600 font-medium">Emplacement</p>

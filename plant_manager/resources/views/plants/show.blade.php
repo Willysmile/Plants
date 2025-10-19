@@ -30,6 +30,13 @@
 
       <!-- Emplacement et Date d'achat à droite du titre -->
       <div class="flex gap-2 ml-4">
+        @if($plant->reference)
+          <div class="bg-purple-50 px-3 py-2 rounded border border-purple-200">
+            <p class="text-xs text-gray-600 font-medium">Référence</p>
+            <p class="text-sm text-purple-700 font-mono font-semibold">{{ $plant->reference }}</p>
+          </div>
+        @endif
+        
         @if($plant->location)
           <div class="bg-green-50 px-3 py-2 rounded border border-green-200">
             <p class="text-xs text-gray-600 font-medium">Emplacement</p>
@@ -46,6 +53,10 @@
       </div>
 
       <div class="flex items-center gap-2 ml-4">
+        <button type="button" onclick="refreshShowPage()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2" title="Actualiser la page">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          Actualiser
+        </button>
         <a href="{{ route('plants.edit', $plant) }}" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition">Modifier</a>
         <a href="{{ route('plants.index') }}" class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition">Retour</a>
       </div>
@@ -281,6 +292,22 @@
 @section('extra-scripts')
   <script src="{{ asset('js/gallery-manager.js') }}"></script>
   <script>
+    // Actualiser la page show
+    window.refreshShowPage = function() {
+      const button = event.currentTarget;
+      const icon = button.querySelector('[data-lucide="refresh-cw"]');
+      
+      // Add spinning animation
+      if (icon) {
+        icon.style.animation = 'spin 1s linear infinite';
+      }
+      
+      // Reload the page after 500ms
+      setTimeout(() => {
+        location.reload();
+      }, 500);
+    };
+    
     // Initialiser le gestionnaire de galerie au chargement
     document.addEventListener('DOMContentLoaded', function() {
       if (typeof GalleryManager !== 'undefined') {
