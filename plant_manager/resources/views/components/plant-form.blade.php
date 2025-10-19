@@ -130,19 +130,6 @@
       @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Tags (hidden - managed in modal) -->
-    <div class="hidden">
-      @php
-        $selectedTagIds = old('tags', $plant?->tags?->pluck('id')->toArray() ?? []);
-        $tagsByCategory = $tags->groupBy('category') ?? collect();
-      @endphp
-      @foreach($tagsByCategory as $categoryTags)
-        @foreach($categoryTags as $tag)
-          <input type="hidden" name="tags_available" value="{{ $tag->id }}">
-        @endforeach
-      @endforeach
-    </div>
-
     <!-- Arrosage -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Arrosage</label>
