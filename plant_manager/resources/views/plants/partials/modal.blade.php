@@ -54,8 +54,8 @@
           </div>
         @endif
 
-        <!-- Historiques (3 cartes) -->
-        <div class="space-y-2">
+        <!-- Historiques (3 cartes) - Affichées horizontalement -->
+        <div class="grid grid-cols-3 gap-2">
           @include('plants.partials.watering-history-modal')
           @include('plants.partials.fertilizing-history-modal')
           @include('plants.partials.repotting-history-modal')
