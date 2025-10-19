@@ -65,21 +65,28 @@ function handleQuickWateringSubmit(event) {
   const enteredDate = dateInput.value;
   const today = new Date().toISOString().split('T')[0];
   
+  console.log('[WATERING] Date entered:', enteredDate);
+  console.log('[WATERING] Today:', today);
+  console.log('[WATERING] Is future?', enteredDate > today);
+  
   // Validate date is not in the future (client-side)
   if (!enteredDate) {
     dateError.textContent = 'La date est requise';
     dateError.classList.remove('hidden');
+    console.log('[WATERING] Error: No date');
     return false;
   }
   
   if (enteredDate > today) {
     dateError.textContent = 'La date ne peut pas être dans le futur';
     dateError.classList.remove('hidden');
+    console.log('[WATERING] Error: Future date blocked');
     return false;
   }
   
   // Date is valid - hide error and submit via AJAX
   dateError.classList.add('hidden');
+  console.log('[WATERING] Date valid, submitting...');
   
   // Collect form data
   const formData = new FormData(form);
