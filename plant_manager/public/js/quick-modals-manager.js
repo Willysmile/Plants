@@ -13,7 +13,8 @@ const QuickModalsManager = {
     checkboxId: 'quickWateringCheckbox',
 
     open(checkbox) {
-      if (!checkbox.checked) {
+      // Si checkbox existe et n'est pas coché, fermer
+      if (checkbox && !checkbox.checked) {
         this.close();
         return;
       }
@@ -52,7 +53,8 @@ const QuickModalsManager = {
     checkboxId: 'quickFertilizingCheckbox',
 
     open(checkbox) {
-      if (!checkbox.checked) {
+      // Si checkbox existe et n'est pas coché, fermer
+      if (checkbox && !checkbox.checked) {
         this.close();
         return;
       }
@@ -91,7 +93,8 @@ const QuickModalsManager = {
     checkboxId: 'quickRepottingCheckbox',
 
     open(checkbox) {
-      if (!checkbox.checked) {
+      // Si checkbox existe et n'est pas coché, fermer
+      if (checkbox && !checkbox.checked) {
         this.close();
         return;
       }
