@@ -159,7 +159,7 @@
               <div class="text-center">
                 <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
               </div>
-              <div class="mt-2 text-center text-xs font-medium text-gray-800">{{ $plant->purchase_date->format('d/m/Y') }}</div>
+              <div class="mt-2 text-center text-xs font-medium text-gray-800">{{ $plant->formatted_purchase_date }}</div>
             </div>
           @endif
           </div>
