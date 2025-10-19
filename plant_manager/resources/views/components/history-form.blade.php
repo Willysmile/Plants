@@ -11,7 +11,7 @@
       'route_index' => 'plants.watering-history.index',
       'date_field' => 'watering_date',
       'fields' => [
-        'watering_date' => ['label' => 'Date et heure d\'arrosage', 'type' => 'datetime-local', 'required' => true],
+        'watering_date' => ['label' => 'Date d\'arrosage', 'type' => 'date', 'required' => true],
         'amount' => ['label' => 'Quantité (ex: 500ml, 1L)', 'type' => 'text'],
         'notes' => ['label' => 'Notes', 'type' => 'textarea'],
       ],
@@ -23,9 +23,9 @@
       'route_index' => 'plants.fertilizing-history.index',
       'date_field' => 'fertilizing_date',
       'fields' => [
-        'fertilizing_date' => ['label' => 'Date et heure de fertilisation', 'type' => 'datetime-local', 'required' => true],
-        'fertilizer_type' => ['label' => 'Type d\'engrais', 'type' => 'text'],
-        'amount' => ['label' => 'Quantité (ml)', 'type' => 'number'],
+        'fertilizing_date' => ['label' => 'Date de fertilisation', 'type' => 'date', 'required' => true],
+        'fertilizer_type' => ['label' => 'Type d\'engrais', 'type' => 'text', 'grid' => 'col'],
+        'amount' => ['label' => 'Quantité', 'type' => 'number', 'suffix' => 'ml', 'grid' => 'col'],
         'notes' => ['label' => 'Notes', 'type' => 'textarea'],
       ],
     ],
@@ -36,9 +36,9 @@
       'route_index' => 'plants.repotting-history.index',
       'date_field' => 'repotting_date',
       'fields' => [
-        'repotting_date' => ['label' => 'Date et heure du rempotage', 'type' => 'datetime-local', 'required' => true],
-        'old_pot_size' => ['label' => 'Ancien pot (taille)', 'type' => 'text'],
-        'new_pot_size' => ['label' => 'Nouveau pot (taille)', 'type' => 'text'],
+        'repotting_date' => ['label' => 'Date du rempotage', 'type' => 'date', 'required' => true],
+        'old_pot_size' => ['label' => 'Ancien pot', 'type' => 'text', 'suffix' => 'cm', 'grid' => 'col'],
+        'new_pot_size' => ['label' => 'Nouveau pot', 'type' => 'text', 'suffix' => 'cm', 'grid' => 'col'],
         'soil_type' => ['label' => 'Type de terreau', 'type' => 'text'],
         'notes' => ['label' => 'Notes', 'type' => 'textarea'],
       ],
@@ -60,8 +60,32 @@
     <label class="block text-gray-700 font-bold mb-2">Plante : {{ $plant->name }}</label>
   </div>
 
+  @php
+    $currentGrid = null;
+    $gridCount = 0;
+  @endphp
+
   @foreach($config['fields'] as $fieldName => $fieldConfig)
-    <div class="mb-4">
+    @php
+      $isGridCol = ($fieldConfig['grid'] ?? null) === 'col';
+      $suffix = $fieldConfig['suffix'] ?? null;
+      
+      // Gérer l'ouverture/fermeture du grid
+      if ($isGridCol && $currentGrid === null) {
+        $currentGrid = true;
+        $gridCount = 0;
+        echo '<div class="grid grid-cols-2 gap-4">';
+      } elseif (!$isGridCol && $currentGrid === true) {
+        $currentGrid = false;
+        echo '</div>';
+      }
+      
+      if ($isGridCol) {
+        $gridCount++;
+      }
+    @endphp
+
+    <div>
       <label class="block text-gray-700 font-bold mb-2" for="{{ $fieldName }}">
         {{ $fieldConfig['label'] }}
         @if(($fieldConfig['required'] ?? false)) <span class="text-red-500">*</span> @endif
@@ -73,28 +97,37 @@
           name="{{ $fieldName }}" 
           rows="4">{{ old($fieldName, $history?->{$fieldName} ?? '') }}</textarea>
       @elseif($fieldConfig['type'] === 'number')
+        <div class="flex items-center gap-2">
+          <input class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
+            type="number" 
+            step="0.1"
+            id="{{ $fieldName }}" 
+            name="{{ $fieldName }}" 
+            value="{{ old($fieldName, $history?->{$fieldName} ?? '') }}"
+            @if(($fieldConfig['required'] ?? false)) required @endif>
+          @if($suffix)
+            <span class="text-gray-600 font-medium min-w-fit">{{ $suffix }}</span>
+          @endif
+        </div>
+      @elseif($fieldConfig['type'] === 'date')
         <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
-          type="number" 
-          step="0.1"
+          type="date" 
           id="{{ $fieldName }}" 
           name="{{ $fieldName }}" 
-          value="{{ old($fieldName, $history?->{$fieldName} ?? '') }}"
-          @if(($fieldConfig['required'] ?? false)) required @endif>
-      @elseif($fieldConfig['type'] === 'datetime-local')
-        <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
-          type="datetime-local" 
-          id="{{ $fieldName }}" 
-          name="{{ $fieldName }}" 
-          value="{{ old($fieldName, $history?->{$fieldName}?->format('Y-m-d\TH:i') ?? '') }}"
-          data-default-local
+          value="{{ old($fieldName, $history?->{$fieldName}?->format('Y-m-d') ?? '') }}"
           @if(($fieldConfig['required'] ?? false)) required @endif>
       @else
-        <input class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
-          type="{{ $fieldConfig['type'] }}" 
-          id="{{ $fieldName }}" 
-          name="{{ $fieldName }}" 
-          value="{{ old($fieldName, $history?->{$fieldName} ?? '') }}"
-          @if(($fieldConfig['required'] ?? false)) required @endif>
+        <div class="flex items-center gap-2">
+          <input class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
+            type="{{ $fieldConfig['type'] }}" 
+            id="{{ $fieldName }}" 
+            name="{{ $fieldName }}" 
+            value="{{ old($fieldName, $history?->{$fieldName} ?? '') }}"
+            @if(($fieldConfig['required'] ?? false)) required @endif>
+          @if($suffix)
+            <span class="text-gray-600 font-medium min-w-fit">{{ $suffix }}</span>
+          @endif
+        </div>
       @endif
 
       @error($fieldName)
@@ -102,6 +135,12 @@
       @enderror
     </div>
   @endforeach
+
+  @php
+    if ($currentGrid === true) {
+      echo '</div>';
+    }
+  @endphp
 
   <div class="flex gap-2 mt-6">
     <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">

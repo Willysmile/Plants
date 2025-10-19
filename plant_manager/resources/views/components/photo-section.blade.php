@@ -38,11 +38,6 @@
            style="max-width:100%; max-height:100%; object-fit:contain; display:block;">
     @endif
   @else
-          </div>
-    @else
-      <x-empty-state message="Pas d'image" height="h-full" />
-    @endif
-  @else
     <x-empty-state message="Pas d'image" height="h-full" />
   @endif
 </div>
