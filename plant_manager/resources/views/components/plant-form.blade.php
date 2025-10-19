@@ -29,12 +29,50 @@
       @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Nom scientifique -->
+    <!-- Genre (Genus) -->
     <div>
-      <label class="block text-sm font-medium text-gray-700">Nom scientifique</label>
-      <input name="scientific_name" value="{{ old('scientific_name', $plant->scientific_name ?? '') }}" class="mt-1 block w-full border rounded p-2 @error('scientific_name') border-red-500 @enderror">
-      @error('scientific_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+      <label class="block text-sm font-medium text-gray-700">Genre</label>
+      <input name="genus" value="{{ old('genus', $plant->genus ?? '') }}" placeholder="Ex: Phalaenopsis" class="mt-1 block w-full border rounded p-2 @error('genus') border-red-500 @enderror">
+      @error('genus') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
+
+    <!-- Espèce -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Espèce</label>
+      <input name="species" value="{{ old('species', $plant->species ?? '') }}" placeholder="Ex: amabilis" class="mt-1 block w-full border rounded p-2 @error('species') border-red-500 @enderror">
+      @error('species') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
+    <!-- Sous-espèce -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Sous-espèce</label>
+      <input name="subspecies" value="{{ old('subspecies', $plant->subspecies ?? '') }}" placeholder="Facultatif" class="mt-1 block w-full border rounded p-2 @error('subspecies') border-red-500 @enderror">
+      @error('subspecies') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
+    <!-- Variété -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Variété</label>
+      <input name="variety" value="{{ old('variety', $plant->variety ?? '') }}" placeholder="Facultatif" class="mt-1 block w-full border rounded p-2 @error('variety') border-red-500 @enderror">
+      @error('variety') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
+    <!-- Cultivar -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Cultivar</label>
+      <input name="cultivar" value="{{ old('cultivar', $plant->cultivar ?? '') }}" placeholder="Ex: White Dream" class="mt-1 block w-full border rounded p-2 @error('cultivar') border-red-500 @enderror">
+      @error('cultivar') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
+    <!-- Nom scientifique (auto-généré, lecture seule pour info) -->
+    @if($plant)
+      <div class="md:col-span-2 bg-gray-50 p-3 rounded border border-gray-200">
+        <p class="text-sm text-gray-600">
+          <strong>Nom complet généré:</strong> 
+          <span class="italic">{{ $plant->full_name ?? '—' }}</span>
+        </p>
+      </div>
+    @endif
 
     <!-- Description -->
     <div class="md:col-span-2">

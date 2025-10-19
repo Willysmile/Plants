@@ -14,6 +14,11 @@ class Plant extends Model
     protected $fillable = [
         'name',
         'scientific_name',
+        'genus',
+        'species',
+        'subspecies',
+        'variety',
+        'cultivar',
         'purchase_date',
         'purchase_place',
         'purchase_price',
@@ -98,6 +103,56 @@ class Plant extends Model
         }
 
         return $dateStr; // Fallback
+    }
+
+    /**
+     * Accessor: Génère automatiquement le nom scientifique à partir de genus et species
+     * Format: "Phalaenopsis amabilis"
+     */
+    public function getGeneratedScientificNameAttribute(): ?string
+    {
+        if (empty($this->genus) && empty($this->species)) {
+            return $this->scientific_name; // Fallback au nom scientifique stocké
+        }
+
+        $parts = [];
+        if ($this->genus) $parts[] = $this->genus;
+        if ($this->species) $parts[] = $this->species;
+
+        return implode(' ', $parts) ?: null;
+    }
+
+    /**
+     * Accessor: Génère le nom complet avec cultivar et variété
+     * Format: "Phalaenopsis amabilis 'White Dream'"
+     * ou "Phalaenopsis amabilis subsp. rosenstromii var. alba 'Pink Dream'"
+     */
+    public function getFullNameAttribute(): ?string
+    {
+        $base = $this->generated_scientific_name;
+        
+        if (!$base) {
+            return $this->name; // Fallback au nom commun
+        }
+
+        $parts = [$base];
+
+        // Ajouter subspecies si présent
+        if ($this->subspecies) {
+            $parts[] = "subsp. {$this->subspecies}";
+        }
+
+        // Ajouter variety si présent
+        if ($this->variety) {
+            $parts[] = "var. {$this->variety}";
+        }
+
+        // Ajouter cultivar si présent (entre guillemets)
+        if ($this->cultivar) {
+            $parts[] = "'{$this->cultivar}'";
+        }
+
+        return implode(' ', $parts);
     }
 
     /**
