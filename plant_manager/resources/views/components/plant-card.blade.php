@@ -18,8 +18,10 @@
 
   <div class="p-3">
     <h3 class="text-sm font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
+    @if($plant->scientific_name)
+      <p class="text-xs italic text-gray-600 truncate" title="{{ $plant->scientific_name }}">{{ $plant->scientific_name }}</p>
+    @endif
     <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
-      <span>Arrosage: {{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}</span>
       <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline">Détails</a>
     </div>
   </div>
