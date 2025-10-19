@@ -41,6 +41,30 @@ const GalleryManager = {
       const plantId = modal.getAttribute('data-modal-plant-id');
       const currentSwapState = this.swapStates[plantId];
 
+      // 🔧 FIX: Si on clique sur un thumbnail différent du swap actuel, restaurer d'abord
+      if (currentSwapState && currentSwapState !== thumbIndex) {
+        console.log('🔄 Restauration du swap précédent avant nouveau swap');
+        delete this.swapStates[plantId];
+        
+        // Trouver le thumbnail du swap précédent et le remettre en place
+        const previousThumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${currentSwapState}"]`);
+        if (previousThumbBtn) {
+          const previousThumbImg = previousThumbBtn.querySelector('img');
+          if (previousThumbImg) {
+            // Restaurer les images visuellement
+            this.swapImages(mainPhoto, previousThumbImg);
+          }
+        }
+        
+        // Restaurer l'array Lightbox
+        const dataScript = modal.querySelector('script[data-lightbox-images]');
+        if (dataScript) {
+          window.globalLightboxImages = JSON.parse(dataScript.textContent);
+        } else if (window.globalLightboxImagesOriginal) {
+          window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
+        }
+      }
+
       if (currentSwapState === thumbIndex) {
         // Déswap: restaurer l'ordre original
         console.log('🔧 DESWAP détecté pour plantId:', plantId, 'thumbIndex:', thumbIndex);
