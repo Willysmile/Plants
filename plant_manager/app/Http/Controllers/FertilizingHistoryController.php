@@ -50,7 +50,7 @@ class FertilizingHistoryController extends Controller
 
         // Return empty response for AJAX requests (no redirect)
         if ($request->header('X-Requested-With') === 'XMLHttpRequest' || $request->input('_ajax')) {
-            return response('OK', 200);
+            return response()->json(['success' => true], 200);
         }
 
         // For normal requests, redirect to show page
