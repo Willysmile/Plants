@@ -5,20 +5,17 @@
     @endphp
     
     <div class="flex items-center justify-between mb-2">
-        <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-sm font-semibold text-green-900 hover:text-green-700 hover:underline flex-1">
-            🌱 Dernière fertilisation : 
-            @if($lastFertilizing)
-                {{ $lastFertilizing->fertilizing_date->format('d/m/Y') }}
-            @else
-                —
-            @endif
-        </a>
-        <a href="{{ route('plants.fertilizing-history.create', $plant) }}" class="text-xs font-semibold text-green-600 hover:text-green-800 hover:underline ml-2 px-2 py-1 rounded hover:bg-green-100 transition">
-            + Fertiliser
-        </a>
+        <div class="flex items-center gap-2">
+            <i data-lucide="leaf" class="w-4 h-4 text-green-600"></i>
+            <span class="text-sm font-semibold text-green-900">Fertilisation</span>
+        </div>
+        <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="quickFertilizingCheckbox" class="w-4 h-4 text-green-600 rounded focus:ring-green-500" onclick="openQuickFertilizingModalFromModal(this)">
+        </label>
     </div>
     
     @if($lastFertilizing)
+        <p class="text-xs text-green-600 mb-2">Dernier : {{ $lastFertilizing->fertilizing_date->format('d/m/Y H:i') }}</p>
         <div class="grid grid-cols-2 gap-2">
             @if($lastFertilizing->fertilizer_type)
                 <p class="text-xs text-gray-600">Type : {{ $lastFertilizing->fertilizer_type }}</p>
@@ -28,6 +25,7 @@
             @endif
         </div>
     @else
-        <p class="text-xs text-gray-600">Aucun enregistrement</p>
+        <p class="text-xs text-green-600 mb-2">Aucun enregistrement</p>
     @endif
+    <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-xs text-green-500 hover:text-green-700 mt-1 inline-block">Gérer →</a>
 </div>
