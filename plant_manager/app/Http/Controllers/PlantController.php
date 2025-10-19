@@ -29,6 +29,19 @@ class PlantController extends Controller
     }
 
     /**
+     * Affiche les plantes archivées.
+     */
+    public function archived(Request $request)
+    {
+        $plants = Plant::where('is_archived', true)
+            ->with(['tags', 'photos'])
+            ->latest('archived_date')
+            ->get();
+
+        return view('plants.archived', compact('plants'));
+    }
+
+    /**
      * Formulaire de création.
      */
     public function create()
@@ -190,5 +203,33 @@ class PlantController extends Controller
         ]);
         // retourne le HTML des 3 cartes d'historiques
         return view('plants.partials.histories', compact('plant'));
+    }
+
+    /**
+     * Archive une plante.
+     */
+    public function archive(Plant $plant, Request $request)
+    {
+        $plant->update([
+            'is_archived' => true,
+            'archived_date' => now(),
+            'archived_reason' => $request->input('reason'),
+        ]);
+
+        return redirect()->route('plants.index')->with('success', 'Plante archivée avec succès.');
+    }
+
+    /**
+     * Restaure une plante.
+     */
+    public function restore(Plant $plant)
+    {
+        $plant->update([
+            'is_archived' => false,
+            'archived_date' => null,
+            'archived_reason' => null,
+        ]);
+
+        return redirect()->route('plants.show', $plant)->with('success', 'Plante restaurée avec succès.');
     }
 }
