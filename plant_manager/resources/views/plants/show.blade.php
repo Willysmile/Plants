@@ -282,4 +282,35 @@
 
 @section('extra-scripts')
   <script src="https://unpkg.com/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
+  <script>
+    // Gestionnaire pour les miniatures de la galerie
+    document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('click', function(e) {
+        // Si c'est un bouton avec data-type="thumbnail", échanger avec la photo principale
+        if (e.target.closest('[data-type="thumbnail"]')) {
+          const btn = e.target.closest('[data-type="thumbnail"]');
+          const mainPhoto = document.querySelector('[data-type="main-photo"]');
+          
+          if (!mainPhoto) return;
+          
+          const thumbImg = btn.querySelector('img');
+          if (!thumbImg) return;
+          
+          // Échanger les src
+          const mainSrc = mainPhoto.src;
+          const thumbSrc = thumbImg.src;
+          
+          mainPhoto.src = thumbSrc;
+          thumbImg.src = mainSrc;
+          
+          // Échanger aussi data-original-src
+          const mainOrig = mainPhoto.getAttribute('data-original-src');
+          const thumbOrig = btn.getAttribute('data-original-src');
+          
+          if (mainOrig) mainPhoto.setAttribute('data-original-src', thumbOrig);
+          if (thumbOrig) btn.setAttribute('data-original-src', mainOrig);
+        }
+      });
+    });
+  </script>
 @endsection
