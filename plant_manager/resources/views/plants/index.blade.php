@@ -5,7 +5,10 @@
 @section('content')
   <div class="max-w-7xl mx-auto p-6">
     <header class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-semibold">Plantes</h1>
+      <div class="flex items-center gap-2">
+        <h1 class="text-2xl font-semibold">Plantes</h1>
+        <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ $plants->count() }}</span>
+      </div>
       <div class="flex items-center gap-3">
         <a href="{{ route('settings.index') }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition">⚙️ Paramètres</a>
         <a href="{{ route('plants.create') }}" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition">Ajouter</a>
