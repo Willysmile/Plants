@@ -9,6 +9,7 @@ class FertilizerType extends Model
     protected $fillable = [
         'name',
         'description',
+        'unit',
     ];
 
     public function fertilizingHistories()
