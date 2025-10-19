@@ -1,7 +1,14 @@
 <!-- Quick Fertilizing Modal -->
-<div id="quickFertilizingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div id="quickFertilizingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="event.stopPropagation();">
   <div class="bg-white rounded-lg shadow-lg p-6 w-96" onclick="event.stopPropagation();">
-    <h3 class="text-lg font-semibold mb-4 text-green-900">Fertilisation</h3>
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-green-900">Fertilisation</h3>
+      <button type="button" onclick="closeQuickFertilizingModalFromModal()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
     <form id="quickFertilizingFormFromModal" action="{{ route('plants.fertilizing-history.store', $plant) }}" method="POST" onsubmit="return handleQuickFertilizingSubmit(event)">
       @csrf
       <div class="mb-3">
