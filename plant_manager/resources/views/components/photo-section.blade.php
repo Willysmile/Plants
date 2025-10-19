@@ -42,6 +42,8 @@
       </div>
     @endif
   @else
-    <x-empty-state message="Pas d'image" height="h-full" />
+    <div style="width:100%; @if($height)height:{{ $height }};@elseif($maxHeight)max-height:{{ $maxHeight }};@else height:400px;@endif display:flex; align-items:center; justify-content:center;">
+      <x-empty-state message="Pas d'image" height="h-full" />
+    </div>
   @endif
 </div>
