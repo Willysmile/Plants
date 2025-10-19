@@ -9,7 +9,6 @@
             <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
             <span class="text-sm font-semibold text-amber-900">Rempotage</span>
         </div>
-        <button type="button" onclick="openQuickRepottingModalFromModal()" class="px-2 py-1 bg-amber-500 text-white rounded text-sm hover:bg-amber-600">+</button>
     </div>
     
     @if($lastRepotting)
@@ -25,5 +24,5 @@
     @else
         <p class="text-xs text-amber-600 mb-2">Aucun enregistrement</p>
     @endif
-    <a href="{{ route('plants.repotting-history.index', $plant) }}" class="text-xs text-amber-500 hover:text-amber-700 mt-1 inline-block">Gérer →</a>
+    <button type="button" onclick="openQuickRepottingModalFromModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">+ Créer →</button>
 </div>
