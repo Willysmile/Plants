@@ -300,27 +300,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Fonction pour régénérer la référence
 window.regenerateReference = function() {
-  const family = document.querySelector('input[name="family"]').value || 'UNK';
-  const familyPrefix = family.substring(0, 3).toUpperCase();
-  
-  // Créer une référence temporaire
-  const newReference = familyPrefix + '-' + Math.floor(Math.random() * 9000 + 1000);
-  
-  // Mettre à jour le champ
-  document.querySelector('input[name="reference"]').value = newReference;
-  
-  // Afficher une notification
+  const familyInput = document.querySelector('input[name="family"]');
+  const referenceInput = document.querySelector('input[name="reference"]');
   const btn = event.target;
-  const originalText = btn.textContent;
-  btn.textContent = '✓ Régénérée!';
-  btn.classList.add('bg-green-500', 'hover:bg-green-600');
-  btn.classList.remove('bg-gray-400', 'hover:bg-gray-500');
   
-  setTimeout(() => {
-    btn.textContent = originalText;
-    btn.classList.remove('bg-green-500', 'hover:bg-green-600');
-    btn.classList.add('bg-gray-400', 'hover:bg-gray-500');
-  }, 2000);
+  const family = familyInput.value;
+  
+  if (!family) {
+    alert('Veuillez d\'abord remplir le champ "Famille"');
+    return;
+  }
+  
+  // Désactiver le bouton
+  btn.disabled = true;
+  btn.textContent = '⏳ Génération...';
+  
+  // Appeler l'API
+  fetch('{{ route("plants.generate-reference") }}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify({ family: family })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.reference) {
+      referenceInput.value = data.reference;
+      
+      // Afficher une notification de succès
+      btn.textContent = '✓ Référence générée!';
+      btn.classList.add('bg-green-500', 'hover:bg-green-600');
+      btn.classList.remove('bg-gray-400', 'hover:bg-gray-500');
+      
+      setTimeout(() => {
+        btn.textContent = '🔄 Régénérer';
+        btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+        btn.classList.add('bg-gray-400', 'hover:bg-gray-500');
+        btn.disabled = false;
+      }, 2000);
+    } else if (data.error) {
+      alert('Erreur: ' + data.error);
+      btn.textContent = '🔄 Régénérer';
+      btn.disabled = false;
+    }
+  })
+  .catch(error => {
+    console.error('Erreur:', error);
+    alert('Erreur lors de la génération');
+    btn.textContent = '🔄 Régénérer';
+    btn.disabled = false;
+  });
 };
 </script>
 @endpush
