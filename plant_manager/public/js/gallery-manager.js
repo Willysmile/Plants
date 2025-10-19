@@ -42,24 +42,22 @@ const GalleryManager = {
       const currentSwapState = this.swapStates[plantId];
 
       if (currentSwapState === thumbIndex) {
-              // Déswap: restaurer l'ordre original
-      if (currentSwapState === thumbIndex) {
+        // Déswap: restaurer l'ordre original
         delete this.swapStates[plantId];
         
+        // Échanger les images visuellement pour les remettre en place
+        this.swapImages(mainPhoto, thumbnailImg);
+        
         // Restaurer l'array Lightbox à partir du JSON dans la modal ou de la variable globale
-        const modal = document.querySelector('[data-modal-plant-id="' + plantId + '"]');
-        if (modal) {
-          const dataScript = modal.querySelector('script[data-lightbox-images]');
-          if (dataScript) {
-            window.globalLightboxImages = JSON.parse(dataScript.textContent);
-          }
+        const dataScript = modal.querySelector('script[data-lightbox-images]');
+        if (dataScript) {
+          window.globalLightboxImages = JSON.parse(dataScript.textContent);
         }
         // Fallback: utiliser l'array original sauvegardé (pour show.blade.php)
-        if (window.globalLightboxImagesOriginal) {
+        else if (window.globalLightboxImagesOriginal) {
           window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
         }
         return;
-      }
       }
 
       // Échanger les images
