@@ -8,7 +8,7 @@
   })->values();
 @endphp
 
-<div class="border-t pt-4 mt-4 rounded-lg bg-gray-50 p-4">
+<div class="border-t pt-4 mt-4 p-4">
   <h3 class="font-medium text-sm mb-4 text-center uppercase text-gray-700 font-semibold">Galerie</h3>
   @if($gallery->count())
     <div class="flex justify-center gap-3 flex-wrap">
