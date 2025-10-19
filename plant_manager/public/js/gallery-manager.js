@@ -42,21 +42,24 @@ const GalleryManager = {
       const currentSwapState = this.swapStates[plantId];
 
       if (currentSwapState === thumbIndex) {
-        // Déjà swappée avec cette miniature - annuler le swap
+              // Déswap: restaurer l'ordre original
+      if (currentSwapState === thumbIndex) {
         delete this.swapStates[plantId];
         
-        // 🔧 IMPORTANT: Réinitialiser l'array lightbox à l'ordre original
-        // Charger le script JSON embarqué pour remettre l'ordre original
-        const dataScript = modal.querySelector('script[data-lightbox-images]');
-        if (dataScript) {
-          try {
+        // Restaurer l'array Lightbox à partir du JSON dans la modal ou de la variable globale
+        const modal = document.querySelector('[data-modal-plant-id="' + plantId + '"]');
+        if (modal) {
+          const dataScript = modal.querySelector('script[data-lightbox-images]');
+          if (dataScript) {
             window.globalLightboxImages = JSON.parse(dataScript.textContent);
-          } catch (e) {
-            console.error('Erreur réinitialisation lightbox:', e);
           }
         }
-        
+        // Fallback: utiliser l'array original sauvegardé (pour show.blade.php)
+        if (window.globalLightboxImagesOriginal) {
+          window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
+        }
         return;
+      }
       }
 
       // Échanger les images
