@@ -102,14 +102,30 @@
           name="{{ $fieldName }}" 
           rows="4">{{ old($fieldName, $history?->{$fieldName} ?? '') }}</textarea>
       @elseif($fieldConfig['type'] === 'select')
-        <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
-          id="{{ $fieldName }}" 
-          name="{{ $fieldName }}">
-          <option value="">-- Sélectionner --</option>
-          @foreach($fertilizerTypes as $ftype)
-            <option value="{{ $ftype->id }}" @selected(old($fieldName, $history?->fertilizer_type_id ?? '') == $ftype->id)>{{ $ftype->name }}</option>
-          @endforeach
-        </select>
+        <div class="space-y-2">
+          <select class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
+            id="{{ $fieldName }}" 
+            name="{{ $fieldName }}">
+            <option value="">-- Sélectionner --</option>
+            @foreach($fertilizerTypes as $ftype)
+              <option value="{{ $ftype->id }}" @selected(old($fieldName, $history?->fertilizer_type_id ?? '') == $ftype->id)>{{ $ftype->name }}</option>
+            @endforeach
+          </select>
+          
+          <!-- Add new fertilizer type section -->
+          <div class="flex gap-2">
+            <input type="text" 
+              id="newFertilizerTypeName" 
+              placeholder="Nouveau type..." 
+              class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500 text-sm">
+            <button type="button" 
+              onclick="addNewFertilizerType(event)" 
+              class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium">
+              +
+            </button>
+          </div>
+          <p class="text-xs text-gray-500">Ou créez un nouveau type ci-dessus</p>
+        </div>
       @elseif($fieldConfig['type'] === 'number')
         <div class="flex items-center gap-2">
           <input class="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 @error($fieldName) border-red-500 @enderror" 
@@ -163,3 +179,48 @@
     <a href="{{ route($config['route_index'], $plant) }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Annuler</a>
   </div>
 </form>
+
+<script>
+  async function addNewFertilizerType(event) {
+    event.preventDefault();
+    const input = document.getElementById('newFertilizerTypeName');
+    const name = input.value.trim();
+    
+    if (!name) {
+      alert('Veuillez entrer un nom pour le type d\'engrais');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/fertilizer-types', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({ name })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création');
+      }
+      
+      const data = await response.json();
+      
+      // Add option to select
+      const select = document.getElementById('fertilizer_type_id');
+      const option = new Option(data.name, data.id);
+      select.appendChild(option);
+      select.value = data.id;
+      
+      // Clear input
+      input.value = '';
+      
+      alert('Type d\'engrais créé avec succès !');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Erreur lors de la création du type d\'engrais');
+    }
+  }
+</script>

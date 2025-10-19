@@ -7,6 +7,7 @@ use App\Http\Controllers\WateringHistoryController;
 use App\Http\Controllers\FertilizingHistoryController;
 use App\Http\Controllers\RepottingHistoryController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\FertilizerTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,9 @@ Route::get('plants/{plant}/modal', [PlantController::class, 'modal'])->name('pla
 
 // route AJAX pour recharger les historiques dans la modal
 Route::get('plants/{plant}/histories', [PlantController::class, 'histories'])->name('plants.histories');
+
+// route AJAX pour créer un nouveau type d'engrais
+Route::post('fertilizer-types', [FertilizerTypeController::class, 'store'])->name('fertilizer-types.store');
 
 // mise à jour de la légende d'une photo (PATCH)
 Route::patch('plants/{plant}/photos/{photo}', [PhotoController::class, 'update'])
