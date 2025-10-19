@@ -15,7 +15,7 @@
         <p class="text-xs text-blue-600 mb-2">Dernier : {{ $lastWatering->watering_date->format('d/m/Y') }}</p>
         <div class="space-y-1">
             @if($lastWatering->amount)
-                <p class="text-xs text-gray-600">Quantité : {{ $lastWatering->amount }}</p>
+                <p class="text-xs text-gray-600">Quantité : {{ $lastWatering->amount }} ml</p>
             @endif
         </div>
     @else
