@@ -15,9 +15,14 @@
         </span>
       </div>
       <div class="flex items-center gap-2">
-        <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm">Voir</a>
-        <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm">Éditer</a>
-        <button class="px-3 py-1 bg-gray-200 rounded text-sm modal-close">Fermer</button>
+        <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm hover:bg-gray-200 transition">Voir</a>
+        <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600 transition">Éditer</a>
+        <button type="button" onclick="refreshModal()" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition flex items-center gap-1" title="Actualiser">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+        <button class="px-2 py-1 bg-gray-200 rounded text-sm modal-close hover:bg-gray-300 transition" title="Fermer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
     </div>
 

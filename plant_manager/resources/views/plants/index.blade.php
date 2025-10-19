@@ -45,6 +45,53 @@
   <script>
     console.log('[INDEX] Defining global form handlers for quick modals');
     
+    // Refresh entire modal with loading animation
+    window.refreshModal = function() {
+      const modal = document.getElementById('plant-modal-content');
+      const button = event.currentTarget;
+      const icon = button.querySelector('[data-lucide="refresh-cw"]');
+      
+      if (!modal) return;
+      
+      const plantModalEl = modal.querySelector('[data-modal-plant-id]');
+      if (!plantModalEl) {
+        console.warn('[REFRESH] No plant modal found');
+        return;
+      }
+      
+      const plantId = plantModalEl.getAttribute('data-modal-plant-id');
+      if (!plantId) {
+        console.warn('[REFRESH] No plant ID found');
+        return;
+      }
+      
+      // Add spinning animation
+      if (icon) {
+        icon.style.animation = 'spin 1s linear infinite';
+      }
+      
+      // Fetch the new modal HTML
+      fetch(`/plants/${plantId}/modal`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => response.text())
+      .then(html => {
+        modal.innerHTML = html;
+        console.log('[REFRESH] Modal refreshed successfully');
+        
+        // Reinitialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      })
+      .catch(error => console.error('[REFRESH] Error:', error))
+      .finally(() => {
+        if (icon) {
+          icon.style.animation = 'none';
+        }
+      });
+    };
+    
     // Reload histories in modal via AJAX
     window.reloadHistoriesInModal = function() {
       const modal = document.getElementById('plant-modal-content');
