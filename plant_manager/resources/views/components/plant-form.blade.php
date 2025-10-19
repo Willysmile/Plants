@@ -68,8 +68,15 @@
     <div>
       <label class="block text-sm font-medium text-gray-700">Tags (Ctrl/Cmd pour multi)</label>
       <select name="tags[]" multiple class="mt-1 block w-full border rounded p-2 @error('tags') border-red-500 @enderror">
-        @foreach($tags as $tag)
-          <option value="{{ $tag->id }}" @selected(in_array($tag->id, old('tags', $plant?->tags?->pluck('id')->toArray() ?? [])))>{{ $tag->name }}</option>
+        @php
+          $tagsByCategory = $tags->groupBy('category');
+        @endphp
+        @foreach($tagsByCategory as $category => $categoryTags)
+          <optgroup label="{{ $category ?? 'Sans catégorie' }}">
+            @foreach($categoryTags as $tag)
+              <option value="{{ $tag->id }}" @selected(in_array($tag->id, old('tags', $plant?->tags?->pluck('id')->toArray() ?? [])))>{{ $tag->name }}</option>
+            @endforeach
+          </optgroup>
         @endforeach
       </select>
       @error('tags') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
