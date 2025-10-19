@@ -44,6 +44,9 @@ Route::resource('plants.watering-history', WateringHistoryController::class);
 Route::resource('plants.fertilizing-history', FertilizingHistoryController::class);
 Route::resource('plants.repotting-history', RepottingHistoryController::class);
 
+// Gestion des types d'engrais
+Route::resource('fertilizer-types', FertilizerTypeController::class);
+
 // Routes pour les paramètres
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
 Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');

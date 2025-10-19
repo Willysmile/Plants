@@ -116,6 +116,15 @@
             </button>
           </div>
         </form>
+
+        <!-- Gestion des types d'engrais -->
+        <div class="mt-8 pt-8 border-t">
+          <h2 class="text-2xl font-semibold text-gray-900 mb-6">🧪 Gestion des types d'engrais</h2>
+          <p class="text-gray-600 mb-4">Gérez les types d'engrais disponibles et leurs unités de mesure.</p>
+          <a href="{{ route('fertilizer-types.index') }}" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition inline-block">
+            Gérer les types d'engrais →
+          </a>
+        </div>
       </div>
 
       <!-- Informations -->
