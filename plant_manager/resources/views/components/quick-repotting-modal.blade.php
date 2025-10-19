@@ -106,12 +106,14 @@ function handleQuickRepottingSubmit(event) {
   })
   .then(response => {
     if (response.ok) {
-      // Success - show message and close modal
+      // Success - show message, then return to plants modal
       alert('Rempotage enregistré !');
       closeQuickRepottingModalFromModal();
-      
-      // Refresh plant history cards if they exist
-      location.reload();
+      // Show the plants modal (assuming it exists)
+      const plantsModal = document.getElementById('quickPlantsModalFromModal');
+      if (plantsModal) {
+        plantsModal.classList.remove('hidden');
+      }
     } else {
       // Server validation failed
       return response.text().then(text => {
