@@ -1,6 +1,8 @@
 @props(['plant', 'type' => 'watering', 'context' => 'modal'])
 
 @php
+  $settings = \App\Models\Setting::getInstance();
+  
   $config = match($type) {
     'watering' => [
       'bg' => 'blue-50',
@@ -83,7 +85,7 @@
       @elseif($type === 'repotting')
         @if($last->old_pot_size || $last->new_pot_size)
           <p class="text-xs text-gray-600">
-            Pots : {{ $last->old_pot_size }}{{ $last->old_pot_unit ? ' ' . $last->old_pot_unit : '' }} → {{ $last->new_pot_size }}{{ $last->new_pot_unit ? ' ' . $last->new_pot_unit : '' }}
+            Pots : {{ $last->old_pot_size }}{{ $last->old_pot_unit ?? $settings->pot_unit }} → {{ $last->new_pot_size }}{{ $last->new_pot_unit ?? $settings->pot_unit }}
           </p>
         @endif
       @endif

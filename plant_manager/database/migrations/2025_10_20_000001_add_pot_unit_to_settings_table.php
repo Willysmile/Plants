@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('repotting_history', function (Blueprint $table) {
-            $table->string('old_pot_unit')->nullable()->after('old_pot_size');
-            $table->string('new_pot_unit')->nullable()->after('new_pot_size');
+        Schema::table('settings', function (Blueprint $table) {
+            $table->string('pot_unit')->default('cm')->after('temperature_unit');
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('repotting_history', function (Blueprint $table) {
-            $table->dropColumn(['old_pot_unit', 'new_pot_unit']);
+        Schema::table('settings', function (Blueprint $table) {
+            $table->dropColumn('pot_unit');
         });
     }
 };

@@ -104,6 +104,20 @@
                 <span class="text-red-500 text-sm">{{ $message }}</span>
               @enderror
             </div>
+
+            <!-- Unité des pots -->
+            <div class="mb-6">
+              <label class="block text-gray-700 font-bold mb-2" for="pot_unit">
+                Unité des pots
+              </label>
+              <select id="pot_unit" name="pot_unit" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 @error('pot_unit') border-red-500 @enderror">
+                <option value="cm" {{ $settings->pot_unit === 'cm' ? 'selected' : '' }}>Centimètres (cm)</option>
+                <option value="in" {{ $settings->pot_unit === 'in' ? 'selected' : '' }}>Pouces (in)</option>
+              </select>
+              @error('pot_unit')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+              @enderror
+            </div>
           </div>
 
           <!-- Boutons -->
@@ -134,6 +148,7 @@
           <li>• <strong>Fuseau horaire :</strong> Définit l'heure par défaut pour tous les enregistrements</li>
           <li>• <strong>Langue :</strong> Change la langue de l'interface (Français/English)</li>
           <li>• <strong>Unité de température :</strong> Affiche les températures en Celsius ou Fahrenheit</li>
+          <li>• <strong>Unité des pots :</strong> Définit l'unité par défaut pour les diamètres de pots (cm ou pouces)</li>
         </ul>
       </div>
     </div>

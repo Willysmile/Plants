@@ -25,6 +25,7 @@ class SettingsController extends Controller
             'timezone' => 'required|timezone',
             'locale' => 'required|in:fr,en',
             'temperature_unit' => 'required|in:celsius,fahrenheit',
+            'pot_unit' => 'required|string|max:10',
         ]);
 
         // Get or create the single settings row

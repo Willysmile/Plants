@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     protected $table = 'settings';
-    protected $fillable = ['timezone', 'locale', 'temperature_unit'];
+    protected $fillable = ['timezone', 'locale', 'temperature_unit', 'pot_unit'];
 
     /**
      * Get the single settings instance
@@ -20,6 +20,7 @@ class Setting extends Model
                 'timezone' => 'Europe/Paris',
                 'locale' => 'fr',
                 'temperature_unit' => 'celsius',
+                'pot_unit' => 'cm',
             ]
         );
     }
