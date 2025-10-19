@@ -66,9 +66,6 @@
         @if($last->amount)
           <p class="text-xs text-gray-600">Quantité : {{ $last->amount }} ml</p>
         @endif
-        @if($context === 'show' && $last->notes)
-          <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
-        @endif
       @elseif($type === 'fertilizing')
         @if($last->fertilizerType)
           <p class="text-xs text-gray-600">Type : {{ $last->fertilizerType->name }}</p>
@@ -83,15 +80,11 @@
             @endif
           </p>
         @endif
-        @if($context === 'show' && $last->notes)
-          <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
-        @endif
       @elseif($type === 'repotting')
         @if($last->old_pot_size || $last->new_pot_size)
-          <p class="text-xs text-gray-600">Pots : {{ $last->old_pot_size }} → {{ $last->new_pot_size }}</p>
-        @endif
-        @if($context === 'show' && $last->notes)
-          <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+          <p class="text-xs text-gray-600">
+            Pots : {{ $last->old_pot_size }}{{ $last->old_pot_unit ? ' ' . $last->old_pot_unit : '' }} → {{ $last->new_pot_size }}{{ $last->new_pot_unit ? ' ' . $last->new_pot_unit : '' }}
+          </p>
         @endif
       @endif
     </div>

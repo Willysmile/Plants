@@ -13,7 +13,9 @@ class RepottingHistory extends Model
         'plant_id',
         'repotting_date',
         'old_pot_size',
+        'old_pot_unit',
         'new_pot_size',
+        'new_pot_unit',
         'soil_type',
         'notes',
     ];
