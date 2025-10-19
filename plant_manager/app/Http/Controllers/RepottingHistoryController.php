@@ -54,7 +54,8 @@ class RepottingHistoryController extends Controller
             return response('OK', 200);
         }
 
-        return redirect()->route('plants.repotting-history.index', $plant)
+        // For normal requests, redirect to show page
+        return redirect()->route('plants.show', $plant)
             ->with('success', 'Rempotage enregistré avec succès.');
     }
 

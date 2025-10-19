@@ -67,39 +67,15 @@ function handleQuickWateringSubmit(event) {
   dateError.classList.add('hidden');
   console.log('Date validation passed');
   
-  // Submit form via AJAX
+  // Submit form via standard form submission
   const form = document.getElementById('quickWateringFormFromModal');
-  const formData = new FormData(form);
   
-  console.log('Submitting form...');
+  console.log('Submitting form normally...');
   
-  fetch(form.action, {
-    method: 'POST',
-    body: formData,
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-    }
-  })
-  .then(response => {
-    console.log('Response status:', response.status);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.text();
-  })
-  .then(data => {
-    console.log('Success response:', data);
-    alert('Arrosage effectué !!');
-    form.reset();
-    dateError.classList.add('hidden');
-    closeQuickWateringModalFromModal();
-    // Note: History will be updated when modal is reopened
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('Erreur lors de l\'enregistrement');
-  });
+  // We'll submit the form normally which will POST to server
+  // The server will redirect to plants.show
+  // We don't prevent this - we let the normal form submission happen
+  form.submit();
   
   return false;
 }
