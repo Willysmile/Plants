@@ -32,8 +32,8 @@ class StorePlantRequest extends FormRequest
             'scientific_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             
-            // Informations d'achat - VALIDATION: date pas future
-            'purchase_date' => 'nullable|date|before_or_equal:today',
+            // Informations d'achat - Accepte "dd/mm/yyyy" ou "mm/yyyy"
+            'purchase_date' => ['nullable', 'string', new \App\Rules\FlexibleDate],
             'purchase_place' => 'nullable|string|max:255',
             'purchase_price' => 'nullable|numeric|min:0',
             
@@ -96,10 +96,7 @@ class StorePlantRequest extends FormRequest
             'watering_frequency.required' => 'La fréquence d\'arrosage est obligatoire.',
             'light_requirement.required' => 'Le besoin en lumière est obligatoire.',
             
-            // Validations - Date d'achat
-            'purchase_date.before_or_equal' => 'La date d\'achat ne peut pas être future.',
-            
-            // Validations - Humidité et Température
+            // Humidité et Température
             'humidity_level.max' => 'L\'humidité ne peut pas dépasser 100%.',
             'humidity_level.min' => 'L\'humidité ne peut pas être négative.',
             'humidity_level.numeric' => 'L\'humidité doit être une valeur numérique.',
