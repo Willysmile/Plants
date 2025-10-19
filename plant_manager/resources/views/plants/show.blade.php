@@ -13,6 +13,9 @@
             @if($plant->family)
               <p class="text-xs uppercase font-bold text-gray-500 tracking-wide mb-1">{{ $plant->family }}</p>
             @endif
+            @if($plant->subfamily)
+              <p class="text-xs font-medium text-gray-600 mb-2">{{ $plant->subfamily }}</p>
+            @endif
             @if($plant->scientific_name)
               <h1 class="text-3xl font-semibold italic text-green-700">{{ $plant->scientific_name }}</h1>
               <p class="text-base text-gray-700 mt-2">{{ $plant->name }}</p>

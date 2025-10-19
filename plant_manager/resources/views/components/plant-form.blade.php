@@ -36,6 +36,13 @@
       @error('family') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
+    <!-- Sous-famille -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Sous-famille</label>
+      <input name="subfamily" value="{{ old('subfamily', $plant->subfamily ?? '') }}" placeholder="Ex: Epidendroideae" class="mt-1 block w-full border rounded p-2 @error('subfamily') border-red-500 @enderror">
+      @error('subfamily') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
     <!-- Genre (Genus) -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Genre</label>
