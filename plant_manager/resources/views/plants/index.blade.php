@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Plantes</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>[x-cloak]{display:none!important}</style>
-</head>
-<body class="bg-gray-50 text-gray-900">
+@extends('layouts.app')
+
+@section('title', 'Plantes')
+
+@section('content')
   <div class="max-w-7xl mx-auto p-6">
     <header class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Plantes</h1>
@@ -21,31 +14,7 @@
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       @foreach($plants as $plant)
-        <article class="bg-white rounded-lg shadow overflow-hidden">
-          <div class="w-full h-48 bg-gray-100 overflow-hidden">
-            <button
-              type="button"
-              class="w-full h-full block focus:outline-none"
-              data-modal-url="{{ route('plants.modal', $plant) }}"
-              aria-label="Ouvrir {{ $plant->name }}"
-            >
-              @if($plant->main_photo)
-                <img src="{{ Storage::url($plant->main_photo) }}" alt="{{ $plant->name }}" class="w-full h-full object-cover">
-              @else
-                <div class="w-full h-full flex items-center justify-center text-gray-400">Pas d'image</div>
-              @endif
-            </button>
-          </div>
-
-          <div class="p-3">
-            <h3 class="text-sm font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
-            <p class="text-xs text-gray-500 mt-1 truncate">{{ $plant->category->name ?? '—' }}</p>
-            <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
-              <span>Arrosage: {{ \App\Models\Plant::$wateringLabels[$plant->watering_frequency] ?? $plant->watering_frequency }}</span>
-              <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline">Détails</a>
-            </div>
-          </div>
-        </article>
+        <x-plant-card :plant="$plant" />
       @endforeach
     </div>
 
@@ -60,7 +29,10 @@
     <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
   </div>
 
-  <script>
+  @include('partials.lightbox')
+@endsection
+
+@section('extra-scripts')
     (function(){
       const modalRoot = document.getElementById('plant-modal-root');
       const modalContent = document.getElementById('plant-modal-content');
@@ -216,8 +188,4 @@ document.addEventListener('click', function(event) {
 
 console.log('Global gallery handler initialized');
   </script>
-
-
-  @include('partials.lightbox')
-</body>
-</html>
+@endsection
