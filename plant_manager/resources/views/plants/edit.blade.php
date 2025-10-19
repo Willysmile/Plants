@@ -12,7 +12,7 @@
       </div>
     </header>
 
-    <x-plant-form :plant="$plant" :categories="$categories" :tags="$tags" />
+    <x-plant-form :plant="$plant" :tags="$tags" />
   </div>
 @endsection
 
