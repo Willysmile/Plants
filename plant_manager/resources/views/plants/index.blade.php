@@ -12,18 +12,18 @@
       </div>
     </header>
 
-    <!-- Navigation -->
-    <div class="flex items-center justify-center gap-4 mb-6">
-      <button id="prev-btn" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded disabled:opacity-50 disabled:cursor-not-allowed transition">← Précédent</button>
-      <span id="page-info" class="text-sm font-medium text-gray-700">Page 1 / 2</span>
-      <button id="next-btn" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded disabled:opacity-50 disabled:cursor-not-allowed transition">Suivant →</button>
-    </div>
-
     <!-- Grille de plantes -->
     <div id="plants-grid" class="grid grid-cols-6 gap-4">
       @foreach($plants as $plant)
         <x-plant-card :plant="$plant" />
       @endforeach
+    </div>
+
+    <!-- Pagination Navigation (bas de page, discret) -->
+    <div class="flex items-center justify-center gap-2 mt-8 py-4">
+      <button id="prev-btn" class="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition">← Précédent</button>
+      <span id="page-info" class="text-xs text-gray-400 min-w-12 text-center">Page 1</span>
+      <button id="next-btn" class="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition">Suivant →</button>
     </div>
   </div>
 
@@ -85,24 +85,7 @@
   </script>
 @endsection
 
-  <!-- Modal container -->
-  <div id="plant-modal-root" x-data x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" @click="closeModal()"></div>
-    <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
-  </div>
-
-  @include('partials.lightbox')
-@endsection
-
 @section('extra-scripts')
-  <!-- External JS Modules -->
-  <script src="{{ asset('js/modal-manager.js') }}"></script>
-  <script src="{{ asset('js/gallery-manager.js') }}"></script>
-  <script src="{{ asset('js/quick-modals-manager.js') }}"></script>
-  <script src="{{ asset('js/form-validation.js') }}"></script>
-  <script src="{{ asset('js/file-preview.js') }}"></script>
-  <script src="{{ asset('js/app.js') }}"></script>
-  
   <!-- Quick Modal Validation Scripts (must be loaded at page init, before AJAX modals load) -->
   <script>
     console.log('[INDEX] Defining global form handlers for quick modals');
