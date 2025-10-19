@@ -9,7 +9,7 @@
         </svg>
       </button>
     </div>
-    <form id="quickWateringFormFromModal" action="{{ route('plants.watering-history.store', $plant) }}" method="POST" onsubmit="return handleQuickWateringSubmit(event)">
+    <form id="quickWateringFormFromModal" action="{{ route('plants.watering-history.store', $plant) }}" method="POST">
       @csrf
       <input type="hidden" name="_ajax" value="1">
       <div class="mb-3">
@@ -41,9 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.max = today;
   }
+  
+  // Attach form submit handler
+  const form = document.getElementById('quickWateringFormFromModal');
+  if (form) {
+    form.addEventListener('submit', handleQuickWateringSubmit);
+  }
 });
 
 function handleQuickWateringSubmit(event) {
+  console.log('handleQuickWateringSubmit called!!!');
+  
   event.preventDefault();
   event.stopPropagation();
   

@@ -45,9 +45,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     dateInput.max = today;
   }
+  
+  // Attach form submit handler
+  const form = document.getElementById('quickFertilizingFormFromModal');
+  if (form) {
+    form.addEventListener('submit', handleQuickFertilizingSubmit);
+  }
 });
 
 function handleQuickFertilizingSubmit(event) {
+  console.log('handleQuickFertilizingSubmit called!!!');
+  
   event.preventDefault();
   event.stopPropagation();
   
