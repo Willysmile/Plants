@@ -41,10 +41,22 @@
             <p class="text-sm text-gray-500">{{ $history->{$config['date_field']}->format('d/m/Y') }}</p>
             
             @foreach($config['fields'] as $field)
-              @if($history->{$field} ?? null)
+              @php
+                $value = null;
+                if ($type === 'fertilizing' && $field === 'fertilizer_type') {
+                  $value = $history->fertilizerType?->name;
+                } else {
+                  $value = $history->{$field} ?? null;
+                }
+              @endphp
+              
+              @if($value)
                 <p class="text-gray-700 text-sm">
                   <span class="font-semibold">{{ $config['labels'][$field] ?? $field }} :</span> 
-                  {{ $history->{$field} }}
+                  {{ $value }}
+                  @if($field === 'amount' && $type === 'fertilizing' && $history->fertilizerType)
+                    {{ $history->fertilizerType->unit === 'ml' ? 'ml' : ($history->fertilizerType->unit === 'g' ? 'g' : '') }}
+                  @endif
                 </p>
               @endif
             @endforeach
