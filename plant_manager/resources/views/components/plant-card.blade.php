@@ -17,10 +17,10 @@
   </div>
 
   <div class="p-2">
-    <h3 class="text-xs font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
     @if($plant->scientific_name)
       <p class="text-xs italic text-gray-600 truncate" title="{{ $plant->scientific_name }}">{{ $plant->scientific_name }}</p>
     @endif
+    <h3 class="text-xs font-medium text-gray-800 truncate" title="{{ $plant->name }}">{{ $plant->name }}</h3>
     <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
       <span></span>
       <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline font-medium">→ Détails</a>
