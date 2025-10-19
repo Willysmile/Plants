@@ -24,6 +24,9 @@ Route::get('/', function () {
 // route AJAX pour charger la fiche d'une plante en HTML (modal)
 Route::get('plants/{plant}/modal', [PlantController::class, 'modal'])->name('plants.modal');
 
+// route AJAX pour recharger les historiques dans la modal
+Route::get('plants/{plant}/histories', [PlantController::class, 'histories'])->name('plants.histories');
+
 // mise à jour de la légende d'une photo (PATCH)
 Route::patch('plants/{plant}/photos/{photo}', [PhotoController::class, 'update'])
     ->name('plants.photos.update');
