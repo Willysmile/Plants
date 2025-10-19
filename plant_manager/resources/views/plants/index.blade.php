@@ -13,7 +13,7 @@
     </header>
 
     <!-- Grille de plantes -->
-    <div id="plants-grid" class="grid grid-cols-6 gap-4">
+    <div id="plants-grid" class="grid grid-cols-5 gap-4">
       @foreach($plants as $plant)
         <x-plant-card :plant="$plant" />
       @endforeach
@@ -47,7 +47,7 @@
   
   <script>
     // Pagination for plants grid
-    const PLANTS_PER_PAGE = 18; // 6 columns × 3 rows
+    const PLANTS_PER_PAGE = 15; // 5 columns × 3 rows
     let currentPage = 0;
     
     const gridContainer = document.getElementById('plants-grid');
