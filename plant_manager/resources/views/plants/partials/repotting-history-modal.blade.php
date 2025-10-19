@@ -14,15 +14,12 @@
     @if($lastRepotting)
         <p class="text-xs text-amber-600 mb-2">Dernier : {{ $lastRepotting->repotting_date->format('d/m/Y') }}</p>
         <div class="space-y-1">
-            @if($lastRepotting->old_pot_size)
-                <p class="text-xs text-gray-600">De : {{ $lastRepotting->old_pot_size }}</p>
-            @endif
-            @if($lastRepotting->new_pot_size)
-                <p class="text-xs text-gray-600">Vers : {{ $lastRepotting->new_pot_size }}</p>
+            @if($lastRepotting->old_pot_size || $lastRepotting->new_pot_size)
+                <p class="text-xs text-gray-600">{{ $lastRepotting->old_pot_size }} → {{ $lastRepotting->new_pot_size }}</p>
             @endif
         </div>
     @else
         <p class="text-xs text-amber-600 mb-2">Aucun enregistrement</p>
     @endif
-    <button type="button" onclick="openQuickRepottingModalFromModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">+ Créer →</button>
+    <button type="button" onclick="openQuickRepottingModalFromModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">Créer →</button>
 </div>
