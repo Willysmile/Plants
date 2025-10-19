@@ -75,7 +75,10 @@ const FormValidator = {
   validateCustomRules(field) {
     // Validation 1: Date d'achat ne doit pas être future
     if (field.name === 'purchase_date' && field.value) {
-      const purchaseDate = new Date(field.value);
+      // Convertir la date saisie (format ISO: YYYY-MM-DD) en objets Date comparables
+      const parts = field.value.split('-');
+      const purchaseDate = new Date(parts[0], parseInt(parts[1]) - 1, parts[2]);
+      
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
