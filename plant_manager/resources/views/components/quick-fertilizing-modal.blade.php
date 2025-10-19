@@ -44,7 +44,7 @@ function handleQuickFertilizingSubmit(event) {
   const dateError = document.getElementById('quickFertilizingDateError');
   const today = new Date().toISOString().split('T')[0];
   
-  // Validate date is not in the future
+  // Validate date is not in the future (client-side)
   if (dateInput.value > today) {
     dateError.classList.remove('hidden');
     return false;
@@ -52,7 +52,7 @@ function handleQuickFertilizingSubmit(event) {
   
   dateError.classList.add('hidden');
   
-  // Submit form
+  // Submit form via AJAX
   const form = document.getElementById('quickFertilizingFormFromModal');
   const formData = new FormData(form);
   
@@ -65,11 +65,24 @@ function handleQuickFertilizingSubmit(event) {
     }
   })
   .then(response => {
-    if (response.ok) {
+    // Check if response is JSON
+    return response.json().then(data => ({ status: response.status, data }));
+  })
+  .then(({ status, data }) => {
+    if (status === 200 || status === 201) {
       alert('Fertilisation effectuée !!');
-      closeQuickFertilizingModalFromModal();
-      // Reset form
       form.reset();
+      dateError.classList.add('hidden');
+      closeQuickFertilizingModalFromModal();
+    } else if (status === 422) {
+      // Validation error from Laravel
+      const errors = data.errors || {};
+      if (errors.fertilizing_date) {
+        dateError.textContent = errors.fertilizing_date[0];
+        dateError.classList.remove('hidden');
+      } else {
+        alert('Erreur de validation: ' + JSON.stringify(errors));
+      }
     } else {
       alert('Erreur lors de l\'enregistrement');
     }
