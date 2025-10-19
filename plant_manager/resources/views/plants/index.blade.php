@@ -189,14 +189,12 @@
 
     // Quick Entry Modal Functions (global scope)
     window.openQuickWateringModalFromModal = function(checkbox) {
-      console.log('openQuickWateringModalFromModal called', checkbox.checked);
       if (checkbox.checked) {
         const now = new Date();
         const dateStr = now.toISOString().slice(0, 16);
         document.getElementById('quickWateringDateFromModal').value = dateStr;
         document.getElementById('quickWateringModalFromModal').classList.remove('hidden');
         document.getElementById('quickWateringModalFromModal').classList.add('flex');
-        console.log('Watering modal opened');
       } else {
         window.closeQuickWateringModalFromModal();
       }
@@ -210,14 +208,12 @@
     };
 
     window.openQuickFertilizingModalFromModal = function(checkbox) {
-      console.log('openQuickFertilizingModalFromModal called', checkbox.checked);
       if (checkbox.checked) {
         const now = new Date();
         const dateStr = now.toISOString().slice(0, 16);
         document.getElementById('quickFertilizingDateFromModal').value = dateStr;
         document.getElementById('quickFertilizingModalFromModal').classList.remove('hidden');
         document.getElementById('quickFertilizingModalFromModal').classList.add('flex');
-        console.log('Fertilizing modal opened');
       } else {
         window.closeQuickFertilizingModalFromModal();
       }
@@ -231,14 +227,12 @@
     };
 
     window.openQuickRepottingModalFromModal = function(checkbox) {
-      console.log('openQuickRepottingModalFromModal called', checkbox.checked);
       if (checkbox.checked) {
         const now = new Date();
         const dateStr = now.toISOString().slice(0, 16);
         document.getElementById('quickRepottingDateFromModal').value = dateStr;
         document.getElementById('quickRepottingModalFromModal').classList.remove('hidden');
         document.getElementById('quickRepottingModalFromModal').classList.add('flex');
-        console.log('Repotting modal opened');
       } else {
         window.closeQuickRepottingModalFromModal();
       }
