@@ -186,11 +186,20 @@
 </div>
 
 <script>
+  @php
+    // Filtrer les photos de galerie (exclure la photo principale)
+    $galleryPhotos = $plant->photos->filter(function($p) use ($plant){
+      if ($plant->main_photo && $p->filename === $plant->main_photo) return false;
+      if (isset($p->is_main) && $p->is_main) return false;
+      return true;
+    })->values();
+  @endphp
+
   window.globalLightboxImages = [
     @if($plant->main_photo)
-      { url: {!! json_encode(Storage::url($plant->main_photo)) !!}, caption: {!! json_encode($plant->name) !!} }{{ $plant->photos->count() ? ',' : '' }}
+      { url: {!! json_encode(Storage::url($plant->main_photo)) !!}, caption: {!! json_encode($plant->name) !!} }{{ $galleryPhotos->count() ? ',' : '' }}
     @endif
-    @foreach($plant->photos as $photo)
+    @foreach($galleryPhotos as $photo)
       { url: {!! json_encode(Storage::url($photo->filename)) !!}, caption: {!! json_encode($photo->description ?? '') !!} }{{ !$loop->last ? ',' : '' }}
     @endforeach
   ];
