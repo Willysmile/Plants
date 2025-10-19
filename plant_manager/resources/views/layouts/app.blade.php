@@ -26,6 +26,8 @@
   
   @yield('extra-scripts')
   
+  @stack('scripts')
+  
   <script>
     console.log('=== END OF BODY ===');
     // Initialize Lucide icons

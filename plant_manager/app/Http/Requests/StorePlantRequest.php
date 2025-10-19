@@ -30,7 +30,7 @@ class StorePlantRequest extends FormRequest
             
             // Informations générales
             'scientific_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:200',
             
             // Informations d'achat - Accepte "dd/mm/yyyy" ou "mm/yyyy"
             'purchase_date' => ['nullable', 'string', new \App\Rules\FlexibleDate],
