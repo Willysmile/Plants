@@ -13,9 +13,9 @@
                 —
             @endif
         </a>
-        <label class="flex items-center cursor-pointer ml-2">
-            <input type="checkbox" id="quickWateringCheckboxModal" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="openQuickWateringModal()">
-        </label>
+        <a href="{{ route('plants.watering-history.create', $plant) }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline ml-2 px-2 py-1 rounded hover:bg-blue-100 transition">
+            + Arroser
+        </a>
     </div>
     
     @if($lastWatering)

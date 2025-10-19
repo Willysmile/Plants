@@ -13,9 +13,9 @@
                 —
             @endif
         </a>
-        <label class="flex items-center cursor-pointer ml-2">
-            <input type="checkbox" id="quickRepottingCheckboxModal" class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500" onclick="openQuickRepottingModal()">
-        </label>
+        <a href="{{ route('plants.repotting-history.create', $plant) }}" class="text-xs font-semibold text-amber-600 hover:text-amber-800 hover:underline ml-2 px-2 py-1 rounded hover:bg-amber-100 transition">
+            + Rempoter
+        </a>
     </div>
     
     @if($lastRepotting)
