@@ -13,12 +13,12 @@
     
     @if($lastRepotting)
         <p class="text-xs text-amber-600 mb-2">Dernier : {{ $lastRepotting->repotting_date->format('d/m/Y') }}</p>
-        <div class="grid grid-cols-2 gap-2">
+        <div class="space-y-1">
             @if($lastRepotting->old_pot_size)
-                <p class="text-xs text-gray-600">De : {{ $lastRepotting->old_pot_size }} cm</p>
+                <p class="text-xs text-gray-600">De : {{ $lastRepotting->old_pot_size }}</p>
             @endif
             @if($lastRepotting->new_pot_size)
-                <p class="text-xs text-gray-600">Vers : {{ $lastRepotting->new_pot_size }} cm</p>
+                <p class="text-xs text-gray-600">Vers : {{ $lastRepotting->new_pot_size }}</p>
             @endif
         </div>
     @else
