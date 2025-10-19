@@ -181,7 +181,7 @@
     </div>
 
     <!-- Galerie - occupe le 1/3 inférieur -->
-    <x-gallery :plant="$plant" />
+    <x-gallery :plant="$plant" :maxThumbnails="99" />
   </div>
 </div>
 
