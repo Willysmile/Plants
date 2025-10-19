@@ -67,14 +67,14 @@
     <!-- Tags -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Tags (Ctrl/Cmd pour multi)</label>
-      <select name="tags[]" multiple class="mt-1 block w-full border rounded p-2 @error('tags') border-red-500 @enderror">
+      <select name="tags[]" multiple class="mt-1 block w-full border rounded p-2 @error('tags') border-red-500 @enderror" style="padding: 8px 6px;">
         @php
           $tagsByCategory = $tags->groupBy('category');
         @endphp
         @foreach($tagsByCategory as $category => $categoryTags)
-          <optgroup label="{{ $category ?? 'Sans catégorie' }}">
+          <optgroup label="{{ $category ?? 'Sans catégorie' }}" style="font-weight: bold; background-color: #f3f4f6; color: #374151;">
             @foreach($categoryTags as $tag)
-              <option value="{{ $tag->id }}" @selected(in_array($tag->id, old('tags', $plant?->tags?->pluck('id')->toArray() ?? [])))>{{ $tag->name }}</option>
+              <option value="{{ $tag->id }}" @selected(in_array($tag->id, old('tags', $plant?->tags?->pluck('id')->toArray() ?? []))) style="padding-left: 20px; background-color: white; color: #1f2937;">{{ $tag->name }}</option>
             @endforeach
           </optgroup>
         @endforeach
