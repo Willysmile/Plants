@@ -27,6 +27,13 @@
         </div>
       @endif
 
+      <!-- Lien vers tableau de bord références -->
+      <div class="mb-6">
+        <a href="{{ route('settings.references') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg transition font-medium">
+          📌 Gestion des Références
+        </a>
+      </div>
+
       <!-- Formulaire -->
       <div class="bg-white rounded-lg shadow-md p-8">
         <form action="{{ route('settings.update') }}" method="POST">
