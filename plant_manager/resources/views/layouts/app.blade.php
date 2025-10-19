@@ -28,6 +28,10 @@
   
   <script>
     console.log('=== END OF BODY ===');
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   </script>
 </body>
 </html>
