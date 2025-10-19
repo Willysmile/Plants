@@ -55,42 +55,40 @@
   @if($last)
     <p class="text-xs text-{{ $config['text'] }} mt-2">Dernier : {{ $last->{$dateField}->format('d/m/Y') }}</p>
     
-    @if($context === 'show')
-      <div class="space-y-1">
-        @if($type === 'watering')
-          @if($last->amount)
-            <p class="text-xs text-gray-600">Quantité : {{ $last->amount }} ml</p>
-          @endif
-          @if($last->notes)
-            <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
-          @endif
-        @elseif($type === 'fertilizing')
-          @if($last->fertilizerType)
-            <p class="text-xs text-gray-600">Type : {{ $last->fertilizerType->name }}</p>
-          @endif
-          @if($last->amount)
-            <p class="text-xs text-gray-600">
-              Quantité : {{ $last->amount }}
-              @if($last->fertilizerType)
-                {{ $last->fertilizerType->unit === 'ml' ? 'ml' : ($last->fertilizerType->unit === 'g' ? 'g' : '') }}
-              @else
-                ml
-              @endif
-            </p>
-          @endif
-          @if($last->notes)
-            <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
-          @endif
-        @elseif($type === 'repotting')
-          @if($last->old_pot_size || $last->new_pot_size)
-            <p class="text-xs text-gray-600">Pots : {{ $last->old_pot_size }} → {{ $last->new_pot_size }}</p>
-          @endif
-          @if($last->notes)
-            <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
-          @endif
+    <div class="space-y-1">
+      @if($type === 'watering')
+        @if($last->amount)
+          <p class="text-xs text-gray-600">Quantité : {{ $last->amount }} ml</p>
         @endif
-      </div>
-    @endif
+        @if($last->notes)
+          <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+        @endif
+      @elseif($type === 'fertilizing')
+        @if($last->fertilizerType)
+          <p class="text-xs text-gray-600">Type : {{ $last->fertilizerType->name }}</p>
+        @endif
+        @if($last->amount)
+          <p class="text-xs text-gray-600">
+            Quantité : {{ $last->amount }}
+            @if($last->fertilizerType)
+              {{ $last->fertilizerType->unit === 'ml' ? 'ml' : ($last->fertilizerType->unit === 'g' ? 'g' : '') }}
+            @else
+              ml
+            @endif
+          </p>
+        @endif
+        @if($last->notes)
+          <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+        @endif
+      @elseif($type === 'repotting')
+        @if($last->old_pot_size || $last->new_pot_size)
+          <p class="text-xs text-gray-600">Pots : {{ $last->old_pot_size }} → {{ $last->new_pot_size }}</p>
+        @endif
+        @if($last->notes)
+          <p class="text-xs text-gray-600">Notes : {{ $last->notes }}</p>
+        @endif
+      @endif
+    </div>
   @else
     <p class="text-xs text-{{ $config['text'] }} mt-2">Aucun enregistrement</p>
   @endif
