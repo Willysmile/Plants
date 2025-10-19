@@ -5,9 +5,9 @@
 @section('content')
   <div class="max-w-7xl mx-auto p-6">
     <header class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <h1 class="text-2xl font-semibold">Plantes</h1>
-        <span class="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">{{ $plants->count() }}</span>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200">{{ $plants->count() }}</span>
       </div>
       <div class="flex items-center gap-3">
         <a href="{{ route('settings.index') }}" class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition">⚙️ Paramètres</a>
