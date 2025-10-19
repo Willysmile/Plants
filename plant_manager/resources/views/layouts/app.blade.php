@@ -12,8 +12,16 @@
   @yield('extra-head')
 </head>
 <body class="bg-gray-50 text-gray-900">
+  <script>
+    console.log('=== APP LAYOUT LOADED ===');
+  </script>
+  
   @yield('content')
   
   @yield('extra-scripts')
+  
+  <script>
+    console.log('=== END OF BODY ===');
+  </script>
 </body>
 </html>
