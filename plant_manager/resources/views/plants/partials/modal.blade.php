@@ -153,16 +153,6 @@
               <p class="mt-2 text-gray-700 leading-relaxed text-xs">{{ $plant->notes }}</p>
             </div>
           @endif
-
-          <!-- Date d'achat -->
-          @if($plant->purchase_date)
-            <div class="bg-teal-50 p-2 rounded-lg border-l-4 border-teal-500 col-span-2">
-              <div class="text-center">
-                <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
-              </div>
-              <div class="mt-2 text-center text-xs font-medium text-gray-800">{{ $plant->formatted_purchase_date }}</div>
-            </div>
-          @endif
           </div>
         </div>
 
