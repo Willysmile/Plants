@@ -45,6 +45,9 @@
     $dateField = 'repotting_date';
     $route = route('plants.repotting-history.index', $plant);
   }
+  
+  // Build function name based on context
+  $functionName = 'openQuick' . $config['functionName'] . 'Modal' . ($context === 'modal' ? 'FromModal' : '') . '()';
 @endphp
 
 <div class="bg-{{ $config['bg'] }} p-3 rounded@if($context === 'modal') rounded-none@else-lg@endif border-l-4 border-{{ $config['border'] }}">
@@ -98,7 +101,7 @@
   
   <button 
     type="button" 
-    onclick="openQuick{{ $config['functionName'] }}Modal@if($context === 'modal')FromModal@endif()"
+    onclick="{{ $functionName }}"
     class="text-xs text-{{ $config['text'] }} hover:text-{{ $config['dark'] }} mt-2 inline-block font-semibold flex items-center gap-1"
   >
     Créer →
