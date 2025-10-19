@@ -9,6 +9,7 @@
       'dark' => 'blue-900',
       'icon' => 'droplet',
       'label' => 'Arrosage',
+      'functionName' => 'Watering',
     ],
     'fertilizing' => [
       'bg' => 'green-50',
@@ -17,6 +18,7 @@
       'dark' => 'green-900',
       'icon' => 'leaf',
       'label' => 'Fertilisation',
+      'functionName' => 'Fertilizing',
     ],
     'repotting' => [
       'bg' => 'amber-50',
@@ -25,6 +27,7 @@
       'dark' => 'amber-900',
       'icon' => 'sprout',
       'label' => 'Rempotage',
+      'functionName' => 'Repotting',
     ],
   };
   
@@ -95,7 +98,7 @@
   
   <button 
     type="button" 
-    onclick="openQuick{{ ucfirst($type) }}Modal@if($context === 'modal')FromModal@endif()"
+    onclick="openQuick{{ $config['functionName'] }}Modal@if($context === 'modal')FromModal@endif()"
     class="text-xs text-{{ $config['text'] }} hover:text-{{ $config['dark'] }} mt-2 inline-block font-semibold flex items-center gap-1"
   >
     Créer →
