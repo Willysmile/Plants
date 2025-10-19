@@ -134,7 +134,8 @@
         <img src="{{ Storage::url($plant->main_photo) }}" alt="" class="w-48 h-48 object-cover rounded shadow">
       </div>
     @endif
-    <input type="file" name="main_photo" accept="image/*" class="block @error('main_photo') border-red-500 @enderror">
+    <input type="file" name="main_photo" accept="image/*" id="mainPhotoInput" class="block @error('main_photo') border-red-500 @enderror">
+    <div id="mainPhotoPreview" class="mt-2"></div>
     <p class="text-xs text-gray-500 mt-1">{{ $isEdit ? 'Remplacer la photo principale (optionnel).' : 'Sélectionner une photo.' }}</p>
     @error('main_photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
   </div>
@@ -142,7 +143,8 @@
   <!-- Galerie -->
   <div>
     <h3 class="text-lg font-medium mb-2">Ajouter des photos (galerie)</h3>
-    <input type="file" name="photos[]" accept="image/*" multiple class="block @error('photos') border-red-500 @enderror">
+    <input type="file" name="photos[]" accept="image/*" multiple id="galleryPhotosInput" class="block @error('photos') border-red-500 @enderror">
+    <div id="galleryPhotosPreview" class="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2"></div>
     <p class="text-xs text-gray-500 mt-1">Les nouvelles images seront ajoutées à la galerie.</p>
     @error('photos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
   </div>

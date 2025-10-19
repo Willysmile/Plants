@@ -38,5 +38,6 @@
   <script src="{{ asset('js/gallery-manager.js') }}"></script>
   <script src="{{ asset('js/quick-modals-manager.js') }}"></script>
   <script src="{{ asset('js/form-validation.js') }}"></script>
+  <script src="{{ asset('js/file-preview.js') }}"></script>
   <script src="{{ asset('js/app.js') }}"></script>
 @endsection

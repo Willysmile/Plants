@@ -8,3 +8,9 @@
     <x-plant-form :categories="$categories" :tags="$tags" />
   </div>
 @endsection
+
+@section('extra-scripts')
+  <script src="{{ asset('js/form-validation.js') }}"></script>
+  <script src="{{ asset('js/file-preview.js') }}"></script>
+  <script src="{{ asset('js/app.js') }}"></script>
+@endsection
