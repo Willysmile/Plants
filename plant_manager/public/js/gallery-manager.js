@@ -30,11 +30,17 @@ const GalleryManager = {
       const thumbnailImg = thumbnailBtn.querySelector('img');
       if (!thumbnailImg) return;
 
+      // Récupérer l'index de la miniature cliquée
+      const thumbIndex = parseInt(thumbnailBtn.getAttribute('data-index') || 0);
+
       // Échanger les images
       this.swapImages(mainPhoto, thumbnailImg);
 
+      // Mettre à jour l'array lightbox global pour que le lightbox ouvre la bonne image
+      this.updateLightboxArray(modal, thumbIndex);
+
       // Marquer cette miniature comme active
-      modal.setAttribute('data-active-thumb', thumbnailBtn.getAttribute('data-index'));
+      modal.setAttribute('data-active-thumb', thumbIndex);
     });
   },
 
@@ -50,19 +56,10 @@ const GalleryManager = {
 
       if (!modal) return;
 
-      const activeThumbIndex = modal.getAttribute('data-active-thumb');
-      if (!activeThumbIndex) return;
-
-      const thumbnailBtn = modal.querySelector(
-        `[data-type="thumbnail"][data-index="${activeThumbIndex}"]`
-      );
-      if (!thumbnailBtn) return;
-
-      const thumbnailImg = thumbnailBtn.querySelector('img');
-      if (!thumbnailImg) return;
-
-      // Échanger les images
-      this.swapImages(mainPhoto, thumbnailImg);
+      // Ouvrir le lightbox avec l'index 0 (photo principale est toujours la 1ère)
+      if (typeof window.openLightboxGlobal === 'function') {
+        window.openLightboxGlobal(0);
+      }
     });
   },
 
@@ -75,8 +72,38 @@ const GalleryManager = {
     const mainSrc = mainPhoto.src;
     const thumbSrc = thumbnailImg.src;
 
+    // Échanger les sources visuelles
     mainPhoto.src = thumbSrc;
     thumbnailImg.src = mainSrc;
+
+    // 🔧 FIX: Échanger aussi les data-original-src pour que le lightbox utilise la bonne photo
+    const mainDataSrc = mainPhoto.getAttribute('data-original-src');
+    const thumbDataSrc = thumbnailImg.parentElement.getAttribute('data-original-src');
+
+    if (mainDataSrc && thumbDataSrc) {
+      mainPhoto.setAttribute('data-original-src', thumbDataSrc);
+      thumbnailImg.parentElement.setAttribute('data-original-src', mainDataSrc);
+    }
+  },
+
+  /**
+   * Met à jour l'array lightbox global après échange de photos
+   * Réorganise les images pour que la photo principale soit toujours en index 0
+   * @param {HTMLElement} modal - Élément modal
+   * @param {number} thumbIndex - Index de la miniature qui est devenue principale
+   */
+  updateLightboxArray(modal, thumbIndex) {
+    const arr = window.globalLightboxImages || [];
+    if (!arr.length) return;
+
+    // Si c'est déjà la photo principale (index 0), pas besoin de réorganiser
+    if (thumbIndex === 0) return;
+
+    // Créer un nouveau tableau avec la photo à thumbIndex en premier
+    const reordered = [arr[thumbIndex], ...arr.slice(0, thumbIndex), ...arr.slice(thumbIndex + 1)];
+
+    // Mettre à jour l'array global
+    window.globalLightboxImages = reordered;
   },
 
   /**

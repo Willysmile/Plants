@@ -329,6 +329,11 @@
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
+
+    // 🔧 FIX: Initialiser le gestionnaire de galerie pour gérer les échanges de photos
+    if (typeof GalleryManager !== 'undefined') {
+      GalleryManager.init();
+    }
   </script>
 
 </div>
