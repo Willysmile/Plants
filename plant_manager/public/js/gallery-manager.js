@@ -48,11 +48,14 @@ const GalleryManager = {
         
         // Trouver le thumbnail du swap précédent et le remettre en place
         const previousThumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${currentSwapState}"]`);
+        console.log('previousThumbBtn trouvé:', previousThumbBtn);
         if (previousThumbBtn) {
           const previousThumbImg = previousThumbBtn.querySelector('img');
+          console.log('previousThumbImg trouvé:', previousThumbImg);
           if (previousThumbImg) {
             // Restaurer les images visuellement
             this.swapImages(mainPhoto, previousThumbImg);
+            console.log('Images du swap précédent restaurées');
           }
         }
         
@@ -60,8 +63,10 @@ const GalleryManager = {
         const dataScript = modal.querySelector('script[data-lightbox-images]');
         if (dataScript) {
           window.globalLightboxImages = JSON.parse(dataScript.textContent);
+          console.log('Array lightbox restauré depuis modal JSON (restauration swap');
         } else if (window.globalLightboxImagesOriginal) {
           window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
+          console.log('Array lightbox restauré depuis globalLightboxImagesOriginal (restauration swap)');
         }
       }
 
