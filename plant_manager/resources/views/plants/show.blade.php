@@ -130,49 +130,44 @@
             <div class="space-y-4">
               <!-- Historique d'arrosage (petit) -->
               <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
-                    <h3 class="text-sm font-semibold text-blue-900">Arrosage</h3>
-                  </div>
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" id="quickWateringCheckbox" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="openQuickWateringModal()">
-                  </label>
+                <div class="flex items-center gap-2">
+                  <i data-lucide="droplet" class="w-4 h-4 text-blue-600"></i>
+                  <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-sm font-semibold text-blue-900 hover:opacity-75">Arrosage</a>
                 </div>
                 @if($plant->last_watering_date)
-                  <p class="text-xs text-blue-600 mt-2">Dernier : {{ $plant->last_watering_date->format('d/m/Y H:i') }}</p>
+                  <p class="text-xs text-blue-600 mt-2">Dernier : {{ $plant->last_watering_date->format('d/m/Y') }}</p>
                 @else
                   <p class="text-xs text-blue-600 mt-2">Aucun enregistrement</p>
                 @endif
-                <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-xs text-blue-500 hover:text-blue-700 mt-1 inline-block">Gérer →</a>
+                <button type="button" onclick="openQuickWateringModal()" class="text-xs text-blue-500 hover:text-blue-700 mt-2 inline-block font-semibold">+ Créer →</button>
               </div>
 
               <!-- Historique de fertilisation (petit) -->
               <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
                 <div class="flex items-center gap-2">
                   <i data-lucide="leaf" class="w-4 h-4 text-green-600"></i>
-                  <h3 class="text-sm font-semibold text-green-900">Fertilisation</h3>
+                  <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-sm font-semibold text-green-900 hover:opacity-75">Fertilisation</a>
                 </div>
                 @if($plant->last_fertilizing_date)
-                  <p class="text-xs text-green-600 mt-2">Dernier : {{ $plant->last_fertilizing_date->format('d/m/Y H:i') }}</p>
+                  <p class="text-xs text-green-600 mt-2">Dernier : {{ $plant->last_fertilizing_date->format('d/m/Y') }}</p>
                 @else
                   <p class="text-xs text-green-600 mt-2">Aucun enregistrement</p>
                 @endif
-                <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-xs text-green-500 hover:text-green-700 mt-1 inline-block">Gérer →</a>
+                <button type="button" onclick="openQuickFertilizingModal()" class="text-xs text-green-500 hover:text-green-700 mt-2 inline-block font-semibold">+ Créer →</button>
               </div>
 
               <!-- Historique de rempotage (petit) -->
               <div class="bg-amber-50 p-3 rounded-lg border-l-4 border-amber-500">
                 <div class="flex items-center gap-2">
                   <i data-lucide="sprout" class="w-4 h-4 text-amber-600"></i>
-                  <h3 class="text-sm font-semibold text-amber-900">Rempotage</h3>
+                  <a href="{{ route('plants.repotting-history.index', $plant) }}" class="text-sm font-semibold text-amber-900 hover:opacity-75">Rempotage</a>
                 </div>
                 @if($plant->last_repotting_date)
-                  <p class="text-xs text-amber-600 mt-2">Dernier : {{ $plant->last_repotting_date->format('d/m/Y H:i') }}</p>
+                  <p class="text-xs text-amber-600 mt-2">Dernier : {{ $plant->last_repotting_date->format('d/m/Y') }}</p>
                 @else
                   <p class="text-xs text-amber-600 mt-2">Aucun enregistrement</p>
                 @endif
-                <a href="{{ route('plants.repotting-history.index', $plant) }}" class="text-xs text-amber-500 hover:text-amber-700 mt-1 inline-block">Gérer →</a>
+                <button type="button" onclick="openQuickRepottingModal()" class="text-xs text-amber-500 hover:text-amber-700 mt-2 inline-block font-semibold">+ Créer →</button>
               </div>
             </div>
           </div>
