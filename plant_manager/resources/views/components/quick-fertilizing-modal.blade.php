@@ -25,6 +25,18 @@
             <option value="{{ $type->id }}">{{ $type->name }}</option>
           @endforeach
         </select>
+        <!-- Add new fertilizer type -->
+        <div class="flex gap-2 mt-2">
+          <input type="text" 
+            id="quickNewFertilizerTypeName" 
+            placeholder="Nouveau type..." 
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 text-sm">
+          <button type="button" 
+            onclick="addNewFertilizerTypeQuick(event)" 
+            class="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+            +
+          </button>
+        </div>
       </div>
       <div class="mb-3">
         <label for="quickFertilizingAmountFromModal" class="block text-sm font-medium text-gray-700 mb-1">Quantité</label>
@@ -41,3 +53,48 @@
     </form>
   </div>
 </div>
+
+<script>
+  async function addNewFertilizerTypeQuick(event) {
+    event.preventDefault();
+    const input = document.getElementById('quickNewFertilizerTypeName');
+    const name = input.value.trim();
+    
+    if (!name) {
+      alert('Veuillez entrer un nom pour le type d\'engrais');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/fertilizer-types', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({ name })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création');
+      }
+      
+      const data = await response.json();
+      
+      // Add option to select
+      const select = document.getElementById('quickFertilizingTypeFromModal');
+      const option = new Option(data.name, data.id);
+      select.appendChild(option);
+      select.value = data.id;
+      
+      // Clear input
+      input.value = '';
+      
+      alert('Type d\'engrais créé avec succès !');
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Erreur lors de la création du type d\'engrais');
+    }
+  }
+</script>
