@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use App\Models\ReppotingHistory;
+use App\Models\RepottingHistory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Route model binding for repotting history
-        // The route parameter is 'repotting_history' but the model is 'ReppotingHistory'
-        Route::model('repotting_history', ReppotingHistory::class);
+        // The route parameter is 'repotting_history' and the model is 'RepottingHistory'
+        Route::model('repotting_history', RepottingHistory::class);
     }
 }

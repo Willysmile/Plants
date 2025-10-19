@@ -1,7 +1,7 @@
 <!-- Repotting History Summary (for modal) -->
 <div class="bg-amber-50 p-3 rounded border-l-4 border-amber-400">
     @php
-        $lastRepotting = $plant->reppotingHistories()->latest('repotting_date')->first();
+        $lastRepotting = $plant->repottingHistories()->latest('repotting_date')->first();
     @endphp
     
     <div class="flex items-center justify-between mb-2">
@@ -23,7 +23,7 @@
                 @if($oldSize === $newSize && $oldSize > 0)
                     <p class="text-xs text-gray-600">Diamètre du pot : {{ $lastRepotting->new_pot_size }}</p>
                 @else
-                    <p class="text-xs text-gray-600">{{ $lastRepotting->old_pot_size }} {{ $arrow }} {{ $lastRepotting->new_pot_size }}</p>
+                    <p class="text-xs text-gray-600">{{ $lastRepotting->old_pot_size }} cm {{ $arrow }} {{ $lastRepotting->new_pot_size }} cm</p>
                 @endif
             @endif
         </div>

@@ -235,8 +235,8 @@ class Plant extends Model
     /**
      * Historique de rempotage
      */
-    public function reppotingHistories()
+    public function repottingHistories()
     {
-        return $this->hasMany(ReppotingHistory::class);
+        return $this->hasMany(RepottingHistory::class);
     }
 }

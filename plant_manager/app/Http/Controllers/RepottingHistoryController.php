@@ -89,4 +89,3 @@ class RepottingHistoryController extends Controller
             ->with('success', 'Rempotage supprimé avec succès.');
     }
 }
-
