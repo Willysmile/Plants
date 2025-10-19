@@ -47,6 +47,37 @@
               <p class="mt-2 text-gray-700 leading-relaxed text-sm break-words">{{ $plant->description }}</p>
             </div>
           @endif
+
+          <!-- Tags -->
+          @if($plant->tags->count() > 0)
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+              <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Tags</h3>
+              <div class="mt-2 flex flex-wrap gap-2">
+                @foreach($plant->tags as $tag)
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                    {{ $tag->name }}
+                  </span>
+                @endforeach
+              </div>
+            </div>
+          @endif
+
+          <!-- Date d'achat et Emplacement -->
+          <div class="grid grid-cols-1 gap-3">
+            @if($plant->purchase_date)
+              <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Date d'achat</h3>
+                <p class="mt-2 text-gray-700 text-sm font-medium">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
+              </div>
+            @endif
+
+            @if($plant->location)
+              <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-600">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Emplacement actuel</h3>
+                <p class="mt-2 text-gray-700 text-sm font-medium">{{ $plant->location }}</p>
+              </div>
+            @endif
+          </div>
         </div>
 
         <!-- Cartes à droite - 55% de la largeur -->
