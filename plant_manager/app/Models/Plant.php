@@ -14,6 +14,7 @@ class Plant extends Model
         'name',
         'scientific_name',
         'family',
+        'subfamily',
         'genus',
         'species',
         'subspecies',

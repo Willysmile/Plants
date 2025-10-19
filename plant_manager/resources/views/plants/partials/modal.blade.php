@@ -8,6 +8,9 @@
           @if($plant->family)
             <div class="text-xs uppercase font-bold text-gray-400 tracking-wide">{{ $plant->family }}</div>
           @endif
+          @if($plant->subfamily)
+            <div class="text-xs font-medium text-gray-500">{{ $plant->subfamily }}</div>
+          @endif
           @if($plant->scientific_name)
             <div class="text-sm italic text-gray-500">{{ $plant->scientific_name }}</div>
           @endif
