@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:525px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:750px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
   <div class="h-full flex flex-col">
     <!-- En-tête -->
     <div class="flex items-center justify-between p-3 border-b">
@@ -31,7 +31,7 @@
       <!-- Colonne gauche (1/2) : Photo + Description + Galerie -->
       <div class="w-1/2 flex flex-col gap-3 overflow-y-auto pr-2">
         <!-- Photo principale -->
-        <x-photo-section :plant="$plant" :aspectRatio="'4/3'" :clickable="true" />
+        <x-photo-section :plant="$plant" :aspectRatio="'4/3'" :clickable="true" height="280px" />
 
         <!-- Description -->
         @if($plant->description)
