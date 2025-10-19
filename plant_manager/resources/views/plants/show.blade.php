@@ -51,83 +51,80 @@
 
         <!-- Cartes à droite - 55% de la largeur -->
         <aside class="overflow-y-auto pr-4 flex-1">
-          <div class="grid grid-cols-2 gap-4">
-            <!-- Cartes colonne gauche -->
-            <div class="space-y-4">
-              <!-- Besoins en arrosage et lumière -->
-              <div class="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
-                <div class="text-center">
-                  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Besoins</h3>
+          <div class="space-y-4">
+            <!-- Besoins en arrosage et lumière -->
+            <div class="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
+              <div class="text-center">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Besoins</h3>
+              </div>
+
+              @php
+                $wf = $plant->watering_frequency ?? 3;
+                $lf = $plant->light_requirement ?? 3;
+                $wIcon = \App\Models\Plant::$wateringIcons[$wf] ?? 'droplet';
+                $lIcon = \App\Models\Plant::$lightIcons[$lf] ?? 'sun';
+                $wColor = \App\Models\Plant::$wateringColors[$wf] ?? 'blue';
+                $lColor = \App\Models\Plant::$lightColors[$lf] ?? 'yellow';
+                $wLabel = \App\Models\Plant::$wateringLabels[$wf] ?? 'N/A';
+                $lLabel = \App\Models\Plant::$lightLabels[$lf] ?? 'N/A';
+              @endphp
+
+              <div class="mt-3 flex items-center justify-around gap-6">
+                <!-- Arrosage -->
+                <div class="flex flex-col items-center gap-1" title="Arrosage : {{ $wLabel }}">
+                  <span class="text-xs text-gray-600 font-medium">Arrosage</span>
+                  <i data-lucide="{{ $wIcon }}" class="w-8 h-8 text-{{ $wColor }}"></i>
+                  <span class="text-xs text-gray-600">{{ $wLabel }}</span>
                 </div>
 
-                @php
-                  $wf = $plant->watering_frequency ?? 3;
-                  $lf = $plant->light_requirement ?? 3;
-                  $wIcon = \App\Models\Plant::$wateringIcons[$wf] ?? 'droplet';
-                  $lIcon = \App\Models\Plant::$lightIcons[$lf] ?? 'sun';
-                  $wColor = \App\Models\Plant::$wateringColors[$wf] ?? 'blue';
-                  $lColor = \App\Models\Plant::$lightColors[$lf] ?? 'yellow';
-                  $wLabel = \App\Models\Plant::$wateringLabels[$wf] ?? 'N/A';
-                  $lLabel = \App\Models\Plant::$lightLabels[$lf] ?? 'N/A';
-                @endphp
+                <!-- Lumière -->
+                <div class="flex flex-col items-center gap-1" title="Lumière : {{ $lLabel }}">
+                  <span class="text-xs text-gray-600 font-medium">Lumière</span>
+                  <i data-lucide="{{ $lIcon }}" class="w-8 h-8 text-{{ $lColor }}"></i>
+                  <span class="text-xs text-gray-600">{{ $lLabel }}</span>
+                </div>
+              </div>
+            </div>
 
+            @if($plant->temperature_min || $plant->temperature_max || $plant->humidity_level)
+              <!-- Température & Humidité -->
+              <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+                <div class="text-center">
+                  <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Température & Humidité</h3>
+                </div>
                 <div class="mt-3 flex items-center justify-around gap-6">
-                  <!-- Arrosage -->
-                  <div class="flex flex-col items-center gap-1" title="Arrosage : {{ $wLabel }}">
-                    <span class="text-xs text-gray-600 font-medium">Arrosage</span>
-                    <i data-lucide="{{ $wIcon }}" class="w-8 h-8 text-{{ $wColor }}"></i>
-                    <span class="text-xs text-gray-600">{{ $wLabel }}</span>
+                  <!-- Température -->
+                  <div class="flex flex-col items-center gap-1 min-w-32">
+                    <span class="text-xs text-gray-600 font-medium">Température</span>
+                    <div class="text-gray-800 text-sm font-medium">
+                      @if($plant->temperature_min || $plant->temperature_max)
+                        @php
+                          $minTemp = $plant->temperature_min ?? '?';
+                          $maxTemp = $plant->temperature_max ?? '?';
+                        @endphp
+                        <div>{{ $minTemp }}°- {{ $maxTemp }}°</div>
+                      @else
+                        <div class="text-gray-500">—</div>
+                      @endif
+                    </div>
                   </div>
-
-                  <!-- Lumière -->
-                  <div class="flex flex-col items-center gap-1" title="Lumière : {{ $lLabel }}">
-                    <span class="text-xs text-gray-600 font-medium">Lumière</span>
-                    <i data-lucide="{{ $lIcon }}" class="w-8 h-8 text-{{ $lColor }}"></i>
-                    <span class="text-xs text-gray-600">{{ $lLabel }}</span>
+                  <!-- Humidité -->
+                  <div class="flex flex-col items-center gap-1 min-w-32">
+                    <span class="text-xs text-gray-600 font-medium">Humidité</span>
+                    <div class="text-gray-800 text-sm font-medium">
+                      @if($plant->humidity_level)
+                        <div>{{ $plant->humidity_level }}%</div>
+                      @else
+                        <div class="text-gray-500">—</div>
+                      @endif
+                    </div>
                   </div>
                 </div>
               </div>
+            @endif
 
-              @if($plant->temperature_min || $plant->temperature_max || $plant->humidity_level)
-                <!-- Température & Humidité -->
-                <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500 col-span-2">
-                  <div class="text-center">
-                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Température & Humidité</h3>
-                  </div>
-                  <div class="mt-3 flex items-center justify-around gap-6">
-                    <!-- Température -->
-                    <div class="flex flex-col items-center gap-1 min-w-32">
-                      <span class="text-xs text-gray-600 font-medium">Température</span>
-                      <div class="text-gray-800 text-sm font-medium">
-                        @if($plant->temperature_min || $plant->temperature_max)
-                          @php
-                            $minTemp = $plant->temperature_min ?? '?';
-                            $maxTemp = $plant->temperature_max ?? '?';
-                          @endphp
-                          <div>{{ $minTemp }}°- {{ $maxTemp }}°</div>
-                        @else
-                          <div class="text-gray-500">—</div>
-                        @endif
-                      </div>
-                    </div>
-                    <!-- Humidité -->
-                    <div class="flex flex-col items-center gap-1 min-w-32">
-                      <span class="text-xs text-gray-600 font-medium">Humidité</span>
-                      <div class="text-gray-800 text-sm font-medium">
-                        @if($plant->humidity_level)
-                          <div>{{ $plant->humidity_level }}%</div>
-                        @else
-                          <div class="text-gray-500">—</div>
-                        @endif
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              @endif
-            </div>
-
-            <!-- Cartes colonne droite -->
-            <div class="space-y-4">
+            <!-- Historiques sur la même ligne (3 colonnes) -->
+            <div class="grid grid-cols-3 gap-2">
               <x-history-card :plant="$plant" type="watering" context="show" />
               <x-history-card :plant="$plant" type="fertilizing" context="show" />
               <x-history-card :plant="$plant" type="repotting" context="show" />
