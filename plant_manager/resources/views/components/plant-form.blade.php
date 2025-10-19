@@ -29,6 +29,13 @@
       @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
+    <!-- Famille -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Famille</label>
+      <input name="family" value="{{ old('family', $plant->family ?? '') }}" placeholder="Ex: Orchidaceae" class="mt-1 block w-full border rounded p-2 @error('family') border-red-500 @enderror">
+      @error('family') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
+
     <!-- Genre (Genus) -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Genre</label>

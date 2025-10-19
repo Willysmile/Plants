@@ -5,6 +5,9 @@
       <div class="flex items-center gap-3">
         <div>
           <h2 class="text-lg font-semibold">{{ $plant->name }}</h2>
+          @if($plant->family)
+            <div class="text-xs uppercase font-bold text-gray-400 tracking-wide">{{ $plant->family }}</div>
+          @endif
           @if($plant->scientific_name)
             <div class="text-sm italic text-gray-500">{{ $plant->scientific_name }}</div>
           @endif
