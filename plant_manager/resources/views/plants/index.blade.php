@@ -12,8 +12,8 @@
       </div>
     </header>
 
-    <div class="flex-1 overflow-y-auto px-6 py-3">
-      <div class="grid grid-cols-5 gap-4">
+    <div class="flex-1 overflow-hidden px-4 py-2">
+      <div class="grid grid-cols-6 gap-2 h-full">
         @foreach($plants as $plant)
           <x-plant-card :plant="$plant" />
         @endforeach
