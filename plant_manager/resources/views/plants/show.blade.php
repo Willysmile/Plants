@@ -44,9 +44,14 @@
           @if($plant->description)
             <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-green-500">
               <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Description</h3>
-              <p class="mt-2 text-gray-700 leading-relaxed text-sm line-clamp-3" data-description-full>{{ $plant->description }}</p>
-              @if(strlen($plant->description) > 150)
-                <button type="button" onclick="document.querySelector('[data-description-full]').classList.remove('line-clamp-3'); this.style.display='none';" class="text-xs text-green-600 hover:text-green-800 mt-2 font-semibold">Lire plus →</button>
+              @php
+                $maxChars = 150;
+                $showReadMore = strlen($plant->description) > $maxChars;
+                $displayText = $showReadMore ? substr($plant->description, 0, $maxChars) . '...' : $plant->description;
+              @endphp
+              <p class="mt-2 text-gray-700 leading-relaxed text-sm" data-description-full>{{ $displayText }}</p>
+              @if($showReadMore)
+                <button type="button" onclick="this.previousElementSibling.textContent = '{{ addslashes($plant->description) }}'; this.style.display='none';" class="text-xs text-green-600 hover:text-green-800 mt-2 font-semibold">Lire plus →</button>
               @endif
             </div>
           @endif
