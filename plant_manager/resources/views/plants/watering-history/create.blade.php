@@ -35,6 +35,7 @@
                     id="watering_date" 
                     name="watering_date" 
                     value="{{ old('watering_date') }}" 
+                    data-default-local
                     required>
                 @error('watering_date')
                     <span class="text-red-500 text-sm">{{ $message }}</span>

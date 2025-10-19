@@ -1,30 +1,33 @@
 <!-- Fertilizing History Summary (for modal) -->
-<div class="mb-6">
-    <h3 class="text-xl font-bold text-green-600 mb-3">
-        🌱 Historique de fertilisation
-    </h3>
+<div class="bg-green-50 p-3 rounded border-l-4 border-green-400">
+    @php
+        $lastFertilizing = $plant->fertilizingHistories()->latest('fertilizing_date')->first();
+    @endphp
     
-    @if($plant->fertilizingHistories()->exists())
-        <div class="space-y-2 max-h-48 overflow-y-auto">
-            @foreach($plant->fertilizingHistories()->latest('fertilizing_date')->take(5) as $history)
-                <div class="bg-green-50 p-3 rounded border-l-4 border-green-400">
-                    <p class="text-sm text-gray-600">{{ $history->fertilizing_date->format('d/m/Y à H:i') }}</p>
-                    @if($history->fertilizer_type)
-                        <p class="text-sm font-semibold text-gray-700">{{ $history->fertilizer_type }}</p>
-                    @endif
-                    @if($history->amount)
-                        <p class="text-sm text-gray-700">{{ $history->amount }}</p>
-                    @endif
-                    @if($history->notes)
-                        <p class="text-sm text-gray-600 italic">{{ Str::limit($history->notes, 100) }}</p>
-                    @endif
-                </div>
-            @endforeach
-        </div>
-        <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-green-500 hover:text-green-700 text-sm mt-2 inline-block">
-            Voir toutes les fertilisations →
+    <div class="flex items-center justify-between mb-2">
+        <a href="{{ route('plants.fertilizing-history.index', $plant) }}" class="text-sm font-semibold text-green-900 hover:text-green-700 hover:underline flex-1">
+            🌱 Dernière fertilisation : 
+            @if($lastFertilizing)
+                {{ $lastFertilizing->fertilizing_date->format('d/m/Y') }}
+            @else
+                —
+            @endif
         </a>
+        <label class="flex items-center cursor-pointer ml-2">
+            <input type="checkbox" id="quickFertilizingCheckboxModal" class="w-4 h-4 text-green-600 rounded focus:ring-green-500" onclick="openQuickFertilizingModal()">
+        </label>
+    </div>
+    
+    @if($lastFertilizing)
+        <div class="grid grid-cols-2 gap-2">
+            @if($lastFertilizing->fertilizer_type)
+                <p class="text-xs text-gray-600">Type : {{ $lastFertilizing->fertilizer_type }}</p>
+            @endif
+            @if($lastFertilizing->amount)
+                <p class="text-xs text-gray-600">Quantité : {{ $lastFertilizing->amount }} ml</p>
+            @endif
+        </div>
     @else
-        <p class="text-gray-600 text-sm">Aucun historique de fertilisation enregistré.</p>
+        <p class="text-xs text-gray-600">Aucun enregistrement</p>
     @endif
 </div>
