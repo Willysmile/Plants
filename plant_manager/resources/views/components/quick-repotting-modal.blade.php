@@ -24,7 +24,7 @@
         </div>
         <div>
           <label for="quickRepottingNewSizeFromModal" class="block text-sm font-medium text-gray-700 mb-1">Nouveau pot (cm)</label>
-          <input type="text" id="quickRepottingNewSizeFromModal" name="new_pot_size" placeholder="12 cm" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
+          <input type="text" id="quickRepottingNewSizeFromModal" name="new_pot_size" placeholder="12 cm" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-amber-500">
         </div>
       </div>
       <div class="mb-3">
