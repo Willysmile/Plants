@@ -38,7 +38,7 @@
         <!-- Image principale et description - 1/3 de la largeur (col-span-1) -->
         <div class="col-span-1 flex flex-col gap-4 overflow-y-auto pr-4">
           <!-- Photo principale -->
-          <x-photo-section :plant="$plant" height="500px" />
+          <x-photo-section :plant="$plant" />
 
           <!-- Description sous la photo -->
           @if($plant->description)

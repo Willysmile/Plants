@@ -31,25 +31,7 @@
       <!-- Colonne gauche (1/2) : Photo + Description + Galerie -->
       <div class="w-1/2 flex flex-col gap-3 overflow-y-auto pr-2">
         <!-- Photo principale -->
-        <div class="rounded overflow-hidden flex-shrink-0" style="aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;">
-          @if($plant->main_photo)
-            <img id="main-photo-display" 
-                 src="{{ Storage::url($plant->main_photo) }}" 
-                 alt="{{ $plant->name }}" 
-                 data-original-src="{{ Storage::url($plant->main_photo) }}"
-                 data-type="main-photo"
-                 style="max-width:100%; max-height:100%; object-fit:contain; display:block; cursor:pointer;">
-          @elseif($plant->photos->count())
-            <img id="main-photo-display" 
-                 src="{{ Storage::url($plant->photos->first()->filename) }}" 
-                 alt="{{ $plant->name }}" 
-                 data-original-src="{{ Storage::url($plant->photos->first()->filename) }}"
-                 data-type="main-photo"
-                 style="max-width:100%; max-height:100%; object-fit:contain; display:block; cursor:pointer;">
-          @else
-            <x-empty-state message="Pas d'image" height="h-full" />
-          @endif
-        </div>
+        <x-photo-section :plant="$plant" :aspectRatio="'4/3'" :clickable="true" />
 
         <!-- Description -->
         @if($plant->description)
