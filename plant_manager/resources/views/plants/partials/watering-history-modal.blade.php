@@ -1,27 +1,33 @@
 <!-- Watering History Summary (for modal) -->
-<div class="mb-6">
-    <h3 class="text-xl font-bold text-blue-600 mb-3">
-        💧 Historique d'arrosage
-    </h3>
+<div class="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+    @php
+        $lastWatering = $plant->wateringHistories()->latest('watering_date')->first();
+    @endphp
     
-    @if($plant->wateringHistories()->exists())
-        <div class="space-y-2 max-h-48 overflow-y-auto">
-            @foreach($plant->wateringHistories()->latest('watering_date')->take(5) as $history)
-                <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
-                    <p class="text-sm text-gray-600">{{ $history->watering_date->format('d/m/Y à H:i') }}</p>
-                    @if($history->amount)
-                        <p class="text-sm text-gray-700">{{ $history->amount }}</p>
-                    @endif
-                    @if($history->notes)
-                        <p class="text-sm text-gray-600 italic">{{ Str::limit($history->notes, 100) }}</p>
-                    @endif
-                </div>
-            @endforeach
-        </div>
-        <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-blue-500 hover:text-blue-700 text-sm mt-2 inline-block">
-            Voir tous les arrosages →
+    <div class="flex items-center justify-between mb-2">
+        <a href="{{ route('plants.watering-history.index', $plant) }}" class="text-sm font-semibold text-blue-900 hover:text-blue-700 hover:underline flex-1">
+            💧 Dernier arrosage : 
+            @if($lastWatering)
+                {{ $lastWatering->watering_date->format('d/m/Y') }}
+            @else
+                —
+            @endif
         </a>
+        <label class="flex items-center cursor-pointer ml-2">
+            <input type="checkbox" id="quickWateringCheckboxModal" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" onclick="openQuickWateringModal()">
+        </label>
+    </div>
+    
+    @if($lastWatering)
+        <div class="grid grid-cols-2 gap-2">
+            @if($lastWatering->amount)
+                <p class="text-xs text-gray-600">Quantité : {{ $lastWatering->amount }} ml</p>
+            @endif
+            @if($lastWatering->notes)
+                <p class="text-xs text-gray-600 italic">{{ Str::limit($lastWatering->notes, 40) }}</p>
+            @endif
+        </div>
     @else
-        <p class="text-gray-600 text-sm">Aucun historique d'arrosage enregistré.</p>
+        <p class="text-xs text-gray-600">Aucun enregistrement</p>
     @endif
 </div>

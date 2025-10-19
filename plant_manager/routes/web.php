@@ -6,6 +6,7 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\WateringHistoryController;
 use App\Http\Controllers\FertilizingHistoryController;
 use App\Http\Controllers\ReppotingHistoryController;
+use App\Http\Controllers\SettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,3 +36,7 @@ Route::delete('plants/{plant}/photos/{photo}', [PhotoController::class, 'destroy
 Route::resource('plants.watering-history', WateringHistoryController::class);
 Route::resource('plants.fertilizing-history', FertilizingHistoryController::class);
 Route::resource('plants.repotting-history', ReppotingHistoryController::class);
+
+// Routes pour les paramètres
+Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');

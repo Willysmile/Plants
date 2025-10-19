@@ -36,6 +36,7 @@
                     id="watering_date" 
                     name="watering_date" 
                     value="{{ old('watering_date', $wateringHistory->watering_date->format('Y-m-d\TH:i')) }}" 
+                    data-default-local
                     required>
                 @error('watering_date')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
