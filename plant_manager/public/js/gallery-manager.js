@@ -36,6 +36,19 @@ const GalleryManager = {
       // Récupérer l'index de la miniature cliquée
       const thumbIndex = parseInt(thumbnailBtn.getAttribute('data-index') || 0);
 
+      // 🔧 FIX: Si on clique sur la miniature qui est déjà la photo principale,
+      // on la "déswap" - on revient à l'état précédent
+      const plantId = modal.getAttribute('data-modal-plant-id');
+      const currentSwapState = this.swapStates[plantId];
+
+      if (currentSwapState === thumbIndex) {
+        // Déjà swappée avec cette miniature - annuler le swap
+        // Simplement retirer l'état pour qu'elle soit considérée comme "originale"
+        delete this.swapStates[plantId];
+        // Retourner pour ne pas re-swapper
+        return;
+      }
+
       // Échanger les images
       this.swapImages(mainPhoto, thumbnailImg);
 
@@ -43,7 +56,6 @@ const GalleryManager = {
       this.updateLightboxArray(modal, thumbIndex);
 
       // 🔧 FIX: Sauvegarder l'état de l'échange pour cette plante
-      const plantId = modal.getAttribute('data-modal-plant-id');
       this.swapStates[plantId] = thumbIndex;
 
       // Marquer cette miniature comme active
