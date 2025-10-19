@@ -32,9 +32,6 @@
       </div>
     </div>
 
-    <!-- Galerie - au-dessus du conteneur pour plus de hauteur -->
-    <x-gallery :plant="$plant" :maxThumbnails="99" />
-
     <!-- Contenu principal - occupe les 2/3 supérieurs -->
     <div class="flex-grow overflow-hidden p-4" style="height: 66%;">
       <div class="flex gap-6 h-full">
@@ -139,6 +136,9 @@
         </aside>
       </div>
     </div>
+
+    <!-- Galerie - occupe le 1/3 inférieur -->
+    <x-gallery :plant="$plant" :maxThumbnails="99" />
   </div>
 </div>
 
