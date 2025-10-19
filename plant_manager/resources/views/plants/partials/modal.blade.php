@@ -10,6 +10,24 @@
           @endif
         </div>
       </div>
+
+      <!-- Emplacement et Date d'achat -->
+      <div class="flex gap-2">
+        @if($plant->location)
+          <div class="bg-green-50 px-2 py-1 rounded border border-green-200 text-xs">
+            <p class="text-gray-600 font-medium">Emplacement</p>
+            <p class="text-green-700 font-semibold">{{ $plant->location }}</p>
+          </div>
+        @endif
+        
+        @if($plant->purchase_date)
+          <div class="bg-blue-50 px-2 py-1 rounded border border-blue-200 text-xs">
+            <p class="text-gray-600 font-medium">Date d'achat</p>
+            <p class="text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
+          </div>
+        @endif
+      </div>
+
       <div class="flex items-center gap-2">
         <a href="{{ route('plants.show', $plant) }}" class="px-3 py-1 bg-gray-100 rounded text-sm hover:bg-gray-200 transition">Voir</a>
         <a href="{{ route('plants.edit', $plant) }}" class="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600 transition">Éditer</a>
