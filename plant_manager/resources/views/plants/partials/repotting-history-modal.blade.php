@@ -15,7 +15,16 @@
         <p class="text-xs text-amber-600 mb-2">Dernier : {{ $lastRepotting->repotting_date->format('d/m/Y') }}</p>
         <div class="space-y-1">
             @if($lastRepotting->old_pot_size || $lastRepotting->new_pot_size)
-                <p class="text-xs text-gray-600">{{ $lastRepotting->old_pot_size }} → {{ $lastRepotting->new_pot_size }}</p>
+                @php
+                    $oldSize = (float) str_replace(['cm', ' '], '', $lastRepotting->old_pot_size ?? '0');
+                    $newSize = (float) str_replace(['cm', ' '], '', $lastRepotting->new_pot_size ?? '0');
+                    $arrow = $oldSize < $newSize ? '→' : ($oldSize > $newSize ? '←' : '=');
+                @endphp
+                @if($oldSize === $newSize && $oldSize > 0)
+                    <p class="text-xs text-gray-600">Diamètre du pot : {{ $lastRepotting->new_pot_size }}</p>
+                @else
+                    <p class="text-xs text-gray-600">{{ $lastRepotting->old_pot_size }} {{ $arrow }} {{ $lastRepotting->new_pot_size }}</p>
+                @endif
             @endif
         </div>
     @else
