@@ -44,8 +44,7 @@
           @if($plant->description)
             <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-green-500">
               <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Description</h3>
-              <p class="mt-2 text-gray-700 leading-relaxed text-sm line-clamp-2 break-words" data-description-full>{{ $plant->description }}</p>
-              <button type="button" onclick="const el = document.querySelector('[data-description-full]'); el.classList.toggle('line-clamp-2'); this.textContent = el.classList.contains('line-clamp-2') ? 'Lire plus →' : 'Lire moins ←';" class="text-xs text-green-600 hover:text-green-800 mt-2 font-semibold">Lire plus →</button>
+              <p class="mt-2 text-gray-700 leading-relaxed text-sm break-words">{{ $plant->description }}</p>
             </div>
           @endif
         </div>
