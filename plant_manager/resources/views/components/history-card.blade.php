@@ -104,8 +104,3 @@
     Créer →
   </button>
 </div>
-    </div>
-  @else
-    <p class="text-xs text-gray-600">Aucun enregistrement</p>
-  @endif
-</div>
