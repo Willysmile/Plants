@@ -25,16 +25,6 @@
                style="max-width:100%; max-height:100%; object-fit:cover; border-radius:4px;">
         </button>
       @endfor
-
-      <!-- Points toujours affichés -->
-      <a href="{{ route('plants.show', $plant) }}" 
-         style="width:70px; height:70px; padding:0; background:transparent; display:flex; align-items:center; justify-content:center; border-radius:4px; text-decoration:none; transition:all 0.2s;" 
-         class="more-photos" 
-         aria-label="Voir la galerie complète" 
-         onmouseover="this.style.border='1px solid #15803d'; this.querySelector('span').style.color='#15803d';" 
-         onmouseout="this.style.border='0'; this.querySelector('span').style.color='#999';">
-        <span style="font-size:32px; color:#999; line-height:0.5; transition:color 0.2s;">⋯</span>
-      </a>
     </div>
   @else
     <div class="flex items-center justify-center h-20 text-gray-400">
