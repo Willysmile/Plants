@@ -32,19 +32,26 @@ class FertilizingHistoryController extends Controller
     public function store(Request $request, Plant $plant)
     {
         $validated = $request->validate([
-            'fertilizing_date' => 'required|date_format:Y-m-d\TH:i',
+            'fertilizing_date' => 'required|date_format:Y-m-d|before_or_equal:today',
             'fertilizer_type' => 'nullable|string|max:255',
             'amount' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
+        ], [
+            'fertilizing_date.before_or_equal' => 'La date ne peut pas être dans le futur.',
         ]);
 
         $validated['plant_id'] = $plant->id;
         FertilizingHistory::create($validated);
 
-        // Update the plant's last fertilizing date (convert to proper datetime)
+        // Update the plant's last fertilizing date
         $plant->update([
-            'last_fertilizing_date' => Carbon::createFromFormat('Y-m-d\TH:i', $validated['fertilizing_date']),
+            'last_fertilizing_date' => $validated['fertilizing_date'],
         ]);
+
+        // Return JSON for AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true], 200);
+        }
 
         return redirect()->route('plants.fertilizing-history.index', $plant)
             ->with('success', 'Fertilisation enregistrée avec succès.');

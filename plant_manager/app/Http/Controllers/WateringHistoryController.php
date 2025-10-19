@@ -32,24 +32,26 @@ class WateringHistoryController extends Controller
     public function store(Request $request, Plant $plant)
     {
         $validated = $request->validate([
-            'watering_date' => 'required|date_format:Y-m-d\TH:i',
-            'amount' => 'nullable|numeric',
+            'watering_date' => 'required|date_format:Y-m-d|before_or_equal:today',
+            'amount' => 'nullable|string',
             'notes' => 'nullable|string',
+        ], [
+            'watering_date.before_or_equal' => 'La date ne peut pas être dans le futur.',
         ]);
 
         $validated['plant_id'] = $plant->id;
         
-        // Add 'ml' unit if amount is provided
-        if (!empty($validated['amount'])) {
-            $validated['amount'] = $validated['amount'] . ' ml';
-        }
-        
         WateringHistory::create($validated);
 
-        // Update the plant's last watering date (convert to proper datetime)
+        // Update the plant's last watering date
         $plant->update([
-            'last_watering_date' => Carbon::createFromFormat('Y-m-d\TH:i', $validated['watering_date']),
+            'last_watering_date' => $validated['watering_date'],
         ]);
+
+        // Return JSON for AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true], 200);
+        }
 
         return redirect()->route('plants.watering-history.index', $plant)
             ->with('success', 'Arrosage enregistré avec succès.');
