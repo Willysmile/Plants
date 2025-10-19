@@ -1,7 +1,7 @@
 <!-- Repotting History Summary (for modal) -->
 <div class="bg-amber-50 p-3 rounded border-l-4 border-amber-400">
     @php
-        $lastRepotting = $plant->repottingHistories()->latest('repotting_date')->first();
+        $lastRepotting = $plant->reppotingHistories()->latest('repotting_date')->first();
     @endphp
     
     <div class="flex items-center justify-between mb-2">
