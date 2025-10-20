@@ -1,4 +1,4 @@
-@props(['plant' => null, 'categories' => [], 'tags' => [], 'tagsModalOpen' => null])
+@props(['plant' => null, 'categories' => [], 'tags' => []])
 
 @php
   $isEdit = $plant !== null;
@@ -21,7 +21,7 @@
     </div>
   @endif
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ tagsModalOpen: @json($tagsModalOpen) }">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Nom -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Nom *</label>
@@ -118,30 +118,20 @@
     <div class="md:col-span-2">
       @php
         $selectedTagIds = old('tags', $plant?->tags?->pluck('id')->toArray() ?? []);
+        $tagCount = count($selectedTagIds);
       @endphp
-      @if($isEdit && $plant->tags->count() > 0)
-        <div class="flex items-center gap-3">
-          <label class="text-sm font-medium text-gray-700">Tags:</label>
-          <div class="flex flex-wrap gap-2">
-            @foreach($plant->tags as $tag)
-              <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                {{ $tag->name }}
-              </span>
-            @endforeach
-          </div>
-          <button type="button"
-                  @click="tagsModalOpen = true"
-                  class="ml-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-medium">
-            Modifier
-          </button>
+      <div class="flex items-center gap-3">
+        <label class="text-sm font-medium text-gray-700">Tags:</label>
+        <div id="tags-display" class="flex flex-wrap gap-2">
+          <!-- Les tags s'affichent ici -->
         </div>
-      @else
         <button type="button"
-                @click="tagsModalOpen = true"
-                class="text-sm text-blue-600 hover:text-blue-700 underline">
-          + Ajouter des tags
+                onclick="document.getElementById('tags-modal').style.display = 'flex'"
+                class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs font-medium">
+          @if($tagCount > 0) Modifier @else + Ajouter @endif
         </button>
-      @endif
+      </div>
+    </div>
     </div>
 
     <!-- Description -->
@@ -365,5 +355,58 @@ window.regenerateReference = function() {
     btn.disabled = false;
   });
 };
+
+// Données de tous les tags disponibles avec catégories
+window.allTagsData = {!! json_encode($tags->map(fn($t) => ['id' => $t->id, 'name' => $t->name, 'category' => $t->category])->values()->toArray(), JSON_UNESCAPED_UNICODE) !!};
+
+// Couleurs par catégorie
+window.categoryColors = {
+  'Climat': { bg: 'bg-amber-100', text: 'text-amber-800' },
+  'Feuillage': { bg: 'bg-green-100', text: 'text-green-800' },
+  'Type': { bg: 'bg-blue-100', text: 'text-blue-800' },
+  'Forme': { bg: 'bg-purple-100', text: 'text-purple-800' },
+  'Floraison': { bg: 'bg-pink-100', text: 'text-pink-800' },
+  'Taille': { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+  'Croissance': { bg: 'bg-orange-100', text: 'text-orange-800' },
+  'Caractéristiques': { bg: 'bg-cyan-100', text: 'text-cyan-800' },
+  'Système racinaire': { bg: 'bg-indigo-100', text: 'text-indigo-800' }
+};
+
+// Mettre à jour l'affichage des tags
+window.updateTagsDisplay = function() {
+  const checkboxes = document.querySelectorAll('input[name="tags[]"]:checked');
+  const selectedIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+  
+  // Mettre à jour le bouton
+  const btnEl = document.querySelector('button[onclick*="tags-modal"]');
+  if (btnEl) btnEl.textContent = selectedIds.length > 0 ? 'Modifier' : '+ Ajouter';
+  
+  // Afficher les noms des tags avec couleurs
+  const display = document.getElementById('tags-display');
+  if (display) {
+    const selectedTags = window.allTagsData.filter(t => selectedIds.includes(t.id));
+    let html = '';
+    if (selectedTags.length > 0) {
+      html = selectedTags.map(tag => {
+        const colors = window.categoryColors[tag.category] || { bg: 'bg-gray-100', text: 'text-gray-800' };
+        return `<span class="inline-flex items-center px-3 py-1 ${colors.bg} ${colors.text} rounded-full text-xs font-medium">${tag.name}</span>`;
+      }).join('');
+    }
+    display.innerHTML = html;
+  }
+};
+
+// Appeler au démarrage pour afficher les tags déjà sélectionnés
+document.addEventListener('DOMContentLoaded', updateTagsDisplay);
+
+// Aussi appeler après un petit délai pour être sûr
+setTimeout(updateTagsDisplay, 100);
+
+// Écouter les changements de checkboxes
+document.addEventListener('change', function(e) {
+  if (e.target.name === 'tags[]') {
+    updateTagsDisplay();
+  }
+});
 </script>
 @endpush

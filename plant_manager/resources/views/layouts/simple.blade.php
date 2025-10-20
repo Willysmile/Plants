@@ -13,5 +13,7 @@
   </div>
   
   @yield('extra-scripts')
+  
+  @stack('scripts')
 </body>
 </html>

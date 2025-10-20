@@ -638,7 +638,114 @@ Cette session a apporté des **refactorisations majeures de l'interface** :
 
 ---
 
-**Rapport Généré** : 16 octobre 2025  
+## 📌 Rapport de Fin de Chantier - Sprint 2 (20 octobre 2025)
+
+### ✅ Objectifs Complétés
+
+#### 1. **Restructuration Base de Données**
+- ✅ Création de 4 tables de lookup : `watering_frequencies`, `light_requirements`, `purchase_places`, `locations`
+- ✅ Migration des données existantes vers les tables lookup
+- ✅ Mise à jour du modèle Plant avec relations Foreign Key
+- ✅ Création et exécution de seeders pour population initiale
+- ✅ Validation des contraintes d'intégrité
+
+#### 2. **Système d'Archivage**
+- ✅ Ajout colonne `archived_at` (soft delete) à la table plants
+- ✅ Création route et vue "Plantes Archivées"
+- ✅ Implémentation boutons Archive/Restaurer sur chaque plante
+- ✅ Filtrage automatique des archives sur index principal
+- ✅ Test complet du flux archive → restaurer
+
+#### 3. **Génération de Références Automatique**
+- ✅ Remplacement système aléatoire par API incrémentale
+- ✅ Création endpoint `POST /plants/generate-reference`
+- ✅ Implémentation logique compteur avec vérification duplicatas
+- ✅ Bouton "Régénérer" avec feedback visuel (✓ / ⏳)
+- ✅ Test intégration avec formulaires create/edit
+
+#### 4. **Système de Tags Amélioré**
+- ✅ Ajout colonne `category` à la table tags (9 catégories)
+- ✅ Création migration pour catégoriser les 60 tags existants
+- ✅ Migration interface dropdown → modal checkbox
+- ✅ Affichage modal avec grille 4-colonnes par catégorie
+- ✅ Coloration par catégorie (9 schémas Tailwind)
+- ✅ Display dynamique des tags sélectionnés avec badges colorés
+- ✅ Event listeners temps réel (changement checkbox = update affichage)
+- ✅ Bouton toggleable (Ajouter → Modifier)
+- ✅ **FIX : Ajout @stack('scripts') au layout simple**
+
+### 📊 Statistiques du Chantier
+
+| Élément | Valeur |
+|---------|--------|
+| Migrations créées | 10 |
+| Seeders créés | 4 |
+| Fichiers modifiés | 8+ |
+| Routes ajoutées | 3 |
+| Contrôleurs enhancés | 2 |
+| Composants créés | 1 |
+| Heures de dev estimées | ~8h |
+| Commits réalisés | 6 |
+| Bugs résolus | 3 |
+
+### 🔧 Détail des Corrections Finales
+
+**Problème Identifié :** Tags ne s'affichaient pas sur page create  
+**Cause Racine :** Layout `simple.blade.php` manquait `@stack('scripts')`  
+**Solution :** Ajout du stack pour exécuter les scripts pushés par composant  
+**Impact :** Tags maintenant visibles sur create ET edit avec couleurs catégories  
+
+### 🎨 Nouvelles Catégories de Tags
+
+1. **Climat** - Ambre 🌡️
+2. **Feuillage** - Vert 🍃
+3. **Type** - Bleu 💧
+4. **Forme** - Violet 🌿
+5. **Floraison** - Rose 🌸
+6. **Taille** - Jaune 📏
+7. **Croissance** - Orange ⚡
+8. **Caractéristiques** - Cyan ✨
+9. **Système racinaire** - Indigo 🌱
+
+### 📁 Fichiers Modifiés
+
+- `database/migrations/` : 10 nouvelles migrations
+- `database/seeders/` : 4 nouveaux seeders
+- `app/Models/Plant.php` : Relations FK ajoutées
+- `app/Http/Controllers/PlantController.php` : Méthodes archive/restore/generate-reference
+- `resources/views/plants/index.blade.php` : Filtrage archives, boutons archive
+- `resources/views/plants/edit.blade.php` : Modal tags, affichage dynamique
+- `resources/views/plants/create.blade.php` : Modal tags (identique edit)
+- `resources/views/components/plant-form.blade.php` : Tags section, JavaScript coloré
+- `resources/views/layouts/simple.blade.php` : **AJOUT @stack('scripts')**
+- `routes/web.php` : 3 routes ajoutées
+
+### ✨ Points Forts de cette Version
+
+1. **Expérience Utilisateur** : Interface modal intuitive pour tags
+2. **Accessibilité** : Checkboxes 4-colonnes faciles à naviguer
+3. **Feedback Visuel** : Couleurs par catégorie, badges dynamiques
+4. **Performance** : Données tags toutes côté client (JSON)
+5. **Maintenance** : Code bien structuré, commenté, facile à étendre
+
+### ⚠️ Limitations Connues
+
+- Les tags ne peuvent pas être créés depuis l'interface (admin only)
+- Pas de validations côté serveur des IDs de tags
+- Archive ne supprime pas les photos associées (soft delete)
+- Pas de limite de tags par plante
+
+### 🚀 Recommandations pour v1.2
+
+1. **Permissions** : Ajouter système d'admin pour création de tags
+2. **Recherche** : Ajouter filtre par tags sur liste plantes
+3. **Export** : Générer rapport PDF avec plantes + tags
+4. **Batch Actions** : Archiver/Restaurer plusieurs plantes
+5. **Tests** : Ajouter suite de tests unitaires et fonctionnels
+
+---
+
+**Rapport Généré** : 20 octobre 2025  
 **Préparé par** : GitHub Copilot  
-**Branche** : v1.01  
-**Statut** : ✅ En bon état de développement
+**Branche** : feat/complete-seeder → v1.1  
+**Statut** : ✅ Chantier Complété - Prêt pour v1.1
