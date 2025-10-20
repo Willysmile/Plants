@@ -1,8 +1,8 @@
 # 📋 Rapport Complet du Projet Plant Manager
 
-**Date** : 16 octobre 2025  
-**Version du Projet** : v1.01  
-**Branche Active** : v1.01  
+**Date** : 20 octobre 2025  
+**Version du Projet** : v1.1  
+**Branche Active** : v1.1  
 **Dépôt** : Plants (Willysmile)
 
 ---
