@@ -99,10 +99,18 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-function openFreeHistoriesModal(plantId) {
+// Fonctions globales pour gérer la modale des Infos Diverses en show.blade.php
+window.openFreeHistoriesModal = function(plantId) {
   const modal = document.getElementById('free-histories-modal-' + plantId);
   if (modal) {
     modal.style.display = 'flex';
   }
-}
+};
+
+window.closeFreeHistoriesModal = function(plantId) {
+  const modal = document.getElementById('free-histories-modal-' + plantId);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+};
 </script>

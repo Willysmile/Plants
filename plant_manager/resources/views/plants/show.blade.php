@@ -207,7 +207,7 @@
 
     <!-- Modale pour les Infos Diverses (Historique libre) -->
     @if($plant->histories && $plant->histories->count() > 0)
-      <div id="free-histories-modal-{{ $plant->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div id="free-histories-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto m-4">
           <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b sticky top-0 bg-white">

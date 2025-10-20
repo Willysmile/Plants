@@ -87,7 +87,7 @@
 
         <!-- Modale pour les Infos Diverses dans la modale plants -->
         @if($plant->histories->count())
-          <div id="modal-free-histories-{{ $plant->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div id="free-histories-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto m-4">
               <div class="flex items-center justify-between p-3 border-b sticky top-0 bg-white">
                 <h3 class="text-sm font-semibold text-gray-800">Infos Diverses</h3>

@@ -183,6 +183,31 @@
       .catch(error => console.error('[RELOAD] Error reloading histories:', error));
     };
     
+    // FREE HISTORIES MODAL
+    window.openModalFreeHistories = function(plantId) {
+      const modal = document.getElementById('plant-modal-content');
+      if (!modal) return;
+      
+      const freeHistoriesModal = modal.querySelector(`#free-histories-modal-${plantId}`);
+      if (freeHistoriesModal) {
+        freeHistoriesModal.style.display = 'flex';
+        console.log('[FREE_HISTORIES] Modal opened for plant:', plantId);
+      } else {
+        console.warn('[FREE_HISTORIES] Modal not found for plant:', plantId);
+      }
+    };
+    
+    window.closeModalFreeHistories = function(plantId) {
+      const modal = document.getElementById('plant-modal-content');
+      if (!modal) return;
+      
+      const freeHistoriesModal = modal.querySelector(`#free-histories-modal-${plantId}`);
+      if (freeHistoriesModal) {
+        freeHistoriesModal.style.display = 'none';
+        console.log('[FREE_HISTORIES] Modal closed for plant:', plantId);
+      }
+    };
+    
     
     // WATERING VALIDATION
     window.handleQuickWateringSubmit = function(event) {
