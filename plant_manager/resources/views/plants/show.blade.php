@@ -227,7 +227,11 @@
                   {{ $history->created_at->format('d/m/Y H:i') }}
                 </div>
                 <div class="text-sm text-gray-800 mt-2 whitespace-pre-wrap break-words">
-                  {{ $history->body }}
+                  @if(strlen($history->body) > 140)
+                    {{ substr($history->body, 0, 140) }}...
+                  @else
+                    {{ $history->body }}
+                  @endif
                 </div>
               </div>
             @endforeach
