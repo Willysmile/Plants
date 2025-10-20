@@ -3,7 +3,7 @@
 @section('title', 'Modifier : ' . $plant->name)
 
 @section('content')
-  <div class="max-w-4xl mx-auto p-6" x-data="{ tagsModalOpen: false }">
+  <div class="max-w-4xl mx-auto p-6">
     <header class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-semibold">Modifier la plante</h1>
       <div class="flex gap-2">
@@ -12,10 +12,10 @@
       </div>
     </header>
 
-    <x-plant-form :plant="$plant" :tags="$tags" :tagsModalOpen="'tagsModalOpen'" />
+    <x-plant-form :plant="$plant" :tags="$tags" />
 
     <!-- Modal Tags -->
-    <div x-show="tagsModalOpen" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="tags-modal" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
           <h2 class="text-xl font-bold">Gestion des tags</h2>
@@ -56,8 +56,8 @@
           </div>
         </div>
         <div class="sticky bottom-0 bg-gray-50 border-t px-6 py-4 flex justify-end gap-2">
-          <button type="button" @click="tagsModalOpen = false" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Fermer</button>
-          <button type="submit" form="plant-form" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Enregistrer les tags</button>
+          <button type="button" onclick="document.getElementById('tags-modal').style.display = 'none'" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Fermer</button>
+          <button type="button" onclick="document.getElementById('tags-modal').style.display = 'none'; window.updateTagsDisplay && window.updateTagsDisplay();" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Sauvegarder les tags</button>
         </div>
       </div>
     </div>

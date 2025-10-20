@@ -3,13 +3,13 @@
 @section('title', 'Ajouter une plante')
 
 @section('content')
-  <div class="bg-white p-6 rounded shadow" x-data="{ tagsModalOpen: false }">
+  <div class="bg-white p-6 rounded shadow">
     <h1 class="text-xl font-bold mb-6">Ajouter une plante</h1>
 
-    <x-plant-form :tags="$tags" :tagsModalOpen="'tagsModalOpen'" />
+    <x-plant-form :tags="$tags" />
 
     <!-- Modal Tags -->
-    <div x-show="tagsModalOpen" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="tags-modal" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
           <h2 class="text-xl font-bold">Gestion des tags</h2>
@@ -50,8 +50,8 @@
           </div>
         </div>
         <div class="sticky bottom-0 bg-gray-50 border-t px-6 py-4 flex justify-end gap-2">
-          <button type="button" @click="tagsModalOpen = false" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Fermer</button>
-          <button type="submit" form="plant-form" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Créer la plante</button>
+          <button type="button" onclick="document.getElementById('tags-modal').style.display = 'none'" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">Fermer</button>
+          <button type="button" onclick="document.getElementById('tags-modal').style.display = 'none'; window.updateTagsDisplay && window.updateTagsDisplay();" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">Sauvegarder les tags</button>
         </div>
       </div>
     </div>
