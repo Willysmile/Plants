@@ -381,6 +381,7 @@
 
 @section('extra-scripts')
   <script src="{{ asset('js/gallery-manager.js') }}"></script>
+  <script src="{{ asset('js/app.js') }}"></script>
   <script>
     // Actualiser la page show
     window.refreshShowPage = function() {
