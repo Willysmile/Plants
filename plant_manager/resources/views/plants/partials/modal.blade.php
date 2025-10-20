@@ -65,44 +65,48 @@
           <x-history-card :plant="$plant" type="repotting" context="modal" />
         </div>
 
-        <!-- Dernières Infos Diverses (collapsible) -->
+        <!-- Dernières Infos Diverses - Simple avec button Voir + Compteur -->
         @if($plant->histories->count())
-          <div class="mt-2">
+          <div class="mt-2 p-2 bg-gray-50 rounded border border-gray-100">
             <div class="flex items-center justify-between">
-              <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Dernières Infos Diverses</h4>
-              <button type="button" id="histories-modal-toggle-{{ $plant->id }}" data-histories-toggle="true" data-histories-list="histories-modal-list-{{ $plant->id }}" data-histories-icon="histories-modal-icon-{{ $plant->id }}" class="p-1 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="histories-modal-list-{{ $plant->id }}" title="Afficher / Masquer les entrées">
-                <svg id="histories-modal-icon-{{ $plant->id }}" class="w-4 h-4 text-gray-600 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Infos Diverses</h4>
+                <span class="inline-block bg-gray-200 text-gray-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                  {{ $plant->histories->count() }}
+                </span>
+              </div>
+              <button type="button" 
+                      onclick="openModalFreeHistories({{ $plant->id }})" 
+                      class="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs transition flex items-center gap-1">
+                <i data-lucide="eye" class="w-3 h-3"></i>
+                Voir
               </button>
-            </div>
-
-            <div id="histories-modal-list-{{ $plant->id }}" class="mt-1 space-y-2 text-xs hidden">
-              @foreach($plant->histories->sortByDesc('created_at')->take(3) as $h)
-                <div class="bg-gray-50 p-2 rounded border border-gray-100">
-                  <div class="text-xs text-gray-400">{{ $h->created_at->format('d/m/Y H:i') }}@if($h->user) - {{ $h->user->name }}@endif</div>
-                  <div class="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{{ $h->body }}</div>
-                </div>
-              @endforeach
             </div>
           </div>
         @endif
 
-        <!-- Script pour toggle Dernières Infos Diverses -->
+        <!-- Modale pour les Infos Diverses dans la modale plants -->
         @if($plant->histories->count())
-          <script>
-            (function(){
-              const toggleBtn = document.getElementById('histories-modal-toggle-{{ $plant->id }}');
-              const toggleIcon = document.getElementById('histories-modal-icon-{{ $plant->id }}');
-              const listEl = document.getElementById('histories-modal-list-{{ $plant->id }}');
-              if (toggleBtn && listEl && toggleIcon) {
-                toggleBtn.addEventListener('click', function(e){
-                  e.stopPropagation();
-                  const isHidden = listEl.classList.toggle('hidden');
-                  toggleBtn.setAttribute('aria-expanded', String(!isHidden));
-                  toggleIcon.classList.toggle('rotate-180');
-                });
-              }
-            })();
-          </script>
+          <div id="modal-free-histories-{{ $plant->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto m-4">
+              <div class="flex items-center justify-between p-3 border-b sticky top-0 bg-white">
+                <h3 class="text-sm font-semibold text-gray-800">Infos Diverses</h3>
+                <button type="button" 
+                        onclick="closeModalFreeHistories({{ $plant->id }})" 
+                        class="text-gray-500 hover:text-gray-700">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+              <div class="p-3 space-y-2">
+                @foreach($plant->histories->sortByDesc('created_at')->take(3) as $history)
+                  <div class="bg-gray-50 p-2 rounded border border-gray-200 text-xs">
+                    <div class="text-gray-500 font-medium">{{ $history->created_at->format('d/m/Y H:i') }}</div>
+                    <div class="text-gray-800 mt-1 whitespace-pre-wrap break-words">{{ $history->body }}</div>
+                  </div>
+                @endforeach
+              </div>
+            </div>
+          </div>
         @endif
       </div>
 
@@ -302,7 +306,11 @@
 
     // Fonction de refresh local pour cette modale
     window.refreshModal = function(event) {
-      const button = event?.currentTarget || document.querySelector('[onclick="refreshModal()"]');
+      // Trouver le bouton refresh
+      let button = event?.currentTarget;
+      if (!button) {
+        button = document.querySelector('button[onclick="refreshModal()"]');
+      }
       if (!button) return;
       
       const icon = button.querySelector('[data-lucide="refresh-cw"]');
@@ -343,6 +351,21 @@
           icon.style.animation = 'none';
         }
       });
+    };
+
+    // Fonctions pour ouvrir/fermer la modale des Infos Diverses dans la modale plants
+    window.openModalFreeHistories = function(plantId) {
+      const modal = document.getElementById('modal-free-histories-' + plantId);
+      if (modal) {
+        modal.style.display = 'flex';
+      }
+    };
+
+    window.closeModalFreeHistories = function(plantId) {
+      const modal = document.getElementById('modal-free-histories-' + plantId);
+      if (modal) {
+        modal.style.display = 'none';
+      }
     };
   </script>
 
