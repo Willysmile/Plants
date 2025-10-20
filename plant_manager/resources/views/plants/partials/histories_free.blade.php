@@ -9,12 +9,12 @@
     <textarea name="body" 
               id="free-history-body-{{ $plant->id }}"
               placeholder="Ajouter une info..."
-              maxlength="500"
+              maxlength="144"
               rows="2"
               class="w-full p-2 border rounded text-sm resize-none focus:ring-2 focus:ring-blue-500"
               style="font-size: 13px;"></textarea>
     <div class="flex items-center justify-between">
-      <span id="free-history-count-{{ $plant->id }}" class="text-xs text-gray-500">0/500</span>
+      <span id="free-history-count-{{ $plant->id }}" class="text-xs text-gray-500">0/144</span>
       <button type="submit" class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-sm transition">
         Ajouter
       </button>
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (textarea && counter) {
     function updateCounter() {
-      counter.textContent = textarea.value.length + '/500';
+      counter.textContent = textarea.value.length + '/144';
     }
     
     textarea.addEventListener('input', updateCounter);

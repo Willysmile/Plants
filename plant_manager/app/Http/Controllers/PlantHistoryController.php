@@ -23,7 +23,7 @@ class PlantHistoryController extends Controller
     public function store(Request $request, Plant $plant)
     {
         $validated = $request->validate([
-            'body' => 'required|string|max:500',
+            'body' => 'required|string|max:144',
         ]);
 
         $plant->histories()->create($validated);
@@ -57,7 +57,7 @@ class PlantHistoryController extends Controller
     public function update(Request $request, PlantHistory $plantHistory)
     {
         $validated = $request->validate([
-            'body' => 'required|string|max:500',
+            'body' => 'required|string|max:144',
         ]);
 
         $plantHistory->update($validated);
