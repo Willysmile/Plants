@@ -198,9 +198,43 @@
               </div>
             @endif
           </div>
+
+          <!-- Infos Diverses -->
+          @include('plants.partials.histories_free')
         </aside>
       </div>
     </div>
+
+    <!-- Modale pour les Infos Diverses (Historique libre) -->
+    @if($plant->histories && $plant->histories->count() > 0)
+      <div id="free-histories-modal-{{ $plant->id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto m-4">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
+            <h3 class="text-lg font-semibold text-gray-800">Infos Diverses</h3>
+            <button type="button" 
+                    onclick="document.getElementById('free-histories-modal-{{ $plant->id }}').style.display='none'" 
+                    class="text-gray-500 hover:text-gray-700">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Contenu -->
+          <div class="p-4 space-y-3">
+            @foreach($plant->histories->sortByDesc('created_at')->take(3) as $history)
+              <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                <div class="text-xs text-gray-500 font-medium">
+                  {{ $history->created_at->format('d/m/Y H:i') }}
+                </div>
+                <div class="text-sm text-gray-800 mt-2 whitespace-pre-wrap break-words">
+                  {{ $history->body }}
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+    @endif
 
     <!-- Galerie - occupe le 1/3 inférieur -->
     <x-gallery :plant="$plant" :maxThumbnails="99" />

@@ -6,6 +6,7 @@ use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\WateringHistoryController;
 use App\Http\Controllers\FertilizingHistoryController;
 use App\Http\Controllers\RepottingHistoryController;
+use App\Http\Controllers\PlantHistoryController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
 
@@ -53,6 +54,7 @@ Route::delete('plants/{plant}/photos/{photo}', [PhotoController::class, 'destroy
 Route::resource('plants.watering-history', WateringHistoryController::class);
 Route::resource('plants.fertilizing-history', FertilizingHistoryController::class);
 Route::resource('plants.repotting-history', RepottingHistoryController::class);
+Route::resource('plants.histories', PlantHistoryController::class);
 
 // Gestion des types d'engrais
 Route::resource('fertilizer-types', FertilizerTypeController::class);

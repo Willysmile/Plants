@@ -218,6 +218,14 @@ class Plant extends Model
     }
 
     /**
+     * Historiques "Infos Diverses" de la plante
+     */
+    public function histories()
+    {
+        return $this->hasMany(PlantHistory::class);
+    }
+
+    /**
      * Labels pour la fréquence d'arrosage.
      */
     public static array $wateringLabels = [
