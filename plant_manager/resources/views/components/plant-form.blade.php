@@ -236,10 +236,7 @@
       <textarea name="notes" rows="3" class="mt-1 block w-full border rounded p-2 @error('notes') border-red-500 @enderror">{{ old('notes', $plant->notes ?? '') }}</textarea>
       @error('notes') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
-  </div>
 
-  <!-- Photos Section -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Photo principale -->
     <div class="md:col-span-1">
       <h3 class="text-lg font-medium mb-2">Photo principale</h3>
