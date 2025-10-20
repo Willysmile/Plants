@@ -94,55 +94,7 @@
 @section('extra-scripts')
   <!-- Quick Modal Validation Scripts (must be loaded at page init, before AJAX modals load) -->
   <script>
-    console.log('[INDEX] Defining global form handlers for quick modals');
-    
-    // Refresh entire modal with loading animation
-    window.refreshModal = function() {
-      const modal = document.getElementById('plant-modal-content');
-      if (!modal) return;
-      
-      const plantModalEl = modal.querySelector('[data-modal-plant-id]');
-      if (!plantModalEl) {
-        console.warn('[REFRESH] No plant modal found');
-        return;
-      }
-      
-      const plantId = plantModalEl.getAttribute('data-modal-plant-id');
-      if (!plantId) {
-        console.warn('[REFRESH] No plant ID found');
-        return;
-      }
-      
-      // Find the refresh button and its icon
-      const refreshButton = modal.querySelector('button[onclick*="refreshModal"]');
-      const icon = refreshButton ? refreshButton.querySelector('[data-lucide="refresh-cw"]') : null;
-      
-      // Add spinning animation
-      if (icon) {
-        icon.style.animation = 'spin 1s linear infinite';
-      }
-      
-      // Fetch the new modal HTML
-      fetch(`/plants/${plantId}/modal`, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(response => response.text())
-      .then(html => {
-        modal.innerHTML = html;
-        console.log('[REFRESH] Modal refreshed successfully');
-        
-        // Reinitialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
-        }
-      })
-      .catch(error => console.error('[REFRESH] Error:', error))
-      .finally(() => {
-        if (icon) {
-          icon.style.animation = 'none';
-        }
-      });
-    };
+    console.log('[INDEX] Defining quick modal handlers');
     
     // Reload histories in modal via AJAX
     window.reloadHistoriesInModal = function() {
@@ -184,29 +136,14 @@
       .catch(error => console.error('[RELOAD] Error reloading histories:', error));
     };
     
-    // FREE HISTORIES MODAL
-    window.openModalFreeHistories = function(plantId) {
-      const modal = document.getElementById('plant-modal-content');
-      if (!modal) return;
-      
-      const freeHistoriesModal = modal.querySelector(`#free-histories-modal-${plantId}`);
-      if (freeHistoriesModal) {
-        freeHistoriesModal.style.display = 'flex';
-        console.log('[FREE_HISTORIES] Modal opened for plant:', plantId);
-      } else {
-        console.warn('[FREE_HISTORIES] Modal not found for plant:', plantId);
-      }
+    // FREE HISTORIES MODAL (Deprecated: use app.js functions instead)
+    // Keeping for backwards compatibility
+    window.openModalFreeHistories = window.openModalFreeHistories || function(plantId) {
+      console.warn('[DEPRECATED] Use window.openModalFreeHistories from app.js');
     };
     
-    window.closeModalFreeHistories = function(plantId) {
-      const modal = document.getElementById('plant-modal-content');
-      if (!modal) return;
-      
-      const freeHistoriesModal = modal.querySelector(`#free-histories-modal-${plantId}`);
-      if (freeHistoriesModal) {
-        freeHistoriesModal.style.display = 'none';
-        console.log('[FREE_HISTORIES] Modal closed for plant:', plantId);
-      }
+    window.closeModalFreeHistories = window.closeModalFreeHistories || function(plantId) {
+      console.warn('[DEPRECATED] Use window.closeModalFreeHistories from app.js');
     };
     
     
