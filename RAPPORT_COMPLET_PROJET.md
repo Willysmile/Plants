@@ -4,6 +4,7 @@
 **Version du Projet** : v1.1  
 **Branche Active** : v1.1  
 **Dépôt** : Plants (Willysmile)
+**Prochaine branche (prévue)** : v1.101
 
 ---
 
