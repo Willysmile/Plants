@@ -238,27 +238,30 @@
     </div>
   </div>
 
-  <!-- Photo principale -->
-  <div class="md:col-span-1">
-    <h3 class="text-lg font-medium mb-2">Photo principale</h3>
-    @if($plant?->main_photo)
-      <div class="mb-2 max-w-xs">
-        <img src="{{ Storage::url($plant->main_photo) }}" alt="" class="w-full h-auto max-h-48 object-cover rounded shadow">
-      </div>
-    @endif
-    <input type="file" name="main_photo" accept="image/*" id="mainPhotoInput" class="block @error('main_photo') border-red-500 @enderror">
-    <div id="mainPhotoPreview" class="mt-2 max-w-xs"></div>
-    <p class="text-xs text-gray-500 mt-1">{{ $isEdit ? 'Remplacer la photo principale (optionnel).' : 'Sélectionner une photo.' }}</p>
-    @error('main_photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-  </div>
+  <!-- Photos Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Photo principale -->
+    <div class="md:col-span-1">
+      <h3 class="text-lg font-medium mb-2">Photo principale</h3>
+      @if($plant?->main_photo)
+        <div class="mb-2 max-w-xs">
+          <img src="{{ Storage::url($plant->main_photo) }}" alt="" class="w-full h-auto max-h-48 object-cover rounded shadow">
+        </div>
+      @endif
+      <input type="file" name="main_photo" accept="image/*" id="mainPhotoInput" class="block @error('main_photo') border-red-500 @enderror">
+      <div id="mainPhotoPreview" class="mt-2 max-w-xs"></div>
+      <p class="text-xs text-gray-500 mt-1">{{ $isEdit ? 'Remplacer la photo principale (optionnel).' : 'Sélectionner une photo.' }}</p>
+      @error('main_photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
 
-  <!-- Galerie -->
-  <div class="md:col-span-2">
-    <h3 class="text-lg font-medium mb-2">Ajouter des photos (galerie)</h3>
-    <input type="file" name="photos[]" accept="image/*" multiple id="galleryPhotosInput" class="block @error('photos') border-red-500 @enderror">
-    <div id="galleryPhotosPreview" class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2"></div>
-    <p class="text-xs text-gray-500 mt-1">Les nouvelles images seront ajoutées à la galerie.</p>
-    @error('photos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    <!-- Galerie -->
+    <div class="md:col-span-1">
+      <h3 class="text-lg font-medium mb-2">Ajouter des photos (galerie)</h3>
+      <input type="file" name="photos[]" accept="image/*" multiple id="galleryPhotosInput" class="block @error('photos') border-red-500 @enderror">
+      <div id="galleryPhotosPreview" class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+      <p class="text-xs text-gray-500 mt-1">Les nouvelles images seront ajoutées à la galerie.</p>
+      @error('photos') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+    </div>
   </div>
 
   <!-- Boutons -->

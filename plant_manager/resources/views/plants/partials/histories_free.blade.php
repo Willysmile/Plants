@@ -38,7 +38,7 @@
     
     @if($plant->histories && $plant->histories->count() > 0)
       <button type="button" 
-              onclick="openFreeHistoriesModal({{ $plant->id }})" 
+              onclick="window.openFreeHistoriesModal({{ $plant->id }})" 
               class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm transition flex items-center gap-1">
         <i data-lucide="eye" class="w-4 h-4"></i>
         Voir
