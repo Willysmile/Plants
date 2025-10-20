@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:900px;height:750px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden" style="width:1035px;height:863px;max-width:calc(100vw - 40px);" id="plant-modal-{{ $plant->id }}" data-modal-plant-id="{{ $plant->id }}">
   <div class="h-full flex flex-col">
     <!-- En-tête -->
     <div class="flex items-center justify-between p-3 border-b">
@@ -64,6 +64,46 @@
           <x-history-card :plant="$plant" type="fertilizing" context="modal" />
           <x-history-card :plant="$plant" type="repotting" context="modal" />
         </div>
+
+        <!-- Dernières Infos Diverses (collapsible) -->
+        @if($plant->histories->count())
+          <div class="mt-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Dernières Infos Diverses</h4>
+              <button type="button" id="histories-modal-toggle-{{ $plant->id }}" data-histories-toggle="true" data-histories-list="histories-modal-list-{{ $plant->id }}" data-histories-icon="histories-modal-icon-{{ $plant->id }}" class="p-1 rounded hover:bg-gray-100" aria-expanded="false" aria-controls="histories-modal-list-{{ $plant->id }}" title="Afficher / Masquer les entrées">
+                <svg id="histories-modal-icon-{{ $plant->id }}" class="w-4 h-4 text-gray-600 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+
+            <div id="histories-modal-list-{{ $plant->id }}" class="mt-1 space-y-2 text-xs hidden">
+              @foreach($plant->histories->sortByDesc('created_at')->take(3) as $h)
+                <div class="bg-gray-50 p-2 rounded border border-gray-100">
+                  <div class="text-xs text-gray-400">{{ $h->created_at->format('d/m/Y H:i') }}@if($h->user) - {{ $h->user->name }}@endif</div>
+                  <div class="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{{ $h->body }}</div>
+                </div>
+              @endforeach
+            </div>
+          </div>
+        @endif
+
+        <!-- Script pour toggle Dernières Infos Diverses -->
+        @if($plant->histories->count())
+          <script>
+            (function(){
+              const toggleBtn = document.getElementById('histories-modal-toggle-{{ $plant->id }}');
+              const toggleIcon = document.getElementById('histories-modal-icon-{{ $plant->id }}');
+              const listEl = document.getElementById('histories-modal-list-{{ $plant->id }}');
+              if (toggleBtn && listEl && toggleIcon) {
+                toggleBtn.addEventListener('click', function(e){
+                  e.stopPropagation();
+                  const isHidden = listEl.classList.toggle('hidden');
+                  toggleBtn.setAttribute('aria-expanded', String(!isHidden));
+                  toggleIcon.classList.toggle('rotate-180');
+                });
+              }
+            })();
+          </script>
+        @endif
       </div>
 
       <!-- Colonne droite (1/2) : Cartes en 2 colonnes + Galerie fixe en bas -->
@@ -259,6 +299,51 @@
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
+
+    // Fonction de refresh local pour cette modale
+    window.refreshModal = function(event) {
+      const button = event?.currentTarget || document.querySelector('[onclick="refreshModal()"]');
+      if (!button) return;
+      
+      const icon = button.querySelector('[data-lucide="refresh-cw"]');
+      const modal = document.getElementById('plant-modal-{{ $plant->id }}');
+      
+      if (!modal) return;
+      
+      // Add spinning animation
+      if (icon) {
+        icon.style.animation = 'spin 1s linear infinite';
+      }
+      
+      const plantId = {{ $plant->id }};
+      
+      // Fetch the updated modal HTML
+      fetch(`/plants/${plantId}/modal`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => response.text())
+      .then(html => {
+        // Parse and replace just the content
+        const parser = new DOMParser();
+        const newModal = parser.parseFromString(html, 'text/html').body.firstChild;
+        modal.replaceWith(newModal);
+        
+        console.log('[MODAL REFRESH] Modal refreshed successfully');
+        
+        // Reinitialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      })
+      .catch(error => {
+        console.error('[MODAL REFRESH] Error:', error);
+      })
+      .finally(() => {
+        if (icon) {
+          icon.style.animation = 'none';
+        }
+      });
+    };
   </script>
 
 </div>
