@@ -99,9 +99,6 @@
     // Refresh entire modal with loading animation
     window.refreshModal = function() {
       const modal = document.getElementById('plant-modal-content');
-      const button = event.currentTarget;
-      const icon = button.querySelector('[data-lucide="refresh-cw"]');
-      
       if (!modal) return;
       
       const plantModalEl = modal.querySelector('[data-modal-plant-id]');
@@ -115,6 +112,10 @@
         console.warn('[REFRESH] No plant ID found');
         return;
       }
+      
+      // Find the refresh button and its icon
+      const refreshButton = modal.querySelector('button[onclick*="refreshModal"]');
+      const icon = refreshButton ? refreshButton.querySelector('[data-lucide="refresh-cw"]') : null;
       
       // Add spinning animation
       if (icon) {
