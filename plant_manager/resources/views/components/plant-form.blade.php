@@ -262,7 +262,7 @@
   </div>
 
   <!-- Boutons -->
-  <div class="flex gap-2 mt-4">
+  <div class="flex justify-end gap-2 mt-4">
     <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">{{ $submitText }}</button>
     <a href="{{ $isEdit ? route('plants.show', $plant) : route('plants.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Annuler</a>
   </div>
