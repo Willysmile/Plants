@@ -9,6 +9,7 @@ use App\Http\Controllers\RepottingHistoryController;
 use App\Http\Controllers\PlantHistoryController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
+use App\Http\Controllers\BackupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,3 +64,11 @@ Route::resource('fertilizer-types', FertilizerTypeController::class);
 Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
 Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
 Route::get('settings/references', [SettingsController::class, 'references'])->name('settings.references');
+
+// Routes pour les sauvegardes et exports
+Route::middleware(['auth', 'admin'])->prefix('settings/backups')->name('backups.')->group(function () {
+    Route::get('/', [BackupController::class, 'index'])->name('index');
+    Route::post('/export', [BackupController::class, 'export'])->name('export');
+    Route::get('/download/{filename}', [BackupController::class, 'download'])->name('download');
+    Route::delete('/{filename}', [BackupController::class, 'delete'])->name('delete');
+});

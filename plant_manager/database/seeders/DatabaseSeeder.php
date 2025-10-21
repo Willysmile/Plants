@@ -15,3 +15,21 @@ class DatabaseSeeder extends Seeder
     {
         // Créer un utilisateur de test seulement s'il n'existe pas
         User::firstOrCreate(
+            ]
+        );
+
+        // Créer un utilisateur admin
+        User::firstOrCreate(
+            ]
+        );
+
+        $this->call([
+            WateringFrequencySeeder::class,
+            LightRequirementSeeder::class,
+            PurchasePlaceSeeder::class,
+            LocationSeeder::class,
+            FertilizerTypeSeeder::class,
+            TagSeeder::class,
+        ]);
+    }
+}
