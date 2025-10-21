@@ -34,7 +34,7 @@
   </div>
 
   <!-- Modal container -->
-  <div id="plant-modal-root" x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="plant-modal-root" x-data="{ open: false }" x-cloak x-show="open" class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" onclick="window.closeModal()"></div>
     <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
   </div>
@@ -127,7 +127,11 @@
       .then(html => {
         container.innerHTML = html;
         console.log('[RELOAD] Histories reloaded successfully');
-        
+        // Réinitialise la galerie après injection en ciblant l'élément modal
+        if (typeof GalleryManager !== 'undefined') {
+          const plantModalEl = container.closest('[data-modal-plant-id]');
+          GalleryManager.init(plantModalEl || container);
+        }
         // Reinitialize Lucide icons
         if (typeof lucide !== 'undefined') {
           lucide.createIcons();

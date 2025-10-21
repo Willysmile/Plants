@@ -91,11 +91,67 @@ const ModalManager = {
     }
 
     // Réinitialiser les icônes Lucide
-    if (typeof lucide !== 'undefined') {
-      setTimeout(() => {
-        lucide.createIcons();
-      }, 50);
-    }
+    // Ensure lucide is loaded, then call createIcons() (with retries)
+    const ensureLucideLoaded = () => {
+      return new Promise((resolve, reject) => {
+        if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+          return resolve(lucide);
+        }
+
+        // Avoid inserting multiple script tags
+        if (document.querySelector('script[data-lucide-loader]')) {
+          // wait for it to load
+          const existing = document.querySelector('script[data-lucide-loader]');
+          existing.addEventListener('load', () => {
+            if (typeof lucide !== 'undefined') resolve(lucide);
+            else reject(new Error('lucide did not initialize'));
+          });
+          existing.addEventListener('error', () => reject(new Error('Failed to load lucide')));
+          return;
+        }
+
+        const s = document.createElement('script');
+        s.setAttribute('src', 'https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js');
+        s.setAttribute('data-lucide-loader', '1');
+        s.async = true;
+        s.onload = () => {
+          if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+            resolve(lucide);
+          } else {
+            reject(new Error('lucide loaded but not available'));
+          }
+        };
+        s.onerror = () => reject(new Error('Failed to load lucide script'));
+        document.head.appendChild(s);
+      });
+    };
+
+    const runCreateIconsWithRetry = (attemptsLeft = 2) => {
+      try {
+        if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+          lucide.createIcons();
+          return Promise.resolve();
+        }
+      } catch (e) {
+        // fallthrough to retry
+      }
+
+      if (attemptsLeft <= 0) return Promise.reject(new Error('lucide.createIcons() failed'));
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          runCreateIconsWithRetry(attemptsLeft - 1).then(resolve).catch(() => resolve());
+        }, 50);
+      });
+    };
+
+    ensureLucideLoaded()
+      .then(() => runCreateIconsWithRetry(2))
+      .catch((err) => {
+        // If lucide cannot be loaded, we silently ignore — icons will stay as fallback text
+        // Optionally, you can log the error if DEBUG is enabled
+        if (window.DEBUG) console.error('Lucide init error:', err);
+      });
   },
 
   /**
@@ -106,7 +162,6 @@ const ModalManager = {
     if (dataScript) {
       try {
         window.globalLightboxImages = JSON.parse(dataScript.textContent);
-        console.log('Images modal chargées:', window.globalLightboxImages.length);
       } catch (e) {
         console.error('Erreur parsing images modal:', e);
       }

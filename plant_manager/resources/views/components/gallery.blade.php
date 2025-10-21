@@ -13,10 +13,11 @@
   @if($gallery->count())
     <div class="flex justify-center gap-3 flex-wrap">
       @for($i = 0; $i < min($maxThumbnails, $gallery->count()); $i++)
-        <button type="button" 
-               class="gallery-thumbnail"
-               data-type="thumbnail"
-               data-index="{{ $i + 1 }}"
+   <button type="button" 
+     class="gallery-thumbnail"
+     data-type="thumbnail"
+     data-index="{{ $i + 1 }}"
+     data-lightbox-index="{{ $i + 1 }}"
                data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
                style="aspect-ratio:1/1; width:120px; height:120px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#fff;" 
                aria-label="Échanger avec la photo principale">

@@ -9,88 +9,124 @@ const GalleryManager = {
 
   /**
    * Initialise le gestionnaire de galerie
+   * @param {HTMLElement} scope - Optionnel, élément racine à cibler
    */
-  init() {
-    this.setupThumbnailHandlers();
-    this.setupMainPhotoHandlers();
+  init(scope) {
+    // Si on reçoit un scope (ex: élément modal ou container injecté),
+    // essayer d'initialiser les images lightbox à partir du JSON inclus dans cette scope/modal
+    try {
+      let modalEl = null;
+      if (scope instanceof HTMLElement) {
+        modalEl = scope.closest('[data-modal-plant-id]') || scope.querySelector('[data-modal-plant-id]') || scope;
+      }
+
+      if (modalEl) {
+        const dataScript = modalEl.querySelector('script[data-lightbox-images]');
+        if (dataScript) {
+          window.globalLightboxImagesOriginal = JSON.parse(dataScript.textContent);
+          // working copy
+          window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
+          // lightbox images loaded from modal
+        }
+        // Restore any previous swap state for this modal
+        try {
+          this.restoreSwapState(modalEl);
+        } catch (err) {
+          // restore failed silently
+        }
+      }
+
+    } catch (err) {
+      console.warn('[GALLERY] Failed to init lightbox images from scope', err);
+    }
+
+    this.setupThumbnailHandlers(scope);
+    this.setupMainPhotoHandlers(scope);
   },
 
   /**
    * Configure les handlers pour les miniatures
+   * @param {HTMLElement} scope
    */
-  setupThumbnailHandlers() {
-    document.addEventListener('click', (event) => {
+  setupThumbnailHandlers(scope) {
+    const root = scope || document;
+    root.addEventListener('click', (event) => {
       if (!event.target.closest('[data-type="thumbnail"]')) return;
 
       const thumbnailBtn = event.target.closest('[data-type="thumbnail"]');
       const modal = thumbnailBtn.closest('[data-modal-plant-id]');
 
+      // thumbnail clicked
+
       if (!modal) return;
 
-      const mainPhoto = modal.querySelector('#main-photo-display');
-      if (!mainPhoto) return;
-
       const thumbnailImg = thumbnailBtn.querySelector('img');
-      if (!thumbnailImg) return;
-
-      // Récupérer l'index de la miniature cliquée
-      const thumbIndex = parseInt(thumbnailBtn.getAttribute('data-index') || 0);
-
-      // 🔧 FIX: Si on clique sur la miniature qui est déjà la photo principale,
-      // on la "déswap" - on revient à l'état précédent
-      const plantId = modal.getAttribute('data-modal-plant-id');
-      const currentSwapState = this.swapStates[plantId];
-
-      // 🔧 FIX: Si on clique sur un thumbnail différent du swap actuel, restaurer d'abord
-      if (currentSwapState && currentSwapState !== thumbIndex) {
-        delete this.swapStates[plantId];
-        
-        // Trouver le thumbnail du swap précédent et le remettre en place
-        const previousThumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${currentSwapState}"]`);
-        if (previousThumbBtn) {
-          const previousThumbImg = previousThumbBtn.querySelector('img');
-          if (previousThumbImg) {
-            // Restaurer les images visuellement
-            this.swapImages(mainPhoto, previousThumbImg);
-          }
-        }
-        
-        // Restaurer l'array Lightbox
-        const dataScript = modal.querySelector('script[data-lightbox-images]');
-        if (dataScript) {
-          window.globalLightboxImages = JSON.parse(dataScript.textContent);
-        } else if (window.globalLightboxImagesOriginal) {
-          window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
-        }
-      }
-
-      if (currentSwapState === thumbIndex) {
-        // Déswap: restaurer l'ordre original
-        delete this.swapStates[plantId];
-        
-        // Échanger les images visuellement pour les remettre en place
-        this.swapImages(mainPhoto, thumbnailImg);
-        
-        // Restaurer l'array Lightbox à partir du JSON dans la modal ou de la variable globale
-        const dataScript = modal.querySelector('script[data-lightbox-images]');
-        if (dataScript) {
-          window.globalLightboxImages = JSON.parse(dataScript.textContent);
-        }
-        // Fallback: utiliser l'array original sauvegardé (pour show.blade.php)
-        else if (window.globalLightboxImagesOriginal) {
-          window.globalLightboxImages = JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal));
-        }
+      if (!thumbnailImg) {
+        // no img inside thumbnail button
         return;
       }
 
-      // Échanger les images
+      // Récupérer l'index de la miniature cliquée
+  const thumbIndexAttr = thumbnailBtn.getAttribute('data-lightbox-index') || thumbnailBtn.getAttribute('data-index');
+  const thumbIndex = parseInt(thumbIndexAttr || 0);
+
+      // Si la modal n'a pas d'élément main-photo (structure différente du show),
+      // ouvrir directement le lightbox avec l'index correspondant.
+      const mainPhoto = modal.querySelector('#main-photo-display');
+      if (!mainPhoto) {
+        // Charger les images lightbox depuis le script JSON présent dans la modal
+        const dataScript = modal.querySelector('script[data-lightbox-images]');
+          if (dataScript) {
+            try {
+              window.globalLightboxImages = JSON.parse(dataScript.textContent);
+            } catch (err) {
+              // failed to parse lightbox JSON in modal
+            }
+        }
+
+        if (typeof window.openLightboxGlobal === 'function') {
+          window.openLightboxGlobal(thumbIndex);
+        } else {
+          console.warn('[GALLERY] openLightboxGlobal not available to open image in modal');
+        }
+
+        return;
+      }
+
+      const plantId = modal.getAttribute('data-modal-plant-id');
+      let currentSwap = this.swapStates[plantId] || null;
+
+      // Si on clique sur la même miniature que celle déjà swappée => déswap (restauration)
+      if (currentSwap && currentSwap.thumbIndex === thumbIndex) {
+        this._restoreSnapshot(modal, plantId);
+        return;
+      }
+
+      // Si un swap précédent existe et on clique sur une miniature différente, restaurer d'abord
+      if (currentSwap && currentSwap.thumbIndex !== thumbIndex) {
+        // restore previous swap before new swap
+        this._restoreSnapshot(modal, plantId);
+        currentSwap = null;
+      }
+
+      // Snapshot: sauvegarder les sources originales avant swap
+      const mainOriginalSrc = mainPhoto.getAttribute('data-original-src') || mainPhoto.src;
+      const thumbOriginalSrc = thumbnailBtn.getAttribute('data-original-src') || thumbnailImg.src;
+      const lightboxOriginal = window.globalLightboxImages ? JSON.parse(JSON.stringify(window.globalLightboxImages)) : (window.globalLightboxImagesOriginal ? JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal)) : []);
+
+      // Échanger les images (loggage pour debug)
       this.swapImages(mainPhoto, thumbnailImg);
 
       // Mettre à jour l'array lightbox global pour que le lightbox ouvre la bonne image
       this.updateLightboxArray(modal, thumbIndex);
 
-      // 🔧 FIX: Sauvegarder l'état de l'échange pour cette plante
-      this.swapStates[plantId] = thumbIndex;
+      // Sauvegarder snapshot pour restauration ultérieure
+      this.swapStates[plantId] = {
+        thumbIndex,
+        mainOriginalSrc,
+        thumbOriginalSrc,
+        lightboxOriginal
+      };
 
       // Marquer cette miniature comme active
       modal.setAttribute('data-active-thumb', thumbIndex);
@@ -137,6 +173,23 @@ const GalleryManager = {
       mainPhoto.setAttribute('data-original-src', thumbDataSrc);
       thumbnailImg.parentElement.setAttribute('data-original-src', mainDataSrc);
     }
+
+    // Force repaint: remplacer les éléments par des clones pour éviter les problèmes de rendu/caching
+    try {
+      const mainClone = mainPhoto.cloneNode(true);
+      mainClone.src = mainPhoto.src; // s'assurer que le clone a la nouvelle source
+      mainPhoto.parentNode.replaceChild(mainClone, mainPhoto);
+
+      const thumbParent = thumbnailImg.parentElement;
+      const thumbCloneImg = thumbnailImg.cloneNode(true);
+      thumbCloneImg.src = thumbnailImg.src;
+      // remplacer l'image dans le parent miniature
+      thumbParent.replaceChild(thumbCloneImg, thumbnailImg);
+
+  // DOM nodes replaced to force repaint
+    } catch (err) {
+      console.warn('[GALLERY_SWAP] Failed to force-replace nodes', err);
+    }
   },
 
   /**
@@ -146,17 +199,32 @@ const GalleryManager = {
    * @param {number} thumbIndex - Index de la miniature qui est devenue principale
    */
   updateLightboxArray(modal, thumbIndex) {
-    const arr = window.globalLightboxImages || [];
+    // Priorité: reconstruire l'array depuis le JSON inclus dans la modal si présent
+    let arr = [];
+    try {
+      const dataScript = modal ? modal.querySelector('script[data-lightbox-images]') : null;
+      if (dataScript) {
+        arr = JSON.parse(dataScript.textContent) || [];
+  // Rebuilt lightbox array from modal JSON
+      } else {
+        arr = window.globalLightboxImages || [];
+      }
+    } catch (err) {
+      console.warn('[GALLERY] Failed to parse modal lightbox JSON, falling back to global array', err);
+      arr = window.globalLightboxImages || [];
+    }
+
     if (!arr.length) return;
 
     // Si c'est déjà la photo principale (index 0), pas besoin de réorganiser
     if (thumbIndex === 0) return;
 
-    // Créer un nouveau tableau avec la photo à thumbIndex en premier
-    const reordered = [arr[thumbIndex], ...arr.slice(0, thumbIndex), ...arr.slice(thumbIndex + 1)];
+    // Sécurité: clamp thumbIndex dans les limites de l'array
+    const idx = Math.max(0, Math.min(thumbIndex, arr.length - 1));
 
-    // Mettre à jour l'array global
+    const reordered = [arr[idx], ...arr.slice(0, idx), ...arr.slice(idx + 1)];
     window.globalLightboxImages = reordered;
+  // Updated globalLightboxImages
   },
 
   /**
@@ -166,6 +234,8 @@ const GalleryManager = {
   restoreSwapState(modal) {
     const plantId = modal.getAttribute('data-modal-plant-id');
     const savedThumbIndex = this.swapStates[plantId];
+
+  // restoreSwapState called
 
     if (!savedThumbIndex || savedThumbIndex === 0) return;
 
@@ -219,6 +289,46 @@ const GalleryManager = {
     });
 
     modal.removeAttribute('data-active-thumb');
+  }
+,
+
+  /**
+   * Restaurer l'état sauvegardé dans swapStates[plantId]
+   * @param {HTMLElement} modal
+   * @param {string} plantId
+   */
+  _restoreSnapshot(modal, plantId) {
+    const snapshot = this.swapStates[plantId];
+    if (!snapshot) return;
+
+    try {
+      const mainPhoto = modal.querySelector('#main-photo-display');
+      const thumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${snapshot.thumbIndex}"]`);
+
+      if (mainPhoto && snapshot.mainOriginalSrc) {
+        mainPhoto.src = snapshot.mainOriginalSrc;
+        mainPhoto.setAttribute('data-original-src', snapshot.mainOriginalSrc);
+      }
+
+      if (thumbBtn && snapshot.thumbOriginalSrc) {
+        const img = thumbBtn.querySelector('img');
+        if (img) {
+          img.src = snapshot.thumbOriginalSrc;
+        }
+        thumbBtn.setAttribute('data-original-src', snapshot.thumbOriginalSrc);
+      }
+
+      // Restaurer l'array lightbox
+      if (snapshot.lightboxOriginal) {
+        window.globalLightboxImages = JSON.parse(JSON.stringify(snapshot.lightboxOriginal));
+      }
+
+  // Nettoyer snapshot
+  delete this.swapStates[plantId];
+  modal.removeAttribute('data-active-thumb');
+    } catch (err) {
+      console.warn('[GALLERY] Failed to restore snapshot', err);
+    }
   }
 };
 

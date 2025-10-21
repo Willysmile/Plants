@@ -11,8 +11,8 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-                <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <!-- Styles -->
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-50">
@@ -25,13 +25,41 @@
         </div>
         
         <!-- Load Lucide Icons at the very end to avoid conflicts -->
-        <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <!-- Alpine.js Loader -->
+    <script src="{{ asset('js/alpine.js') }}"></script>
+    <!-- Lucide Icons (local fallback vendor) -->
+    <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+
+    <!-- Application JavaScript -->
+    <script src="{{ asset('js/app.js') }}"></script>
+
+        <!-- Debug gate: set window.DEBUG = true to allow console.log during development -->
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                    lucide.createIcons();
+            window.DEBUG = window.DEBUG || false;
+            if (!window.DEBUG) {
+                console.log = function(){};
+                console.debug = function(){};
+                console.info = function(){};
+            }
+        </script>
+        <script>
+            (function initLucide() {
+                const run = () => {
+                    try {
+                        if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+                            lucide.createIcons();
+                        }
+                    } catch (e) {
+                        if (window.DEBUG) console.error('lucide.init error', e);
+                    }
+                };
+
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    run();
+                } else {
+                    document.addEventListener('DOMContentLoaded', run);
                 }
-            });
+            })();
         </script>
         
         <!-- Page-specific scripts -->

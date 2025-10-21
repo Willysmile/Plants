@@ -242,11 +242,12 @@
           @if($gallery->count())
             <div class="flex justify-center gap-2">
               @for($i = 0; $i < min($maxGallery, $gallery->count()); $i++)
-                <button type="button" 
-                       class="gallery-thumbnail"
-                       data-type="thumbnail"
-                       data-index="{{ $i + 1 }}"
-                       data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
+      <button type="button" 
+        class="gallery-thumbnail"
+        data-type="thumbnail"
+        data-index="{{ $i + 1 }}"
+        data-lightbox-index="{{ $i + 1 }}"
+        data-original-src="{{ Storage::url($gallery[$i]->filename) }}"
                        style="aspect-ratio:1/1; width:70px; height:70px; padding:0; border:0; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; background-color:#f8f8f8;" 
                        aria-label="Échanger avec la photo principale">
                   <img src="{{ Storage::url($gallery[$i]->filename) }}" 
@@ -296,15 +297,8 @@
 ]
   </script>
   
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>
-    // Initialiser les icônes quand la modale est chargée
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    }
-
-    // Fonction de refresh local pour cette modale
+  <!-- Fonction de refresh local pour cette modale -->
+    <script>
     window.refreshModal = function(event) {
       // Trouver le bouton refresh
       let button = event?.currentTarget;
@@ -336,15 +330,10 @@
         const newModal = parser.parseFromString(html, 'text/html').body.firstChild;
         modal.replaceWith(newModal);
         
-        console.log('[MODAL REFRESH] Modal refreshed successfully');
-        
-        // Reinitialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
-        }
+        // Modal refreshed successfully
       })
       .catch(error => {
-        console.error('[MODAL REFRESH] Error:', error);
+        console.error('Modal refresh error:', error);
       })
       .finally(() => {
         if (icon) {

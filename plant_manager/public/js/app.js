@@ -11,11 +11,9 @@
  * Fonction globale pour rafraîchir la modale
  */
 window.refreshModal = function() {
-  console.log('[REFRESH] refreshModal called');
-  console.log('[REFRESH] window.refreshModal exists:', typeof window.refreshModal);
+  // refreshModal called
   
   const modal = document.getElementById('plant-modal-content');
-  console.log('[REFRESH] modal found:', !!modal);
   
   if (!modal) {
     console.error('[REFRESH] No plant-modal-content found');
@@ -23,7 +21,6 @@ window.refreshModal = function() {
   }
   
   const plantModalEl = modal.querySelector('[data-modal-plant-id]');
-  console.log('[REFRESH] plantModalEl found:', !!plantModalEl);
   
   if (!plantModalEl) {
     console.warn('[REFRESH] No plant modal found');
@@ -31,7 +28,6 @@ window.refreshModal = function() {
   }
   
   const plantId = plantModalEl.getAttribute('data-modal-plant-id');
-  console.log('[REFRESH] plantId:', plantId);
   
   if (!plantId) {
     console.warn('[REFRESH] No plant ID found');
@@ -41,15 +37,14 @@ window.refreshModal = function() {
   // Find the refresh button and its icon
   const refreshButton = modal.querySelector('button[onclick*="refreshModal"]');
   const icon = refreshButton ? refreshButton.querySelector('[data-lucide="refresh-cw"]') : null;
-  console.log('[REFRESH] refreshButton found:', !!refreshButton);
-  console.log('[REFRESH] icon found:', !!icon);
+  // refresh button/icon presence logged during development
   
   // Add spinning animation
   if (icon) {
     icon.style.animation = 'spin 1s linear infinite';
   }
   
-  console.log('[REFRESH] Fetching /plants/' + plantId + '/modal');
+  // Fetching updated modal HTML
   
   // Fetch the new modal HTML
   fetch(`/plants/${plantId}/modal`, {
@@ -58,14 +53,14 @@ window.refreshModal = function() {
   .then(response => response.text())
   .then(html => {
     modal.innerHTML = html;
-    console.log('[REFRESH] Modal refreshed successfully');
+  // Modal refreshed successfully
     
     // Reinitialize Lucide icons
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     }
   })
-  .catch(error => console.error('[REFRESH] Error:', error))
+  .catch(error => console.error('Refresh error:', error))
   .finally(() => {
     if (icon) {
       icon.style.animation = 'none';
@@ -77,7 +72,7 @@ window.refreshModal = function() {
  * Ouvre la modale des Infos Diverses dans la modale plants
  */
 window.openModalFreeHistories = function(plantId) {
-  console.log('[FREE_HISTORIES] Opening modal for plant:', plantId);
+  // open free histories modal
   
   const modal = document.getElementById('plant-modal-content');
   if (!modal) {
@@ -88,9 +83,9 @@ window.openModalFreeHistories = function(plantId) {
   const freeHistoriesModal = modal.querySelector(`#free-histories-modal-${plantId}`);
   if (freeHistoriesModal) {
     freeHistoriesModal.style.display = 'flex';
-    console.log('[FREE_HISTORIES] Modal opened for plant:', plantId);
+  // modal opened
   } else {
-    console.warn('[FREE_HISTORIES] Modal not found for plant:', plantId);
+  // modal not found
   }
 };
 
@@ -98,18 +93,18 @@ window.openModalFreeHistories = function(plantId) {
  * Ferme la modale des Infos Diverses dans la modale plants
  */
 window.closeModalFreeHistories = function(plantId) {
-  console.log('[FREE_HISTORIES] Closing modal for plant:', plantId);
+  // close free histories modal
   
   const modal = document.getElementById('plant-modal-content');
   if (!modal) {
-    console.warn('[FREE_HISTORIES] Modal container not found');
+  // modal container not found
     return;
   }
   
   const freeHistoriesModal = modal.querySelector(`#free-histories-modal-${plantId}`);
   if (freeHistoriesModal) {
     freeHistoriesModal.style.display = 'none';
-    console.log('[FREE_HISTORIES] Modal closed for plant:', plantId);
+  // modal closed
   }
 };
 
@@ -117,14 +112,14 @@ window.closeModalFreeHistories = function(plantId) {
  * Ouvre la modale des Infos Diverses en show.blade.php
  */
 window.openFreeHistoriesModal = function(plantId) {
-  console.log('[FREE_HISTORIES_SHOW] Opening modal for plant:', plantId);
+  // open free histories modal (show)
   
   const modal = document.getElementById('free-histories-modal-' + plantId);
   if (modal) {
     modal.style.display = 'flex';
-    console.log('[FREE_HISTORIES_SHOW] Modal opened for plant:', plantId);
+  // modal opened
   } else {
-    console.warn('[FREE_HISTORIES_SHOW] Modal not found for plant:', plantId);
+  // modal not found
   }
 };
 
@@ -132,12 +127,26 @@ window.openFreeHistoriesModal = function(plantId) {
  * Ferme la modale des Infos Diverses en show.blade.php
  */
 window.closeFreeHistoriesModal = function(plantId) {
-  console.log('[FREE_HISTORIES_SHOW] Closing modal for plant:', plantId);
+  // close free histories modal (show)
   
   const modal = document.getElementById('free-histories-modal-' + plantId);
   if (modal) {
     modal.style.display = 'none';
-    console.log('[FREE_HISTORIES_SHOW] Modal closed for plant:', plantId);
+  // modal closed
+  }
+};
+
+/**
+ * Ouvre la modale et réinitialise la galerie à chaque ouverture
+ */
+window.openModal = function() {
+  const modalRoot = document.getElementById('plant-modal-root');
+  if (modalRoot && modalRoot.__x) {
+    modalRoot.__x.$data.open = true;
+    // Réinitialise la galerie à chaque ouverture
+    if (typeof GalleryManager !== 'undefined') {
+      GalleryManager.init();
+    }
   }
 };
 
@@ -145,7 +154,7 @@ window.closeFreeHistoriesModal = function(plantId) {
 // APP INITIALIZATION
 // ============================================================
 
-const App = {
+window.App = window.App || {
   /**
    * Initialise l'application
    */
@@ -155,19 +164,19 @@ const App = {
     if (typeof ModalManager !== 'undefined') {
       ModalManager.init();
     } else {
-      console.warn('ModalManager not loaded');
+      // ModalManager not loaded
     }
     
     if (typeof GalleryManager !== 'undefined') {
       GalleryManager.init();
     } else {
-      console.warn('GalleryManager not loaded');
+      // GalleryManager not loaded
     }
     
     if (typeof FormValidator !== 'undefined') {
       FormValidator.init();
     } else {
-      console.warn('FormValidator not loaded');
+      // FormValidator not loaded
     }
   },
 
