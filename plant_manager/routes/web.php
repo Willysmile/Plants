@@ -16,6 +16,11 @@ Route::get('/', function () {
     return auth()->check() ? redirect()->route('plants.index') : redirect()->route('login');
 })->name('home');
 
+// Dashboard redirect to plants
+Route::get('/dashboard', function () {
+    return redirect()->route('plants.index');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 // Routes protégées par authentification
 Route::middleware(['auth', 'verified'])->group(function () {
     // Route pour les plantes archivées
@@ -58,6 +63,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/export', [BackupController::class, 'export'])->name('export');
         Route::get('/download/{filename}', [BackupController::class, 'download'])->name('download');
         Route::delete('/{filename}', [BackupController::class, 'delete'])->name('delete');
+        
+        // Import routes
+        Route::post('/preview', [BackupController::class, 'importPreview'])->name('preview');
+        Route::post('/import', [BackupController::class, 'import'])->name('import');
+        Route::get('/info', [BackupController::class, 'getBackupInfo'])->name('info');
     });
 });
 

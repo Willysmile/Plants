@@ -9,6 +9,94 @@
       <p class="text-gray-600 mt-2">Gérez vos sauvegardes de données et vos exports</p>
     </header>
 
+    <!-- Import Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <i data-lucide="upload" class="w-5 h-5"></i>
+        Importer des données
+      </h2>
+      
+      <p class="text-gray-600 text-sm mb-4">
+        Restaurez vos données à partir d'une sauvegarde précédente.
+      </p>
+
+      <div class="space-y-4">
+        <!-- Backup Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Choisir une sauvegarde</label>
+          <select id="backup-select" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border">
+            <option value="">— Sélectionner une sauvegarde —</option>
+            @foreach($backups as $backup)
+              <option value="{{ $backup['filename'] }}">
+                {{ $backup['filename'] }} ({{ $backup['size_human'] }}, {{ $backup['created_at_human'] }})
+              </option>
+            @endforeach
+          </select>
+        </div>
+
+        <!-- Mode Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Mode d'import</label>
+          <div class="space-y-2">
+            <div>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="import-mode" value="MERGE" checked class="w-4 h-4 text-blue-600">
+                <span class="text-sm text-gray-700"><strong>MERGE</strong> — Ajouter/mettre à jour les données (par défaut, sûr)</span>
+              </label>
+            </div>
+            <div>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="import-mode" value="REPLACE" class="w-4 h-4 text-blue-600">
+                <span class="text-sm text-gray-700"><strong>REPLACE</strong> — Remplacer les données existantes (par référence)</span>
+              </label>
+            </div>
+            <div>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="import-mode" value="FRESH" class="w-4 h-4 text-blue-600">
+                <span class="text-sm text-red-600"><strong>FRESH</strong> — Supprimer et recommencer (ATTENTION: perte de données!)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Button -->
+        <button id="preview-btn" 
+                class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition flex items-center gap-2">
+          <i data-lucide="eye" class="w-4 h-4"></i>
+          Aperçu avant import
+        </button>
+      </div>
+
+      <!-- Preview Results -->
+      <div id="preview-results" class="mt-6 hidden bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <h3 class="font-semibold text-gray-800 mb-3">Aperçu de l'import</h3>
+        <div id="preview-content"></div>
+        
+        <!-- Confirmation -->
+        <div class="mt-4 flex gap-2">
+          <button id="confirm-import-btn" 
+                  class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            Confirmer l'import
+          </button>
+          <button onclick="document.getElementById('preview-results').classList.add('hidden')" 
+                  class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-lg transition">
+            Annuler
+          </button>
+        </div>
+      </div>
+
+      <!-- Import Status -->
+      <div id="import-status" class="mt-4 hidden">
+        <div class="flex items-center gap-2">
+          <div class="animate-spin">
+            <i data-lucide="loader" class="w-4 h-4"></i>
+          </div>
+          <span class="text-sm text-gray-600">Import en cours...</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Export Section -->
     <div class="bg-white rounded-lg shadow p-6 mb-6">
       <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -174,6 +262,125 @@
         }
       })
       .catch(err => alert('Erreur: ' + err.message));
+    }
+
+    // Import Preview handler
+    document.getElementById('preview-btn').addEventListener('click', async function() {
+      const backupFile = document.getElementById('backup-select').value;
+      const mode = document.querySelector('input[name="import-mode"]:checked').value;
+      const previewResults = document.getElementById('preview-results');
+      const previewContent = document.getElementById('preview-content');
+
+      if (!backupFile) {
+        alert('Veuillez sélectionner une sauvegarde');
+        return;
+      }
+
+      previewResults.classList.add('hidden');
+      this.disabled = true;
+
+      try {
+        const response = await fetch('{{ route("backups.preview") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          },
+          body: JSON.stringify({
+            backup: backupFile,
+            mode: mode,
+          }),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          const result = data.result;
+          previewContent.innerHTML = generatePreviewHTML(result, mode);
+          previewResults.classList.remove('hidden');
+        } else {
+          alert('Erreur: ' + data.message);
+        }
+      } catch (error) {
+        alert('Erreur: ' + error.message);
+      } finally {
+        this.disabled = false;
+      }
+    });
+
+    // Confirm Import handler
+    document.getElementById('confirm-import-btn').addEventListener('click', async function() {
+      const backupFile = document.getElementById('backup-select').value;
+      const mode = document.querySelector('input[name="import-mode"]:checked').value;
+      
+      if (!confirm('⚠️ Êtes-vous vraiment sûr? Cette action ne peut pas être annulée.')) {
+        return;
+      }
+
+      document.getElementById('preview-results').classList.add('hidden');
+      document.getElementById('import-status').classList.remove('hidden');
+      this.disabled = true;
+
+      try {
+        const response = await fetch('{{ route("backups.import") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          },
+          body: JSON.stringify({
+            backup: backupFile,
+            mode: mode,
+            confirmed: true,
+          }),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          alert('✓ Import complété avec succès!');
+          setTimeout(() => window.location.reload(), 2000);
+        } else {
+          alert('✗ Erreur: ' + data.message);
+        }
+      } catch (error) {
+        alert('✗ Erreur: ' + error.message);
+      } finally {
+        document.getElementById('import-status').classList.add('hidden');
+        this.disabled = false;
+      }
+    });
+
+    // Generate preview HTML
+    function generatePreviewHTML(result, mode) {
+      const warnings = result.warnings || [];
+      const counts = result.counts || {};
+
+      let html = '<div class="space-y-3">';
+
+      // Mode warning
+      if (mode === 'FRESH') {
+        html += '<div class="bg-red-100 border border-red-300 rounded p-3 text-red-800 text-sm"><strong>⚠️ Mode FRESH:</strong> Tous les données existantes seront supprimées!</div>';
+      }
+
+      // Counts
+      html += '<div><strong>Données à importer:</strong><ul class="list-disc list-inside text-sm text-gray-700 mt-1">';
+      html += `<li>${counts.plants_imported || 0} plantes</li>`;
+      html += `<li>${counts.photos_imported || 0} photos</li>`;
+      html += `<li>${counts.categories_synced || 0} catégories</li>`;
+      html += `<li>${counts.tags_synced || 0} tags</li>`;
+      html += `<li>${counts.histories_imported || 0} historiques</li>`;
+      html += '</ul></div>';
+
+      // Warnings
+      if (warnings.length > 0) {
+        html += '<div><strong>Avertissements:</strong><ul class="list-disc list-inside text-sm text-yellow-700 mt-1">';
+        warnings.forEach(w => html += `<li>${w}</li>`);
+        html += '</ul></div>';
+      }
+
+      html += '</div>';
+      return html;
     }
   </script>
 @endsection
