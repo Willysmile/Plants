@@ -2,10 +2,6 @@
 
 @section('title', 'Paramètres — Sauvegardes')
 
-@push('scripts')
-  <script src="https://unpkg.com/lucide@latest" defer></script>
-@endpush
-
 @section('content')
   <div class="max-w-6xl mx-auto p-6">
     <header class="mb-6">
@@ -301,6 +297,15 @@
           body: formData,
         });
 
+        console.log('Upload response status:', response.status);
+        
+        if (!response.ok) {
+          const text = await response.text();
+          console.error('Upload error response:', text);
+          alert('✗ Erreur serveur: ' + response.status + ' ' + response.statusText);
+          return;
+        }
+
         const data = await response.json();
         
         if (data.success) {
@@ -320,6 +325,7 @@
           alert('✗ Erreur: ' + data.message);
         }
       } catch (error) {
+        console.error('Upload fetch error:', error);
         alert('✗ Erreur lors de l\'upload: ' + error.message);
       }
     });
@@ -373,6 +379,24 @@
       const backupFile = document.getElementById('backup-select').value;
       const mode = document.querySelector('input[name="import-mode"]:checked').value;
       
+      // Debug logging
+      console.log('Import confirmation clicked', {
+        backupFile: backupFile,
+        mode: mode,
+        backupFileExists: !!backupFile,
+        modeExists: !!mode,
+      });
+      
+      if (!backupFile) {
+        alert('✗ Erreur: Veuillez sélectionner un fichier de sauvegarde');
+        return;
+      }
+      
+      if (!mode) {
+        alert('✗ Erreur: Veuillez sélectionner un mode d\'import');
+        return;
+      }
+      
       if (!confirm('⚠️ Êtes-vous vraiment sûr? Cette action ne peut pas être annulée.')) {
         return;
       }
@@ -382,20 +406,26 @@
       this.disabled = true;
 
       try {
+        const payload = {
+          backup: backupFile,
+          mode: mode,
+          confirmed: true,
+        };
+        
+        console.log('Sending import request with payload:', payload);
+        
         const response = await fetch('{{ route("backups.import") }}', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
           },
-          body: JSON.stringify({
-            backup: backupFile,
-            mode: mode,
-            confirmed: true,
-          }),
+          body: JSON.stringify(payload),
         });
 
+        console.log('Response status:', response.status);
         const data = await response.json();
+        console.log('Response data:', data);
         
         if (data.success) {
           alert('✓ Import complété avec succès!');
@@ -404,6 +434,7 @@
           alert('✗ Erreur: ' + data.message);
         }
       } catch (error) {
+        console.error('Import error:', error);
         alert('✗ Erreur: ' + error.message);
       } finally {
         document.getElementById('import-status').classList.add('hidden');
@@ -442,36 +473,5 @@
       html += '</div>';
       return html;
     }
-  </script>
-
-  <!-- Lucide Icons Library -->
-  <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-  <script>
-    /**
-     * Initialize Lucide Icons
-     * Safely waits for lucide library to load and initializes icons
-     */
-    (function initLucideIcons() {
-      const maxAttempts = 50;
-      let attempts = 0;
-
-      function checkAndInit() {
-        attempts++;
-        
-        if (typeof lucide !== 'undefined' && lucide.createIcons) {
-          lucide.createIcons();
-        } else if (attempts < maxAttempts) {
-          // Retry after 100ms if lucide not yet loaded
-          setTimeout(checkAndInit, 100);
-        }
-      }
-
-      // Start checking when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', checkAndInit);
-      } else {
-        checkAndInit();
-      }
-    })();
   </script>
 @endsection

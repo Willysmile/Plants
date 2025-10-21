@@ -71,12 +71,27 @@ class BackupController extends Controller
      */
     public function uploadBackup(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:zip|max:52428800', // 50MB max
-        ]);
+        try {
+            $request->validate([
+                'file' => 'required|file|mimes:zip|max:52428800', // 50MB max
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Upload validation failed', ['errors' => $e->errors()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        }
 
         try {
             $file = $request->file('file');
+            
+            \Log::info('Uploading backup file', [
+                'original_name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'mime' => $file->getClientMimeType(),
+            ]);
             
             // Generate unique filename
             $filename = 'uploaded_' . now()->format('Y-m-d_H-i-s') . '_' . uniqid() . '.zip';
@@ -85,18 +100,25 @@ class BackupController extends Controller
             $path = Storage::disk('backups')->putFileAs('', $file, $filename);
             
             if (!$path) {
+                \Log::error('Failed to store backup file', ['filename' => $filename]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to upload file',
                 ], 500);
             }
 
+            \Log::info('Backup file uploaded successfully', ['filename' => $filename, 'path' => $path]);
             return response()->json([
                 'success' => true,
                 'filename' => $filename,
                 'message' => 'File uploaded successfully',
             ]);
         } catch (\Exception $e) {
+            \Log::error('Upload exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Upload failed: ' . $e->getMessage(),
@@ -179,13 +201,25 @@ class BackupController extends Controller
      */
     public function import(Request $request)
     {
+        // Debug: Log what we receive
+        \Log::info('Import request received', [
+            'all' => $request->all(),
+            'backup' => $request->input('backup'),
+            'mode' => $request->input('mode'),
+            'confirmed' => $request->input('confirmed'),
+            'confirmed_type' => gettype($request->input('confirmed')),
+        ]);
+
         try {
             $validated = $request->validate([
                 'backup' => 'required|string',
                 'mode' => 'required|in:FRESH,MERGE,REPLACE',
-                'confirmed' => 'required|boolean',
+                'confirmed' => 'required',  // Simplified - just check it exists
             ]);
+            
+            \Log::info('Validation passed', ['validated' => $validated]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation failed', ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error',
@@ -204,7 +238,18 @@ class BackupController extends Controller
             $backupDir = storage_path('app/' . BackupService::BACKUP_DIR);
             $filepath = $backupDir . '/' . $request->input('backup');
 
+            \Log::info('Checking backup file', [
+                'backup_name' => $request->input('backup'),
+                'backup_dir' => $backupDir,
+                'full_path' => $filepath,
+                'file_exists' => file_exists($filepath),
+            ]);
+
             if (!file_exists($filepath)) {
+                \Log::error('Backup file not found', [
+                    'path' => $filepath,
+                    'backup' => $request->input('backup'),
+                ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Backup file not found',
@@ -216,7 +261,13 @@ class BackupController extends Controller
                 'dry_run' => false,
             ]);
 
+            \Log::info('Import service returned', [
+                'result_status' => $result['status'] ?? 'unknown',
+                'result_keys' => array_keys($result),
+            ]);
+
             if ($result['status'] === 'failed') {
+                \Log::error('Import failed', ['result' => $result]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Import failed',
@@ -224,6 +275,7 @@ class BackupController extends Controller
                 ], 400);
             }
 
+            \Log::info('Import successful', ['result' => $result]);
             return response()->json([
                 'success' => true,
                 'message' => 'Import completed successfully',
@@ -296,13 +348,28 @@ class BackupController extends Controller
      */
     public function reset(Request $request)
     {
-        $request->validate([
-            'reason' => 'required|string',
-            'create_backup' => 'boolean',
-            'confirmed' => 'required|boolean',
+        \Log::info('Reset request received', [
+            'user_id' => auth()->id(),
+            'request_data' => $request->all(),
         ]);
 
+        try {
+            $request->validate([
+                'reason' => 'nullable|string',
+                'create_backup' => 'boolean',
+                'confirmed' => 'required|boolean',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Reset validation failed', ['errors' => $e->errors()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        }
+
         if (!$request->boolean('confirmed')) {
+            \Log::warning('Reset not confirmed');
             return response()->json([
                 'success' => false,
                 'message' => 'Reset must be confirmed',
@@ -310,13 +377,17 @@ class BackupController extends Controller
         }
 
         try {
+            \Log::info('Calling reset service');
             $result = $this->resetService->reset([
                 'reason' => $request->input('reason'),
                 'create_backup' => $request->boolean('create_backup', false),
                 'dry_run' => false,
             ]);
 
+            \Log::info('Reset service returned', ['result_status' => $result['status']]);
+
             if ($result['status'] === 'failed') {
+                \Log::error('Reset failed', ['errors' => $result['errors']]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Reset failed',
@@ -324,12 +395,19 @@ class BackupController extends Controller
                 ], 400);
             }
 
+            \Log::info('Reset completed successfully');
             return response()->json([
                 'success' => true,
                 'message' => 'Reset completed successfully',
                 'result' => $result,
             ]);
         } catch (\Exception $e) {
+            \Log::error('Reset exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Reset failed: ' . $e->getMessage(),

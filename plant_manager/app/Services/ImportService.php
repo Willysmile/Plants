@@ -203,11 +203,12 @@ class ImportService
      */
     private function importFresh(array $backupData, array &$result): void
     {
-        // Clear existing data (except categories and other fixtures)
-        Photo::truncate();
-        PlantHistory::truncate();
-        Plant::truncate();
-        Tag::truncate();
+        // Clear existing data (including soft-deleted)
+        // Delete in correct order to respect foreign key relationships
+        PlantHistory::query()->forceDelete();  // Force delete plant histories first (includes soft-deleted)
+        Photo::query()->forceDelete();          // Force delete photos (includes soft-deleted)
+        Plant::query()->forceDelete();          // Force delete plants (includes soft-deleted)
+        Tag::query()->forceDelete();            // Force delete tags (includes soft-deleted)
 
         // Import fresh
         $this->importData($backupData, $result);
@@ -250,10 +251,15 @@ class ImportService
                     'category' => $tagData['category'] ?? null,
                 ]);
             } else {
-                $tag = Tag::updateOrCreate(
+                // In MERGE/REPLACE mode, use firstOrCreate to avoid duplicate key errors
+                $tag = Tag::firstOrCreate(
                     ['name' => $tagName],
                     ['category' => $tagData['category'] ?? null]
                 );
+                // Update category if it was empty
+                if (!$tag->category && !empty($tagData['category'])) {
+                    $tag->update(['category' => $tagData['category']]);
+                }
             }
             
             $tagMapping[$oldId] = $tag->id;
@@ -271,10 +277,26 @@ class ImportService
             if ($strategy === 'fresh') {
                 $plant = Plant::create($plantCreateData);
             } else {
-                $plant = Plant::updateOrCreate(
-                    ['reference' => $plantData['reference'] ?? 'ref-' . $oldId],
+                $reference = $plantData['reference'] ?? 'ref-' . $oldId;
+                \Log::info('Upserting plant', [
+                    'reference' => $reference,
+                    'name' => $plantData['name'] ?? 'unknown',
+                ]);
+                
+                // In MERGE mode, check if plant exists (including soft-deleted)
+                // If it's soft-deleted, restore it; otherwise update it
+                $plant = Plant::withTrashed()->firstOrCreate(
+                    ['reference' => $reference],
                     $plantCreateData
                 );
+                
+                // If the plant was soft-deleted, restore it
+                if ($plant->trashed()) {
+                    $plant->restore();
+                }
+                
+                // Update the plant data
+                $plant->update($plantCreateData);
             }
 
             $plantMapping[$oldId] = $plant->id;

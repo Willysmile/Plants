@@ -11,19 +11,8 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
+                <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
-        <script>
-            // Initialize Lucide Icons - Wait for library to load
-            (function initLucide() {
-                if (typeof lucide !== 'undefined' && lucide.createIcons) {
-                    lucide.createIcons();
-                } else {
-                    setTimeout(initLucide, 100);
-                }
-            })();
-        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-50">
@@ -34,5 +23,15 @@
                 @yield('content', $slot ?? '')
             </main>
         </div>
+        
+        <!-- Load Lucide Icons at the very end to avoid conflicts -->
+        <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                }
+            });
+        </script>
     </body>
 </html>

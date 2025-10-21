@@ -211,6 +211,16 @@
         }),
       });
       
+      console.log('Reset response status:', response.status);
+      console.log('Reset response headers:', response.headers);
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Reset error response:', text);
+        alert('✗ Erreur serveur: ' + response.status + ' ' + response.statusText);
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -220,6 +230,7 @@
         alert('✗ Erreur: ' + (data.message || 'Erreur inconnue'));
       }
     } catch (error) {
+      console.error('Reset fetch error:', error);
       alert('✗ Erreur: ' + error.message);
     } finally {
       this.disabled = false;
