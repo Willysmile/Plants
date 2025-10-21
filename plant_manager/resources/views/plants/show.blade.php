@@ -39,7 +39,7 @@
       </div>
 
       <div class="flex items-center gap-2 ml-4">
-        <button type="button" onclick="refreshShowPage()" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2" title="Actualiser la page">
+        <button type="button" id="refresh-page-btn" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2" title="Actualiser la page">
           <i data-lucide="refresh-cw" class="w-4 h-4"></i>
         </button>
         @if(!$plant->is_archived)
@@ -383,45 +383,49 @@
   <script src="{{ asset('js/gallery-manager.js') }}"></script>
   <script src="{{ asset('js/app.js') }}"></script>
   <script>
-    // Actualiser la page show
-    window.refreshShowPage = function() {
-      const button = event.currentTarget;
-      const icon = button.querySelector('[data-lucide="refresh-cw"]');
+    console.log('[SHOW] Extra scripts loaded');
+    
+    // Refresh button handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const refreshBtn = document.getElementById('refresh-page-btn');
       
-      // Add spinning animation
-      if (icon) {
-        icon.style.animation = 'spin 1s linear infinite';
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const icon = refreshBtn.querySelector('[data-lucide="refresh-cw"]');
+          if (icon) {
+            icon.classList.add('animate-spin');
+          }
+          // Reload immediately
+          location.reload();
+        });
       }
       
-      // Reload the page after 500ms
-      setTimeout(() => {
-        location.reload();
-      }, 500);
-    };
-    
+      // Initialize gallery manager
+      if (typeof GalleryManager !== 'undefined') {
+        GalleryManager.init();
+      }
+    });
+
     // Modale d'archivage
     window.confirmArchive = function() {
+      console.log('[SHOW] confirmArchive called');
       document.getElementById('archiveModal').classList.remove('hidden');
     };
-    
+
     window.cancelArchive = function() {
+      console.log('[SHOW] cancelArchive called');
       document.getElementById('archiveModal').classList.add('hidden');
       document.getElementById('archiveReason').value = '';
     };
-    
+
     window.submitArchive = function() {
+      console.log('[SHOW] submitArchive called');
       const reason = document.getElementById('archiveReason').value;
       const form = document.getElementById('archiveForm');
       const reasonInput = form.querySelector('input[name="reason"]');
       reasonInput.value = reason;
       form.submit();
     };
-    
-    // Initialiser le gestionnaire de galerie au chargement
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof GalleryManager !== 'undefined') {
-        GalleryManager.init();
-      }
-    });
   </script>
 @endsection

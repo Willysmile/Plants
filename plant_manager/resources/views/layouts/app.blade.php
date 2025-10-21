@@ -33,5 +33,8 @@
                 }
             });
         </script>
+        
+        <!-- Page-specific scripts -->
+        @yield('extra-scripts')
     </body>
 </html>

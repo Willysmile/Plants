@@ -194,6 +194,45 @@ const App = {
 };
 
 /**
+ * Ferme la modale Alpine dans index.blade.php
+ */
+window.closeModal = function() {
+  console.log('[CLOSE] closeModal called');
+  const modalRoot = document.getElementById('plant-modal-root');
+  if (modalRoot) {
+    modalRoot.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    console.log('[CLOSE] Modal closed');
+  }
+};
+
+/**
+ * Rafraîchit la page show.blade.php avec animation
+ */
+window.refreshShowPage = function() {
+  console.log('[REFRESH_SHOW] refreshShowPage called');
+  console.log('[REFRESH_SHOW] typeof location:', typeof location);
+  console.log('[REFRESH_SHOW] location.reload:', typeof location.reload);
+  
+  // Find the refresh button and animate its icon
+  const buttons = document.querySelectorAll('button[onclick*="refreshShowPage"]');
+  console.log('[REFRESH_SHOW] Found buttons with onclick:', buttons.length);
+  
+  buttons.forEach(button => {
+    const icon = button.querySelector('[data-lucide="refresh-cw"]');
+    if (icon) {
+      icon.style.animation = 'spin 1s linear infinite';
+    }
+  });
+  
+  // Reload after brief delay to show animation
+  setTimeout(() => {
+    console.log('[REFRESH_SHOW] Reloading page...');
+    location.reload();
+  }, 300);
+};
+
+/**
  * Initialise l'app au chargement du DOM
  */
 document.addEventListener('DOMContentLoaded', () => {

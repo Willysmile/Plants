@@ -34,8 +34,8 @@
   </div>
 
   <!-- Modal container -->
-  <div id="plant-modal-root" x-data x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" @click="closeModal()"></div>
+  <div id="plant-modal-root" x-cloak style="display:none" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="plant-modal-backdrop" class="absolute inset-0 bg-black/60" onclick="window.closeModal()"></div>
     <div id="plant-modal-content" class="relative max-w-4xl w-full z-10"></div>
   </div>
 

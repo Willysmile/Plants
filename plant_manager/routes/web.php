@@ -79,4 +79,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+// Serve files from storage (bypass Laravel's public storage)
+Route::get('/storage/{path}', [StorageController::class, 'serve'])
+    ->where('path', '.*')
+    ->name('storage.serve');
+
 require __DIR__.'/auth.php';

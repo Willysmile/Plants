@@ -330,12 +330,14 @@ class ImportService
             // Store photo from backup archive
             $photoPath = "photos/" . basename($filename);
             if (isset($backupData['photos'][$photoPath])) {
+                $newPlantId = $plantMapping[$oldPlantId];
                 $newFilename = Str::uuid() . '.' . pathinfo($filename, PATHINFO_EXTENSION);
-                $disk->put('plants/' . $newFilename, $backupData['photos'][$photoPath]);
+                $storagePath = "plants/{$newPlantId}/" . $newFilename;
+                $disk->put($storagePath, $backupData['photos'][$photoPath]);
 
                 $photo = Photo::create([
-                    'plant_id' => $plantMapping[$oldPlantId],
-                    'filename' => $newFilename,
+                    'plant_id' => $newPlantId,
+                    'filename' => $storagePath,
                     'description' => $photoData['description'] ?? null,
                     'is_main' => $photoData['is_main'] ?? false,
                 ]);
