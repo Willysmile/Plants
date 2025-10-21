@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\BackupService;
 use App\Services\ImportService;
+use App\Services\ResetService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -11,14 +12,17 @@ class BackupController extends Controller
 {
     protected BackupService $backupService;
     protected ImportService $importService;
+    protected ResetService $resetService;
 
-    public function __construct(BackupService $backupService, ImportService $importService)
-    {
+    public function __construct(
+        BackupService $backupService,
+        ImportService $importService,
+        ResetService $resetService
+    ) {
         $this->backupService = $backupService;
         $this->importService = $importService;
-    }
-
-    /**
+        $this->resetService = $resetService;
+    }    /**
      * Show backups page
      */
     public function index()
@@ -217,6 +221,162 @@ class BackupController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to read backup: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get deleted items that can be recovered
+     */
+    public function getDeletedItems(Request $request)
+    {
+        try {
+            $result = $this->resetService->getDeletedItems();
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve deleted items: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Perform reset (soft-delete all data)
+     */
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'reason' => 'required|string',
+            'create_backup' => 'boolean',
+            'confirmed' => 'required|boolean',
+        ]);
+
+        if (!$request->boolean('confirmed')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reset must be confirmed',
+            ], 400);
+        }
+
+        try {
+            $result = $this->resetService->reset([
+                'reason' => $request->input('reason'),
+                'create_backup' => $request->boolean('create_backup', false),
+                'dry_run' => false,
+            ]);
+
+            if ($result['status'] === 'failed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Reset failed',
+                    'errors' => $result['errors'],
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reset completed successfully',
+                'result' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reset failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Preview reset (dry-run)
+     */
+    public function resetPreview(Request $request)
+    {
+        try {
+            $result = $this->resetService->reset([
+                'dry_run' => true,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'result' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to preview reset: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Recover deleted items
+     */
+    public function recover(Request $request)
+    {
+        $request->validate([
+            'plant_ids' => 'required|array|min:1',
+            'plant_ids.*' => 'integer|min:1',
+            'confirmed' => 'required|boolean',
+        ]);
+
+        if (!$request->boolean('confirmed')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recovery must be confirmed',
+            ], 400);
+        }
+
+        try {
+            $result = $this->resetService->recover([
+                'plant_ids' => $request->input('plant_ids'),
+                'reason' => 'User recovery via web UI',
+            ]);
+
+            if ($result['status'] === 'failed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recovery failed',
+                    'errors' => $result['errors'],
+                ], 400);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Recovery completed successfully',
+                'result' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recovery failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get audit logs
+     */
+    public function getAuditLogs(Request $request)
+    {
+        try {
+            $result = $this->resetService->getAuditLogs([
+                'action' => $request->input('action'),
+                'limit' => $request->integer('limit', 50),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve audit logs: ' . $e->getMessage(),
             ], 500);
         }
     }

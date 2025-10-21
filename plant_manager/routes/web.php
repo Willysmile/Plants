@@ -68,6 +68,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/preview', [BackupController::class, 'importPreview'])->name('preview');
         Route::post('/import', [BackupController::class, 'import'])->name('import');
         Route::get('/info', [BackupController::class, 'getBackupInfo'])->name('info');
+        
+        // Reset & Recovery routes
+        Route::get('/deleted-items', [BackupController::class, 'getDeletedItems'])->name('deleted-items');
+        Route::post('/reset-preview', [BackupController::class, 'resetPreview'])->name('reset-preview');
+        Route::post('/reset', [BackupController::class, 'reset'])->name('reset');
+        Route::post('/recover', [BackupController::class, 'recover'])->name('recover');
+        Route::get('/audit-logs', [BackupController::class, 'getAuditLogs'])->name('audit-logs');
     });
 });
 

@@ -134,7 +134,7 @@
     </div>
 
     <!-- Backups History -->
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
       <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <i data-lucide="hard-drive" class="w-5 h-5"></i>
         Historique des sauvegardes
@@ -194,6 +194,8 @@
         </div>
       @endif
     </div>
+
+    @include('settings.backups._reset_section')
   </div>
 
   <script>
