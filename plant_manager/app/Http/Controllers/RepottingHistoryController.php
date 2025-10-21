@@ -32,14 +32,11 @@ class RepottingHistoryController extends Controller
     public function store(Request $request, Plant $plant)
     {
         $validated = $request->validate([
-            'repotting_date' => 'required|date_format:Y-m-d|before_or_equal:today',
+            'repotting_date' => 'required|date',
             'old_pot_size' => 'nullable|string|max:255',
             'new_pot_size' => 'required|string|max:255',
             'soil_type' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
-        ], [
-            'repotting_date.before_or_equal' => 'La date ne peut pas être dans le futur.',
-            'new_pot_size.required' => 'Le nouveau pot est obligatoire.',
         ]);
 
         $validated['plant_id'] = $plant->id;
@@ -50,13 +47,7 @@ class RepottingHistoryController extends Controller
             'last_repotting_date' => $validated['repotting_date'],
         ]);
 
-        // Return empty response for AJAX requests (no redirect)
-        if ($request->header('X-Requested-With') === 'XMLHttpRequest' || $request->input('_ajax')) {
-            return response()->json(['success' => true], 200);
-        }
-
-        // For normal requests, redirect to show page
-        return redirect()->route('plants.show', $plant)
+        return redirect()->route('plants.repotting-history.index', $plant)
             ->with('success', 'Rempotage enregistré avec succès.');
     }
 
@@ -98,3 +89,4 @@ class RepottingHistoryController extends Controller
             ->with('success', 'Rempotage supprimé avec succès.');
     }
 }
+

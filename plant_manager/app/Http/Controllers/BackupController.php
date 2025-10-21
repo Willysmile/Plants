@@ -13,8 +13,6 @@ class BackupController extends Controller
     public function __construct(BackupService $backupService)
     {
         $this->backupService = $backupService;
-        $this->middleware('auth');
-        $this->middleware('admin'); // Add admin middleware
     }
 
     /**
