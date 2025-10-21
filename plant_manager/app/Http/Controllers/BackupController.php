@@ -67,6 +67,44 @@ class BackupController extends Controller
     }
 
     /**
+     * Upload backup file from user's computer
+     */
+    public function uploadBackup(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:zip|max:52428800', // 50MB max
+        ]);
+
+        try {
+            $file = $request->file('file');
+            
+            // Generate unique filename
+            $filename = 'uploaded_' . now()->format('Y-m-d_H-i-s') . '_' . uniqid() . '.zip';
+            
+            // Store in backups directory
+            $path = Storage::disk('backups')->putFileAs('', $file, $filename);
+            
+            if (!$path) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload file',
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'filename' => $filename,
+                'message' => 'File uploaded successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Download backup file
      */
     public function download($filename)
@@ -141,11 +179,19 @@ class BackupController extends Controller
      */
     public function import(Request $request)
     {
-        $request->validate([
-            'backup' => 'required|string',
-            'mode' => 'required|in:FRESH,MERGE,REPLACE',
-            'confirmed' => 'required|boolean',
-        ]);
+        try {
+            $validated = $request->validate([
+                'backup' => 'required|string',
+                'mode' => 'required|in:FRESH,MERGE,REPLACE',
+                'confirmed' => 'required|boolean',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        }
 
         if (!$request->boolean('confirmed')) {
             return response()->json([

@@ -170,11 +170,27 @@ class BackupService
 
         foreach ($photos as $photo) {
             $filename = $photo['filename'];
-            if ($disk->exists($filename)) {
-                $content = $disk->get($filename);
-                $zipPath = 'photos/' . basename($filename);
-                $zip->addFromString($zipPath, $content);
-                $count++;
+            
+            // Try different path variations
+            $pathVariations = [
+                $filename,  // Original
+                'plants/' . basename($filename),  // With plants prefix
+                basename($filename),  // Just filename
+            ];
+            
+            foreach ($pathVariations as $path) {
+                if ($disk->exists($path)) {
+                    try {
+                        $content = $disk->get($path);
+                        $zipPath = 'photos/' . basename($filename);
+                        $zip->addFromString($zipPath, $content);
+                        $count++;
+                        break; // Found and added, move to next photo
+                    } catch (\Exception $e) {
+                        // Try next variation
+                        continue;
+                    }
+                }
             }
         }
 
@@ -189,14 +205,14 @@ class BackupService
         $this->ensureBackupDir();
         $backups = [];
 
-        $files = Storage::disk('local')->files(self::BACKUP_DIR);
+        $files = Storage::disk('backups')->files('');
         foreach ($files as $file) {
             if (str_ends_with($file, '.zip')) {
                 $backups[] = [
                     'filename' => basename($file),
                     'path' => $file,
-                    'size' => Storage::disk('local')->size($file),
-                    'created_at' => Storage::disk('local')->lastModified($file),
+                    'size' => Storage::disk('backups')->size($file),
+                    'created_at' => Storage::disk('backups')->lastModified($file),
                 ];
             }
         }
@@ -257,7 +273,7 @@ class BackupService
         }
 
         try {
-            Storage::disk('local')->delete(self::BACKUP_DIR . "/{$filename}");
+            Storage::disk('backups')->delete($filename);
             return true;
         } catch (\Exception $e) {
             return false;

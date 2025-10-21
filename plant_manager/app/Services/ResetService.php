@@ -29,11 +29,9 @@ class ResetService
         $result = [
             'status' => 'pending',
             'dry_run' => $dryRun,
-            'counts' => [
-                'plants_deleted' => 0,
-                'photos_deleted' => 0,
-                'histories_deleted' => 0,
-            ],
+            'plants_count' => 0,
+            'photos_count' => 0,
+            'histories_count' => 0,
             'recovery_deadline' => null,
             'backup_filename' => null,
             'errors' => [],
@@ -59,11 +57,12 @@ class ResetService
                 $result['status'] = 'completed';
                 $result['recovery_deadline'] = now()->addDays(self::RECOVERY_WINDOW_DAYS)->toIso8601String();
             } else {
-                // Calculate what would be deleted
-                $result['counts']['plants_deleted'] = Plant::count();
-                $result['counts']['photos_deleted'] = Photo::count();
-                $result['counts']['histories_deleted'] = PlantHistory::count();
+                // Calculate what would be deleted (only non-deleted items)
+                $result['plants_count'] = Plant::whereNull('deleted_at')->count();
+                $result['photos_count'] = Photo::whereNull('deleted_at')->count();
+                $result['histories_count'] = PlantHistory::whereNull('deleted_at')->count();
                 $result['status'] = 'dry-run-completed';
+                $result['recovery_deadline'] = now()->addDays(self::RECOVERY_WINDOW_DAYS)->toIso8601String();
             }
 
         } catch (\Exception $e) {
@@ -83,8 +82,8 @@ class ResetService
         $recoveryDeadline = now()->addDays(self::RECOVERY_WINDOW_DAYS);
 
         // Delete plants (soft-delete)
-        $plants = Plant::all();
-        $result['counts']['plants_deleted'] = 0;
+        $plants = Plant::whereNull('deleted_at')->get();
+        $result['plants_count'] = 0;
 
         foreach ($plants as $plant) {
             // Log before deletion
@@ -103,12 +102,12 @@ class ResetService
                 'recovery_deadline' => $recoveryDeadline,
             ]);
             $plant->delete();
-            $result['counts']['plants_deleted']++;
+            $result['plants_count']++;
         }
 
         // Photos cascade delete with plants
-        $photos = Photo::all();
-        $result['counts']['photos_deleted'] = 0;
+        $photos = Photo::whereNull('deleted_at')->get();
+        $result['photos_count'] = 0;
 
         foreach ($photos as $photo) {
             AuditLog::log([
@@ -118,16 +117,16 @@ class ResetService
                 'reason' => $reason,
             ]);
             $photo->delete();
-            $result['counts']['photos_deleted']++;
+            $result['photos_count']++;
         }
 
         // Histories cascade delete
-        $histories = PlantHistory::all();
-        $result['counts']['histories_deleted'] = 0;
+        $histories = PlantHistory::whereNull('deleted_at')->get();
+        $result['histories_count'] = 0;
 
         foreach ($histories as $history) {
             $history->delete();
-            $result['counts']['histories_deleted']++;
+            $result['histories_count']++;
         }
 
         // Log the reset action
@@ -135,9 +134,9 @@ class ResetService
             'action' => 'reset_completed',
             'reason' => $reason,
             'new_values' => [
-                'plants_deleted' => $result['counts']['plants_deleted'],
-                'photos_deleted' => $result['counts']['photos_deleted'],
-                'histories_deleted' => $result['counts']['histories_deleted'],
+                'plants_deleted' => $result['plants_count'],
+                'photos_deleted' => $result['photos_count'],
+                'histories_deleted' => $result['histories_count'],
                 'recovery_deadline' => $recoveryDeadline->toIso8601String(),
             ],
         ]);

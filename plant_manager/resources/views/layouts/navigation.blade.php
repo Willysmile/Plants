@@ -38,6 +38,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        @if(auth()->user()?->is_admin)
+                            <x-dropdown-link :href="route('backups.index')">
+                                💾 {{ __('Sauvegardes') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

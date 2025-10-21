@@ -2,6 +2,10 @@
 
 @section('title', 'Paramètres — Sauvegardes')
 
+@push('scripts')
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+@endpush
+
 @section('content')
   <div class="max-w-6xl mx-auto p-6">
     <header class="mb-6">
@@ -21,17 +25,31 @@
       </p>
 
       <div class="space-y-4">
-        <!-- Backup Selection -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Choisir une sauvegarde</label>
-          <select id="backup-select" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border">
-            <option value="">— Sélectionner une sauvegarde —</option>
-            @foreach($backups as $backup)
-              <option value="{{ $backup['filename'] }}">
-                {{ $backup['filename'] }} ({{ $backup['size_human'] }}, {{ $backup['created_at_human'] }})
-              </option>
-            @endforeach
-          </select>
+        <!-- Backup Selection OR Upload -->
+        <div class="flex gap-4">
+          <!-- Method 1: From saved backups -->
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">📁 Choisir une sauvegarde existante</label>
+            <select id="backup-select" class="w-full border-gray-300 rounded-lg shadow-sm p-2 border">
+              <option value="">— Sélectionner une sauvegarde —</option>
+              @foreach($backups as $backup)
+                <option value="{{ $backup['filename'] }}">
+                  {{ $backup['filename'] }} ({{ $backup['size_human'] }}, {{ $backup['created_at_human'] }})
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          <div class="flex items-end">
+            <span class="text-gray-400">OU</span>
+          </div>
+
+          <!-- Method 2: Upload from computer -->
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">📤 Importer un fichier ZIP</label>
+            <input type="file" id="backup-upload" accept=".zip" class="w-full border border-gray-300 rounded-lg shadow-sm p-2">
+            <p class="text-xs text-gray-500 mt-1">Fichier ZIP exporté (max 50MB)</p>
+          </div>
         </div>
 
         <!-- Mode Selection -->
@@ -266,6 +284,46 @@
       .catch(err => alert('Erreur: ' + err.message));
     }
 
+    // Upload backup handler
+    document.getElementById('backup-upload')?.addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('{{ route("backups.upload") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+          },
+          body: formData,
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          // Add the uploaded file to the select dropdown
+          const select = document.getElementById('backup-select');
+          const option = document.createElement('option');
+          option.value = data.filename;
+          option.textContent = data.filename + ' (Importé)';
+          select.appendChild(option);
+          select.value = data.filename;
+          
+          alert('✓ Fichier importé avec succès!');
+          
+          // Clear the file input
+          this.value = '';
+        } else {
+          alert('✗ Erreur: ' + data.message);
+        }
+      } catch (error) {
+        alert('✗ Erreur lors de l\'upload: ' + error.message);
+      }
+    });
+
     // Import Preview handler
     document.getElementById('preview-btn').addEventListener('click', async function() {
       const backupFile = document.getElementById('backup-select').value;
@@ -384,5 +442,36 @@
       html += '</div>';
       return html;
     }
+  </script>
+
+  <!-- Lucide Icons Library -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+  <script>
+    /**
+     * Initialize Lucide Icons
+     * Safely waits for lucide library to load and initializes icons
+     */
+    (function initLucideIcons() {
+      const maxAttempts = 50;
+      let attempts = 0;
+
+      function checkAndInit() {
+        attempts++;
+        
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+          lucide.createIcons();
+        } else if (attempts < maxAttempts) {
+          // Retry after 100ms if lucide not yet loaded
+          setTimeout(checkAndInit, 100);
+        }
+      }
+
+      // Start checking when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkAndInit);
+      } else {
+        checkAndInit();
+      }
+    })();
   </script>
 @endsection

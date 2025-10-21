@@ -27,11 +27,16 @@
         </div>
       @endif
 
-      <!-- Lien vers tableau de bord références -->
-      <div class="mb-6">
+      <!-- Liens vers sous-sections -->
+      <div class="mb-6 flex gap-3">
         <a href="{{ route('settings.references') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg transition font-medium">
           📌 Gestion des Références
         </a>
+        @if(auth()->user()?->is_admin)
+          <a href="{{ route('backups.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg transition font-medium">
+            💾 Sauvegardes & Exports
+          </a>
+        @endif
       </div>
 
       <!-- Formulaire -->

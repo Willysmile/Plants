@@ -61,6 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['admin'])->prefix('settings/backups')->name('backups.')->group(function () {
         Route::get('/', [BackupController::class, 'index'])->name('index');
         Route::post('/export', [BackupController::class, 'export'])->name('export');
+        Route::post('/upload', [BackupController::class, 'uploadBackup'])->name('upload');
         Route::get('/download/{filename}', [BackupController::class, 'download'])->name('download');
         Route::delete('/{filename}', [BackupController::class, 'delete'])->name('delete');
         

@@ -113,6 +113,120 @@
 </div>
 
 <script>
+  // Toggle reset section
+  document.getElementById('toggle-reset-btn')?.addEventListener('click', function() {
+    const section = document.querySelector('[data-reset-section]');
+    section.classList.toggle('hidden');
+    this.textContent = section.classList.contains('hidden') ? 'Afficher options avancées' : 'Masquer options avancées';
+  });
+
+  // Reset Preview
+  document.getElementById('reset-preview-btn')?.addEventListener('click', async function() {
+    const createBackup = document.getElementById('reset-backup-checkbox').checked;
+    const reason = document.getElementById('reset-reason').value;
+    const previewDiv = document.getElementById('reset-preview');
+    const contentDiv = document.getElementById('reset-preview-content');
+    
+    this.disabled = true;
+    
+    try {
+      const response = await fetch('{{ route("backups.reset-preview") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({
+          create_backup: createBackup,
+          reason: reason,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        const result = data.result;
+        contentDiv.innerHTML = `
+          <table class="min-w-full text-sm border-collapse">
+            <tr class="border-b">
+              <td class="px-2 py-1">Plantes à supprimer</td>
+              <td class="px-2 py-1 font-semibold text-red-700">${result.plants_count || 0}</td>
+            </tr>
+            <tr class="border-b">
+              <td class="px-2 py-1">Photos à supprimer</td>
+              <td class="px-2 py-1 font-semibold text-red-700">${result.photos_count || 0}</td>
+            </tr>
+            <tr class="border-b">
+              <td class="px-2 py-1">Historiques à supprimer</td>
+              <td class="px-2 py-1 font-semibold text-red-700">${result.histories_count || 0}</td>
+            </tr>
+            <tr>
+              <td class="px-2 py-1">Sauvegarde créée</td>
+              <td class="px-2 py-1 font-semibold text-blue-700">${createBackup ? '✓ Oui' : '✗ Non'}</td>
+            </tr>
+          </table>
+          ${result.recovery_deadline ? `<p class="text-xs text-red-600 mt-2">Récupération possible jusqu'au: ${result.recovery_deadline}</p>` : ''}
+        `;
+        previewDiv.classList.remove('hidden');
+      } else {
+        alert('Erreur: ' + (data.message || 'Impossible de générer l\'aperçu'));
+      }
+    } catch (error) {
+      alert('Erreur: ' + error.message);
+    } finally {
+      this.disabled = false;
+    }
+  });
+
+  // Confirm Reset
+  document.getElementById('confirm-reset-btn')?.addEventListener('click', async function() {
+    if (!confirm('⚠️ ATTENTION: Vous êtes sur le point de supprimer toutes les plantes.\nCette action est irréversible pendant 30 jours.\nÊtes-vous sûr ?')) {
+      return;
+    }
+    
+    if (!confirm('🚨 DEUXIÈME CONFIRMATION: Êtes-vous absolument sûr ? Cette action supprimera TOUTES les données !')) {
+      return;
+    }
+
+    const createBackup = document.getElementById('reset-backup-checkbox').checked;
+    const reason = document.getElementById('reset-reason').value;
+    const statusDiv = document.getElementById('reset-status');
+    const previewDiv = document.getElementById('reset-preview');
+    
+    this.disabled = true;
+    statusDiv.classList.remove('hidden');
+    previewDiv.classList.add('hidden');
+    
+    try {
+      const response = await fetch('{{ route("backups.reset") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({
+          confirmed: true,
+          create_backup: createBackup,
+          reason: reason,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('✓ Réinitialisation complète!\nLes données restent récupérables pendant 30 jours.');
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        alert('✗ Erreur: ' + (data.message || 'Erreur inconnue'));
+      }
+    } catch (error) {
+      alert('✗ Erreur: ' + error.message);
+    } finally {
+      this.disabled = false;
+      statusDiv.classList.add('hidden');
+    }
+  });
+
   // Show Deleted Items
   document.getElementById('show-deleted-btn')?.addEventListener('click', async function() {
     const container = document.getElementById('deleted-items-list');

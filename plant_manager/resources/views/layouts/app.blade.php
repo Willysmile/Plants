@@ -15,7 +15,14 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
         <script>
-            lucide.createIcons();
+            // Initialize Lucide Icons - Wait for library to load
+            (function initLucide() {
+                if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                    lucide.createIcons();
+                } else {
+                    setTimeout(initLucide, 100);
+                }
+            })();
         </script>
     </head>
     <body class="font-sans antialiased">
