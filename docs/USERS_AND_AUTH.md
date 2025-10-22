@@ -63,12 +63,23 @@ users
 Exécutée au premier `php artisan migrate:fresh --seed`:
 
 ```php
+```
+
+---
+
+## 🔧 Méthodes de création
+
+### 1️⃣ Seed de développement (Automatique)
+
+Exécutée au premier `php artisan migrate:fresh --seed`:
+
+```php
 // database/seeders/DatabaseSeeder.php
 User::firstOrCreate(
-    ['email' => 'test@example.com'],
+    ['email' => 'user@example.com'],
     [
-        'name' => 'Test User',
-        'password' => Hash::make('password'),
+        'name' => 'User',
+        'password' => Hash::make('***'),  // Voir .env
         'is_admin' => false,
     ]
 );
@@ -76,11 +87,81 @@ User::firstOrCreate(
 User::firstOrCreate(
     ['email' => 'admin@example.com'],
     [
-        'name' => 'Admin User',
-        'password' => Hash::make('admin123'),
+        'name' => 'Admin',
+        'password' => Hash::make('***'),  // Voir .env
         'is_admin' => true,
     ]
 );
+```
+
+**Utilisateurs créés:**
+| Email | Mot de passe | Rôle |
+|-------|--------------|------|
+| user@example.com | *(voir .env ou seeder)* | User |
+| admin@example.com | *(voir .env ou seeder)* | Admin |
+
+> ⚠️ **Note:** Les mots de passe exacts ne sont pas documentés ici. Consultez le seeder ou les variables d'environnement.
+
+---
+
+### 2️⃣ Inscription Web (Manuelle)
+
+Via la page d'inscription: `http://localhost:8000/register`
+
+```php
+// routes/auth.php
+Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('register', [RegisteredUserController::class, 'store']);
+```
+
+**Processus:**
+1. Aller à `/register`
+2. Remplir: Nom, Email, Mot de passe (x2)
+3. Cliquer "Register"
+4. ✅ Utilisateur créé avec `is_admin = false`
+5. ✅ Auto-login et redirection dashboard
+
+**Validation:**
+```php
+$request->validate([
+    'name' => ['required', 'string', 'max:255'],
+    'email' => ['required', 'string', 'email', 'unique:users'],
+    'password' => ['required', 'confirmed', Password::defaults()],
+]);
+```
+
+---
+
+### 3️⃣ Ligne de commande (Artisan Tinker)
+
+Pour créer rapidement via console:
+
+```bash
+php artisan tinker
+
+# Créer un utilisateur simple
+>>> User::create([
+...   'name' => 'Nouveau User',
+...   'email' => 'utilisateur@example.com',
+...   'password' => Hash::make('secure_password_here'),
+...   'is_admin' => false,
+... ])
+
+# Créer un admin
+>>> User::create([
+...   'name' => 'Nouvel Admin',
+...   'email' => 'adminname@example.com',
+...   'password' => Hash::make('secure_password_here'),
+...   'is_admin' => true,
+... ])
+
+# Lister tous les users
+>>> User::all()
+
+# Trouver un user par email
+>>> User::where('email', 'user@example.com')->first()
+
+```
 ```
 
 **Utilisateurs créés:**
@@ -230,7 +311,7 @@ Route::middleware('guest')->group(function () {
 
 ## 📊 Données existantes
 
-### Users actuels (après seed)
+### Users après seed
 
 ```bash
 $ php artisan tinker
@@ -239,15 +320,15 @@ $ php artisan tinker
 Collection {
   0 => {
     "id": 1,
-    "name": "Test User",
-    "email": "test@example.com",
+    "name": "User",
+    "email": "user@example.com",
     "is_admin": false,
     "created_at": "2025-10-22T...",
     "updated_at": "2025-10-22T...",
   },
   1 => {
     "id": 2,
-    "name": "Admin User",
+    "name": "Admin",
     "email": "admin@example.com",
     "is_admin": true,
     "created_at": "2025-10-22T...",
@@ -255,6 +336,8 @@ Collection {
   },
 }
 ```
+
+> ⚠️ **Sécurité:** Les mots de passe exacts des utilisateurs de seed ne sont pas affichés ici. Consultez `database/seeders/DatabaseSeeder.php` ou les variables d'environnement.
 
 ---
 
@@ -275,8 +358,8 @@ Collection {
 - [x] Validation input OK
 
 ### Tests
-- [x] Login avec test@example.com ✅
-- [x] Login avec admin@example.com ✅
+- [x] Login avec user test ✅
+- [x] Login avec user admin ✅
 - [x] Logout ✅
 - [x] Register nouveau user ✅
 - [x] Password reset ✅
@@ -291,13 +374,13 @@ php artisan tinker
 >>> User::all()
 
 # Créer un user rapidement
->>> User::create(['name' => 'X', 'email' => 'x@x.com', 'password' => Hash::make('pass'), 'is_admin' => false])
+>>> User::create(['name' => 'Nom', 'email' => 'email@domain.com', 'password' => Hash::make('secure_password'), 'is_admin' => false])
 
 # Faire un user admin
 >>> $user = User::find(1); $user->is_admin = true; $user->save()
 
 # Supprimer un user
->>> User::where('email', 'test@example.com')->delete()
+>>> User::where('email', 'user@domain.com')->delete()
 
 # Compter les users
 >>> User::count()
