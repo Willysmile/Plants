@@ -104,7 +104,7 @@
                class="flex-1 border rounded p-2 @error('reference') border-red-500 @enderror">
         @if($plant)
           <button type="button" 
-                  onclick="regenerateReference()" 
+                  onclick="regenerateReference(this)" 
                   class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded transition">
             🔄 Régénérer
           </button>
@@ -301,10 +301,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Fonction pour régénérer la référence
-window.regenerateReference = function() {
+window.regenerateReference = function(btn) {
   const familyInput = document.querySelector('input[name="family"]');
   const referenceInput = document.querySelector('input[name="reference"]');
-  const btn = event.target;
+  
+  if (!btn) {
+    console.error('Button element not found');
+    return;
+  }
   
   const family = familyInput.value;
   
