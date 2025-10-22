@@ -60,19 +60,28 @@ class ConvertPhotosToWebp extends Command
                 $originalSize = filesize($sourcePath);
 
                 if (!$dryRun) {
-                    // Convert to WebP
-                    $webpFilename = $imageService->convertToWebp($sourcePath, $quality);
-                    $webpPath = "plants/{$photo->plant_id}/{$webpFilename}";
-                    $webpFullPath = Storage::disk('public')->path($webpPath);
-
+                    // Read and convert image
+                    $image = \Intervention\Image\ImageManager::gd()->read($sourcePath);
+                    
+                    // Generate WebP filename with same directory
+                    $dirname = dirname($sourcePath);
+                    $basename = pathinfo($sourcePath, PATHINFO_FILENAME);
+                    $webpFullPath = $dirname . '/' . $basename . '.webp';
+                    
+                    // Save as WebP with quality parameter
+                    $image->toWebp(quality: (int)$quality)->save($webpFullPath);
+                    
                     if (file_exists($webpFullPath)) {
                         $webpSize = filesize($webpFullPath);
                         $saved = $originalSize - $webpSize;
                         $totalSaved += $saved;
+                        
+                        // Update to relative path for storage
+                        $webpRelativePath = str_replace(Storage::disk('public')->path(''), '', $webpFullPath);
 
                         // Update photo record
                         $photo->update([
-                            'filename' => $webpPath,
+                            'filename' => $webpRelativePath,
                             'mime_type' => 'image/webp',
                             'size' => $webpSize,
                         ]);

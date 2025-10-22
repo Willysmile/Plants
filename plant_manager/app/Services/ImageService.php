@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Laravel\Facades\Image;
 
 class ImageService
 {
@@ -18,8 +17,8 @@ class ImageService
     public function convertToWebp(string $sourcePath, int $quality = 85): string
     {
         try {
-            // Read image from storage
-            $image = Image::read($sourcePath);
+            // Read image from storage using Intervention v3
+            $image = \Intervention\Image\ImageManager::gd()->read($sourcePath);
 
             // Generate WebP filename
             $filename = pathinfo(basename($sourcePath), PATHINFO_FILENAME) . '.webp';
@@ -48,7 +47,7 @@ class ImageService
     {
         try {
             // Read uploaded file
-            $image = Image::read($file);
+            $image = \Intervention\Image\ImageManager::gd()->read($file);
 
             // Generate unique WebP filename
             $filename = Str::random(40) . '.webp';
@@ -77,7 +76,7 @@ class ImageService
     public function convertExistingImage(string $sourcePath, int $quality = 85): bool
     {
         try {
-            $image = Image::read($sourcePath);
+            $image = \Intervention\Image\ImageManager::gd()->read($sourcePath);
             
             // Replace original file with WebP
             $webpPath = pathinfo($sourcePath, PATHINFO_DIRNAME) . '/' . 
@@ -106,7 +105,7 @@ class ImageService
     public function getImageInfo(string $path): array
     {
         try {
-            $image = Image::read($path);
+            $image = \Intervention\Image\ImageManager::gd()->read($path);
             
             return [
                 'width' => $image->width(),
