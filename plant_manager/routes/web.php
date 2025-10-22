@@ -64,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/upload', [BackupController::class, 'uploadBackup'])->name('upload');
         Route::get('/download/{filename}', [BackupController::class, 'download'])->name('download');
         Route::delete('/{filename}', [BackupController::class, 'delete'])->name('delete');
+        Route::post('/delete-multiple', [BackupController::class, 'deleteMultiple'])->name('delete-multiple');
         
         // Import routes
         Route::post('/preview', [BackupController::class, 'importPreview'])->name('preview');

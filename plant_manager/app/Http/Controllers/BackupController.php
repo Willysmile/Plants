@@ -50,6 +50,7 @@ class BackupController extends Controller
         try {
             $filename = $this->backupService->export([
                 'include_photos' => $request->boolean('include_photos', true),
+                'save_to_history' => $request->boolean('save_to_history', true),
                 'compress' => true,
             ]);
 
@@ -137,6 +138,13 @@ class BackupController extends Controller
             abort(404, 'Backup file not found');
         }
 
+        $isTemp = str_contains($filepath, '/temp/');
+        
+        // For temp files, delete after download
+        if ($isTemp) {
+            return response()->download($filepath, $filename)->deleteFileAfterSend(true);
+        }
+
         return response()->download($filepath, $filename);
     }
 
@@ -158,6 +166,44 @@ class BackupController extends Controller
         ]);
     }
 
+    /**
+     * Delete multiple backup files
+     */
+    public function deleteMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'filenames' => 'required|array|min:1',
+            'filenames.*' => 'required|string',
+        ]);
+
+        $deleted = 0;
+        $failed = 0;
+        $errors = [];
+
+        foreach ($validated['filenames'] as $filename) {
+            try {
+                if ($this->backupService->deleteBackup($filename)) {
+                    $deleted++;
+                } else {
+                    $failed++;
+                    $errors[] = "Impossible de supprimer: $filename";
+                }
+            } catch (\Exception $e) {
+                $failed++;
+                $errors[] = "Erreur pour $filename: " . $e->getMessage();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Suppression terminée: $deleted fichier(s) supprimé(s), $failed erreur(s)",
+            'result' => [
+                'deleted' => $deleted,
+                'failed' => $failed,
+                'errors' => $errors,
+            ],
+        ]);
+    }
     /**
      * Get import preview (dry-run)
      */

@@ -19,6 +19,7 @@ class BackupService
     public function export(array $options = []): string
     {
         $includePhotos = $options['include_photos'] ?? true;
+        $saveToHistory = $options['save_to_history'] ?? true;
         $compress = $options['compress'] ?? true;
 
         // Collect data
@@ -28,10 +29,17 @@ class BackupService
         $exportId = Str::uuid();
         $timestamp = now()->format('Y-m-d_H-i-s');
         $filename = "export_{$timestamp}_{$exportId}.zip";
-        $filepath = storage_path("app/" . self::BACKUP_DIR . "/{$filename}");
-
-        // Ensure backup dir exists
-        $this->ensureBackupDir();
+        
+        // If not saving to history, use temp file path
+        if ($saveToHistory) {
+            $filepath = storage_path("app/" . self::BACKUP_DIR . "/{$filename}");
+            $this->ensureBackupDir();
+        } else {
+            $filepath = storage_path("app/temp/{$filename}");
+            if (!is_dir(dirname($filepath))) {
+                mkdir(dirname($filepath), 0755, true);
+            }
+        }
 
         // Create ZIP
         $zip = new ZipArchive();
@@ -75,14 +83,16 @@ class BackupService
 
             $zip->close();
 
-            // Log export
-            $this->logBackup('export', [
-                'filename' => $filename,
-                'filepath' => $filepath,
-                'size' => filesize($filepath),
-                'checksum' => $checksum,
-                'metadata' => $metadata,
-            ]);
+            // Log export only if saving to history
+            if ($saveToHistory) {
+                $this->logBackup('export', [
+                    'filename' => $filename,
+                    'filepath' => $filepath,
+                    'size' => filesize($filepath),
+                    'checksum' => $checksum,
+                    'metadata' => $metadata,
+                ]);
+            }
 
             return $filename;
         } catch (\Exception $e) {
@@ -254,10 +264,17 @@ class BackupService
      */
     public function getBackupPath(string $filename): ?string
     {
+        // Try backup directory first
         $filepath = storage_path("app/" . self::BACKUP_DIR . "/{$filename}");
-
+        
         if (file_exists($filepath) && str_ends_with($filename, '.zip')) {
             return $filepath;
+        }
+
+        // Try temp directory for temporary exports
+        $tempPath = storage_path("app/temp/{$filename}");
+        if (file_exists($tempPath) && str_ends_with($filename, '.zip')) {
+            return $tempPath;
         }
 
         return null;
