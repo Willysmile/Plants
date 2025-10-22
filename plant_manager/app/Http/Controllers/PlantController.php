@@ -239,7 +239,7 @@ class PlantController extends Controller
 
     /**
      * 🔧 FIX: Génère une référence incrémentée via API
-     * Trouve le prochain numéro disponible
+     * Trouve le prochain numéro disponible (y compris soft-deleted)
      */
     public function generateReferenceAPI(Request $request)
     {
@@ -252,8 +252,10 @@ class PlantController extends Controller
         // Obtenir les 5 premières lettres de la famille en majuscules
         $familyPrefix = strtoupper(substr($family, 0, 5));
         
-        // 🔧 FIX: Chercher le MAX numéro existant et ajouter 1
-        $maxNumber = Plant::where('reference', 'like', $familyPrefix . '-%')
+        // 🔧 FIX: Chercher le MAX numéro existant et ajouter 1 (incluant soft-deleted!)
+        // Car la contrainte UNIQUE s'applique même aux soft-deleted
+        $maxNumber = Plant::withTrashed()
+            ->where('reference', 'like', $familyPrefix . '-%')
             ->get()
             ->map(function($plant) {
                 // Extraire le numéro de la référence (ex: "BROME-001" → 1)

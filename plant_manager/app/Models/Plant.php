@@ -332,15 +332,17 @@ class Plant extends Model
     /**
      * 🔧 FIX: Générer une référence automatique basée sur la famille
      * Format: "ORCHI-001" (5 premières lettres de la famille + numéro séquentiel)
-     * Cherche le MAX numéro et ajoute 1
+     * Cherche le MAX numéro (incluant les soft-deleted)
      */
     public function generateReference(): string
     {
         // Obtenir les 5 premières lettres de la famille en majuscules
         $familyPrefix = strtoupper(substr($this->family ?? 'UNKWN', 0, 5));
         
-        // 🔧 FIX: Chercher le MAX numéro existant et ajouter 1
-        $maxNumber = Plant::where('reference', 'like', $familyPrefix . '-%')
+        // 🔧 FIX: Chercher le MAX numéro existant (y compris soft-deleted!)
+        // Car la contrainte UNIQUE s'applique même aux soft-deleted
+        $maxNumber = Plant::withTrashed()
+            ->where('reference', 'like', $familyPrefix . '-%')
             ->get()
             ->map(function($plant) {
                 // Extraire le numéro de la référence (ex: "BROME-001" → 1)
