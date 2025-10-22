@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\ValidateTags;
 
 class UpdatePlantRequest extends FormRequest
 {
@@ -29,5 +30,15 @@ class UpdatePlantRequest extends FormRequest
         }
         
         return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages(): array
+    {
+        return (new StorePlantRequest())->messages();
     }
 }

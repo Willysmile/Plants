@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\ValidateTags;
 
 class StorePlantRequest extends FormRequest
 {
@@ -83,9 +84,9 @@ class StorePlantRequest extends FormRequest
             // Photos
             'main_photo' => 'nullable|image|max:5120', // 5MB max
             
-            // Relations
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
+            // Relations - Validation stricte des tags
+            'tags' => ['nullable', 'array', new ValidateTags()],
+            'tags.*' => 'integer',
         ];
     }
     
@@ -112,6 +113,10 @@ class StorePlantRequest extends FormRequest
             'next_repotting_date.after_or_equal' => 'La date du prochain rempotage doit être postérieure au dernier rempotage.',
             'main_photo.image' => 'Le fichier doit être une image (jpeg, png, bmp, gif, svg, ou webp).',
             'main_photo.max' => 'La photo ne doit pas dépasser 5 Mo.',
+            
+            // Tags
+            'tags.array' => 'Les tags doivent être un tableau.',
+            'tags.*.integer' => 'Chaque tag ID doit être un nombre entier.',
         ];
     }
 }

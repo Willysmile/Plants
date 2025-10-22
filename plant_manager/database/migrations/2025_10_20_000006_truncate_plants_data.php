@@ -12,8 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Désactiver les contraintes de clés étrangères temporairement
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // Compatibilité MySQL et SQLite
+        if (DB::connection()->getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } else {
+            DB::statement('PRAGMA foreign_keys = OFF;');
+        }
 
         // Vider les tables dans l'ordre inverse des dépendances
         DB::table('plant_tag')->truncate();
@@ -25,7 +29,11 @@ return new class extends Migration
         DB::table('plants')->truncate();
 
         // Réactiver les contraintes
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        if (DB::connection()->getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } else {
+            DB::statement('PRAGMA foreign_keys = ON;');
+        }
     }
 
     /**
