@@ -330,27 +330,28 @@ class Plant extends Model
     }
 
     /**
-     * Générer une référence automatique basée sur la famille
+     * 🔧 FIX: Générer une référence automatique basée sur la famille
      * Format: "ORCHI-001" (5 premières lettres de la famille + numéro séquentiel)
+     * Cherche le MAX numéro et ajoute 1
      */
     public function generateReference(): string
     {
         // Obtenir les 5 premières lettres de la famille en majuscules
         $familyPrefix = strtoupper(substr($this->family ?? 'UNKWN', 0, 5));
         
-        // Compter combien de références existent déjà pour cette famille
-        $lastNumber = Plant::where('reference', 'like', $familyPrefix . '-%')
-            ->orderByRaw('CAST(SUBSTRING_INDEX(reference, "-", -1) AS UNSIGNED) DESC')
-            ->value('reference');
-        
-        // Extraire le numéro et l'incrémenter
-        $number = 1;
-        if ($lastNumber) {
-            $number = (int) substr($lastNumber, -3) + 1;
-        }
+        // 🔧 FIX: Chercher le MAX numéro existant et ajouter 1
+        $maxNumber = Plant::where('reference', 'like', $familyPrefix . '-%')
+            ->get()
+            ->map(function($plant) {
+                // Extraire le numéro de la référence (ex: "BROME-001" → 1)
+                return (int) substr($plant->reference, -3);
+            })
+            ->max() ?? 0;
+
+        $nextNumber = $maxNumber + 1;
         
         // Retourner la référence formatée (ex: "ORCHI-001")
-        return $familyPrefix . '-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        return $familyPrefix . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 }
 

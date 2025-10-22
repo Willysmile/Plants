@@ -238,7 +238,8 @@ class PlantController extends Controller
     }
 
     /**
-     * Génère une référence incrémentée via API
+     * 🔧 FIX: Génère une référence incrémentée via API
+     * Trouve le prochain numéro disponible
      */
     public function generateReferenceAPI(Request $request)
     {
@@ -248,10 +249,22 @@ class PlantController extends Controller
             return response()->json(['error' => 'Family is required'], 400);
         }
 
-        // Créer une instance temporaire pour utiliser la méthode generateReference
-        $plant = new Plant();
-        $plant->family = $family;
-        $reference = $plant->generateReference();
+        // Obtenir les 5 premières lettres de la famille en majuscules
+        $familyPrefix = strtoupper(substr($family, 0, 5));
+        
+        // 🔧 FIX: Chercher le MAX numéro existant et ajouter 1
+        $maxNumber = Plant::where('reference', 'like', $familyPrefix . '-%')
+            ->get()
+            ->map(function($plant) {
+                // Extraire le numéro de la référence (ex: "BROME-001" → 1)
+                return (int) substr($plant->reference, -3);
+            })
+            ->max() ?? 0;
+
+        $nextNumber = $maxNumber + 1;
+
+        // Formater la référence
+        $reference = $familyPrefix . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
         return response()->json(['reference' => $reference]);
     }
