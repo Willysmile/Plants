@@ -5,6 +5,7 @@
 ### Entrée principale
 - **[README.md](README.md)** - Vue d'ensemble du projet
 - **[QUICK_START.md](QUICK_START.md)** - Commencer vite (par cas d'usage)
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** - 📊 Rapport complet du projet (v1.13)
 
 ### Vue générale
 - **[CHANGELOG_SESSION_V113.md](CHANGELOG_SESSION_V113.md)** - Tous les changements de cette session
