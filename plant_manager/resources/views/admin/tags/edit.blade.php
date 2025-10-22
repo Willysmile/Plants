@@ -34,21 +34,21 @@
 
             <!-- Category Field -->
             <div>
-                <label for="category" class="block text-sm font-semibold text-gray-900 mb-2">
+                <label for="tag_category_id" class="block text-sm font-semibold text-gray-900 mb-2">
                     Catégorie <span class="text-red-600">*</span>
                 </label>
-                <select id="category" 
-                        name="category" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('category') border-red-500 @enderror"
+                <select id="tag_category_id" 
+                        name="tag_category_id" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('tag_category_id') border-red-500 @enderror"
                         required>
                     <option value="">-- Sélectionner une catégorie --</option>
                     @foreach($categories as $cat)
-                        <option value="{{ $cat }}" @selected(old('category', $tag->category) === $cat)>
-                            {{ $cat }}
+                        <option value="{{ $cat->id }}" @selected(old('tag_category_id', $tag->tag_category_id) == $cat->id)>
+                            {{ $cat->name }}
                         </option>
                     @endforeach
                 </select>
-                @error('category')
+                @error('tag_category_id')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>

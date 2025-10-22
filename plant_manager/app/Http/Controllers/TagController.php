@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use App\Models\TagCategory;
 use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 
@@ -13,12 +14,16 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::orderBy('category')
+        $categories = TagCategory::with('tags')
+                                  ->orderBy('name')
+                                  ->get();
+        
+        $tags = Tag::with('tagCategory')
                    ->orderBy('name')
                    ->get()
                    ->groupBy('category');
 
-        return view('admin.tags.index', compact('tags'));
+        return view('admin.tags.index', compact('tags', 'categories'));
     }
 
     /**
@@ -26,7 +31,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        $categories = $this->getCategories();
+        $categories = TagCategory::orderBy('name')->get();
         return view('admin.tags.create', compact('categories'));
     }
 
@@ -46,7 +51,7 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        $categories = $this->getCategories();
+        $categories = TagCategory::orderBy('name')->get();
         return view('admin.tags.edit', compact('tag', 'categories'));
     }
 
@@ -73,21 +78,20 @@ class TagController extends Controller
     }
 
     /**
-     * Get available categories for tag selection
+     * Remove all tags from a category
      */
-    private function getCategories()
+    public function destroyCategory(TagCategory $tagCategory)
     {
-        return [
-            'Origine climatique',
-            'Type de feuillage',
-            'Type de plante',
-            'Port de la plante',
-            'Floraison',
-            'Taille de la plante',
-            'Vitesse de croissance',
-            'Caractéristiques spéciales',
-            'Texture/Aspect',
-            'Système racinaire',
-        ];
+        $tagsCount = $tagCategory->tags()->count();
+        $categoryName = $tagCategory->name;
+        
+        // Supprime d'abord les tags
+        $tagCategory->tags()->delete();
+        
+        // Puis supprime la catégorie
+        $tagCategory->delete();
+
+        return redirect()->route('tags.index')
+                       ->with('success', "Catégorie '{$categoryName}' et ses {$tagsCount} tag(s) supprimés avec succès.");
     }
 }

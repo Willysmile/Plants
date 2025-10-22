@@ -35,12 +35,27 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            👤 {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <!-- Admin Section -->
                         @if(auth()->user()?->is_admin)
+                            <hr class="my-1 border-gray-200" />
+                            
+                            <x-dropdown-link :href="route('settings.index')">
+                                ⚙️ {{ __('Paramètres') }}
+                            </x-dropdown-link>
+                            
+                            <x-dropdown-link :href="route('settings.references')">
+                                📌 {{ __('Gestion Références') }}
+                            </x-dropdown-link>
+                            
+                            <x-dropdown-link :href="route('fertilizer-types.index')">
+                                🌿 {{ __('Gestion Engrais') }}
+                            </x-dropdown-link>
+                            
                             <x-dropdown-link :href="route('tags.index')">
-                                ⚙️ {{ __('Paramètres Tags') }}
+                                🏷️ {{ __('Gestion Tags') }}
                             </x-dropdown-link>
                             
                             <x-dropdown-link :href="route('backups.index')">

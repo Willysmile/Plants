@@ -21,7 +21,7 @@ class StoreTagRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:tags,name',
-            'category' => 'required|string|max:255',
+            'tag_category_id' => 'required|exists:tag_categories,id',
         ];
     }
 
@@ -34,8 +34,8 @@ class StoreTagRequest extends FormRequest
             'name.required' => 'Le nom du tag est obligatoire.',
             'name.unique' => 'Ce tag existe déjà.',
             'name.max' => 'Le nom ne peut pas dépasser 255 caractères.',
-            'category.required' => 'La catégorie est obligatoire.',
-            'category.max' => 'La catégorie ne peut pas dépasser 255 caractères.',
+            'tag_category_id.required' => 'La catégorie est obligatoire.',
+            'tag_category_id.exists' => 'La catégorie sélectionnée n\'existe pas.',
         ];
     }
 }

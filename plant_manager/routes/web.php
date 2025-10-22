@@ -68,6 +68,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'update' => 'tags.update',
             'destroy' => 'tags.destroy',
         ]]);
+        
+        // Supprimer une catégorie entière (tous les tags)
+        Route::delete('admin/tags-category/{tagCategory}', [TagController::class, 'destroyCategory'])->name('tags.destroy-category');
     });
 
     // Routes pour les sauvegardes et exports (admin-only)
