@@ -317,6 +317,19 @@ class Plant extends Model
     }
 
     /**
+     * 🔧 Boot the model - Générer la référence automatiquement lors de la création
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            // Si aucune référence n'est fournie, la générer automatiquement
+            if (empty($model->reference) && !empty($model->family)) {
+                $model->reference = $model->generateReference();
+            }
+        });
+    }
+
+    /**
      * Générer une référence automatique basée sur la famille
      * Format: "ORCHI-001" (5 premières lettres de la famille + numéro séquentiel)
      */
