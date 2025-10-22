@@ -9,37 +9,84 @@ use Illuminate\Support\Facades\Storage;
 
 class PhotoService
 {
-    /**
-     * Attache une photo principale à une plante.
-     */
-    public function attachMainPhoto(Plant $plant, UploadedFile $file): void
+    private ImageService $imageService;
+
+    public function __construct(ImageService $imageService)
     {
-        $path = $file->store("plants/{$plant->id}", 'public');
-        
-        $plant->update(['main_photo' => $path]);
-        
-        $plant->photos()->create([
-            'filename' => $path,
-            'mime_type' => $file->getClientMimeType(),
-            'size' => $file->getSize(),
-            'is_main' => true,
-        ]);
+        $this->imageService = $imageService;
     }
 
     /**
-     * Attache plusieurs photos à une plante.
+     * Attache une photo principale à une plante (convertie en WebP).
+     */
+    public function attachMainPhoto(Plant $plant, UploadedFile $file): void
+    {
+        // Store original file temporarily
+        $tempPath = $file->store("plants/{$plant->id}", 'public');
+        $fullPath = Storage::disk('public')->path($tempPath);
+
+        try {
+            // Convert to WebP
+            $webpFilename = $this->imageService->convertToWebp($fullPath, 85);
+            $webpPath = "plants/{$plant->id}/{$webpFilename}";
+            
+            // Delete original file
+            Storage::disk('public')->delete($tempPath);
+
+            // Get WebP file size
+            $webpFullPath = Storage::disk('public')->path($webpPath);
+            $webpSize = filesize($webpFullPath);
+
+            $plant->update(['main_photo' => $webpPath]);
+            
+            $plant->photos()->create([
+                'filename' => $webpPath,
+                'mime_type' => 'image/webp',
+                'size' => $webpSize,
+                'is_main' => true,
+            ]);
+        } catch (\Exception $e) {
+            // Fallback: keep original file if conversion fails
+            Storage::disk('public')->delete($tempPath);
+            throw $e;
+        }
+    }
+
+    /**
+     * Attache plusieurs photos à une plante (converties en WebP).
      */
     public function attachPhotos(Plant $plant, array $files): void
     {
         foreach ($files as $file) {
-            $path = $file->store("plants/{$plant->id}", 'public');
-            
-            $plant->photos()->create([
-                'filename' => $path,
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
-                'is_main' => false,
-            ]);
+            // Store original file temporarily
+            $tempPath = $file->store("plants/{$plant->id}", 'public');
+            $fullPath = Storage::disk('public')->path($tempPath);
+
+            try {
+                // Convert to WebP
+                $webpFilename = $this->imageService->convertToWebp($fullPath, 85);
+                $webpPath = "plants/{$plant->id}/{$webpFilename}";
+                
+                // Delete original file
+                Storage::disk('public')->delete($tempPath);
+
+                // Get WebP file size
+                $webpFullPath = Storage::disk('public')->path($webpPath);
+                $webpSize = filesize($webpFullPath);
+
+                $plant->photos()->create([
+                    'filename' => $webpPath,
+                    'mime_type' => 'image/webp',
+                    'size' => $webpSize,
+                    'is_main' => false,
+                ]);
+            } catch (\Exception $e) {
+                // Log error and continue with next file
+                Storage::disk('public')->delete($tempPath);
+                \Log::error("Failed to convert photo for plant {$plant->id}", [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 
