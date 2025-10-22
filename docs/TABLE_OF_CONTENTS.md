@@ -12,7 +12,10 @@
 - **[BUGS_SUMMARY.md](BUGS_SUMMARY.md)** - Résumé des 7 bugs corrigés
 - **[VISUAL_SUMMARY.md](VISUAL_SUMMARY.md)** - Vue visuelle avec diagrammes
 
-### 📋 Spécifications & Cahiers des charges
+### �️ Configuration & Administration
+- **[USERS_AND_AUTH.md](USERS_AND_AUTH.md)** - 👥 Gestion des utilisateurs & authentification
+
+### �📋 Spécifications & Cahiers des charges
 - **[SPECIFICATIONS.md](SPECIFICATIONS.md)** - Index des spécifications
   - [SPECS_v1_01.md](SPECS_v1_01.md) - v1.01 (MVP)
   - [SPECS_v1_02.md](SPECS_v1_02.md) - v1.02 (UI/UX amélioration)
