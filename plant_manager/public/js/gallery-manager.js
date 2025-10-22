@@ -109,10 +109,13 @@ const GalleryManager = {
         currentSwap = null;
       }
 
-      // Snapshot: sauvegarder les sources originales avant swap
+      // 🔧 FIX: Sauvegarder les sources AVANT le swap pour la restauration ultérieure
       const mainOriginalSrc = mainPhoto.getAttribute('data-original-src') || mainPhoto.src;
       const thumbOriginalSrc = thumbnailBtn.getAttribute('data-original-src') || thumbnailImg.src;
       const lightboxOriginal = window.globalLightboxImages ? JSON.parse(JSON.stringify(window.globalLightboxImages)) : (window.globalLightboxImagesOriginal ? JSON.parse(JSON.stringify(window.globalLightboxImagesOriginal)) : []);
+
+      // 🔧 FIX: Aussi sauvegarder l'image src AVANT le swap pour updateGalleryThumbnails
+      const oldMainPhotoSrc = mainPhoto.src;
 
       // Échanger les images (loggage pour debug)
       this.swapImages(mainPhoto, thumbnailImg);
@@ -121,7 +124,8 @@ const GalleryManager = {
       this.updateLightboxArray(modal, thumbIndex);
 
       // 🔧 NOUVEAU FIX: Mettre à jour les miniatures de la galerie après le swap
-      this.updateGalleryThumbnails(modal, thumbnailBtn, mainPhoto);
+      // Passer l'ancienne source en paramètre pour que updateGalleryThumbnails sache quoi afficher
+      this.updateGalleryThumbnails(modal, thumbnailBtn, mainPhoto, oldMainPhotoSrc);
 
       // Sauvegarder snapshot pour restauration ultérieure
       this.swapStates[plantId] = {
@@ -197,47 +201,41 @@ const GalleryManager = {
 
   /**
    * Met à jour les miniatures de la galerie après un swap
-   * Échange visuellement les miniatures affichées
+   * Remplace la miniature swappée par une nouvelle avec l'ancienne photo principale
    * @param {HTMLElement} modal - Élément modal
    * @param {HTMLElement} swappedThumb - Miniature qui a été swappée
-   * @param {HTMLElement} mainPhoto - Photo principale
+   * @param {HTMLElement} mainPhoto - Photo principale (après swap, contient la nouvelle image)
+   * @param {string} oldMainPhotoSrc - Source de l'ancienne photo principale (avant swap)
    */
-  updateGalleryThumbnails(modal, swappedThumb, mainPhoto) {
+  updateGalleryThumbnails(modal, swappedThumb, mainPhoto, oldMainPhotoSrc) {
     try {
-      // Récupérer le conteneur des miniatures
-      const thumbContainer = modal.querySelector('[data-type="thumbnail"]')?.parentElement;
-      if (!thumbContainer) return;
-
-      // Le conteneur parent des miniatures
-      const galleryContainer = thumbContainer.parentElement;
-      if (!galleryContainer) return;
-
-      // Récupérer tous les boutons miniatures
-      const allThumbs = Array.from(galleryContainer.querySelectorAll('[data-type="thumbnail"]'));
-      if (!allThumbs.length) return;
-
-      // Trouver l'index du swappedThumb
-      const swappedIndex = allThumbs.indexOf(swappedThumb);
-      if (swappedIndex === -1) return;
-
-      // Créer une nouvelle miniature pour remplacer celle qui est devenue principale
-      // Cette nouvelle miniature aura l'image qui était la photo principale
+      // On doit reconstruire la miniature : remplacer la source de la miniature cliquée
+      // par l'ancienne source de la photo principale
+      
+      // 1. Cloner la miniature swappée pour créer la "nouvelle" miniature
       const newThumbBtn = swappedThumb.cloneNode(true);
-      newThumbBtn.setAttribute('data-index', swappedIndex + 1);
-      newThumbBtn.setAttribute('data-lightbox-index', swappedIndex + 1);
-      newThumbBtn.setAttribute('data-original-src', mainPhoto.getAttribute('data-original-src'));
+      
+      // 2. Mettre à jour les sources pour afficher l'ancienne photo principale
+      newThumbBtn.setAttribute('data-original-src', oldMainPhotoSrc);
       
       const newImg = newThumbBtn.querySelector('img');
       if (newImg) {
-        newImg.src = mainPhoto.src;
-        newImg.setAttribute('src', mainPhoto.src);
+        // Utiliser la source de l'ancienne photo principale
+        newImg.src = oldMainPhotoSrc;
+        newImg.setAttribute('alt', mainPhoto.getAttribute('alt') || 'Ancienne photo principale');
       }
 
-      // Remplacer l'ancienne miniature par la nouvelle
+      // 3. Remplacer la miniature cliquée par cette nouvelle miniature
+      // Cela va faire apparaître l'ancienne photo principale à la place de la miniature
       swappedThumb.replaceWith(newThumbBtn);
 
-      // Réinitialiser les event listeners (important!)
+      // 4. Réinitialiser les event listeners sur la nouvelle miniature
       this.setupThumbnailHandlers(modal);
+
+      // 5. DEBUG: Ajouter un badge pour voir que le swap a été effectué
+      // (optionnel, à retirer après tests)
+      newThumbBtn.style.opacity = '0.8';
+      newThumbBtn.title = 'Ancienne photo principale (clique pour restaurer)';
 
     } catch (err) {
       console.warn('[GALLERY] Failed to update gallery thumbnails after swap', err);
@@ -355,29 +353,44 @@ const GalleryManager = {
 
     try {
       const mainPhoto = modal.querySelector('#main-photo-display');
-      const thumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${snapshot.thumbIndex}"]`);
+      const currentThumbBtn = modal.querySelector(`[data-type="thumbnail"][data-index="${snapshot.thumbIndex}"]`);
 
+      // 1. Restaurer la photo principale
       if (mainPhoto && snapshot.mainOriginalSrc) {
         mainPhoto.src = snapshot.mainOriginalSrc;
         mainPhoto.setAttribute('data-original-src', snapshot.mainOriginalSrc);
       }
 
-      if (thumbBtn && snapshot.thumbOriginalSrc) {
-        const img = thumbBtn.querySelector('img');
-        if (img) {
-          img.src = snapshot.thumbOriginalSrc;
+      // 2. Restaurer la miniature cliquée (elle a été remplacée après le swap)
+      // Pour cela, créer une nouvelle miniature avec les sources originales
+      if (currentThumbBtn) {
+        const restoredThumbBtn = currentThumbBtn.cloneNode(true);
+        restoredThumbBtn.setAttribute('data-original-src', snapshot.thumbOriginalSrc);
+        
+        const restoredImg = restoredThumbBtn.querySelector('img');
+        if (restoredImg) {
+          restoredImg.src = snapshot.thumbOriginalSrc;
         }
-        thumbBtn.setAttribute('data-original-src', snapshot.thumbOriginalSrc);
+        
+        // Restaurer l'opacité (en cas de style appliqué après swap)
+        restoredThumbBtn.style.opacity = '1';
+        restoredThumbBtn.title = '';
+        
+        // Remplacer la miniature swappée par la miniature restaurée
+        currentThumbBtn.replaceWith(restoredThumbBtn);
+        
+        // Réinitialiser les event listeners
+        this.setupThumbnailHandlers(modal);
       }
 
-      // Restaurer l'array lightbox
+      // 3. Restaurer l'array lightbox
       if (snapshot.lightboxOriginal) {
         window.globalLightboxImages = JSON.parse(JSON.stringify(snapshot.lightboxOriginal));
       }
 
-  // Nettoyer snapshot
-  delete this.swapStates[plantId];
-  modal.removeAttribute('data-active-thumb');
+      // 4. Nettoyer snapshot
+      delete this.swapStates[plantId];
+      modal.removeAttribute('data-active-thumb');
     } catch (err) {
       console.warn('[GALLERY] Failed to restore snapshot', err);
     }
