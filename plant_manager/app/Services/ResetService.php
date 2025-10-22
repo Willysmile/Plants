@@ -86,15 +86,6 @@ class ResetService
         $result['plants_count'] = 0;
 
         foreach ($plants as $plant) {
-            // Log before deletion
-            AuditLog::log([
-                'action' => 'reset',
-                'model_type' => 'Plant',
-                'model_id' => $plant->id,
-                'old_values' => $plant->toArray(),
-                'reason' => $reason,
-            ]);
-
             // Soft delete
             $plant->update([
                 'deleted_by_user_id' => $userId,
@@ -110,12 +101,6 @@ class ResetService
         $result['photos_count'] = 0;
 
         foreach ($photos as $photo) {
-            AuditLog::log([
-                'action' => 'reset',
-                'model_type' => 'Photo',
-                'model_id' => $photo->id,
-                'reason' => $reason,
-            ]);
             $photo->delete();
             $result['photos_count']++;
         }
@@ -129,11 +114,11 @@ class ResetService
             $result['histories_count']++;
         }
 
-        // Log the reset action
+        // Log the reset action (single entry with aggregated details)
         AuditLog::log([
             'action' => 'reset_completed',
             'reason' => $reason,
-            'new_values' => [
+            'details' => [
                 'plants_deleted' => $result['plants_count'],
                 'photos_deleted' => $result['photos_count'],
                 'histories_deleted' => $result['histories_count'],
@@ -326,9 +311,9 @@ class ResetService
             'id' => $log->id,
             'action' => $log->action,
             'model' => $log->model_type,
-            'model_id' => $log->model_id,
             'user' => $log->user?->name ?? 'System',
             'reason' => $log->reason,
+            'details' => $log->details ? json_decode($log->details, true) : null,
             'created_at' => $log->created_at->toIso8601String(),
         ])->toArray();
 

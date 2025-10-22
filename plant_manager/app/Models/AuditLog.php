@@ -14,6 +14,7 @@ class AuditLog extends Model
         'old_values',
         'new_values',
         'reason',
+        'details',
         'ip_address',
         'user_agent',
     ];
@@ -41,6 +42,7 @@ class AuditLog extends Model
             'old_values' => isset($data['old_values']) ? json_encode($data['old_values']) : null,
             'new_values' => isset($data['new_values']) ? json_encode($data['new_values']) : null,
             'reason' => $data['reason'] ?? null,
+            'details' => isset($data['details']) ? json_encode($data['details']) : null,
             'ip_address' => request()?->ip(),
             'user_agent' => request()?->userAgent(),
         ]);
