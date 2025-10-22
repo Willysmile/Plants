@@ -67,5 +67,8 @@
         
         <!-- Page-specific scripts -->
         @yield('extra-scripts')
+        
+        <!-- Component-specific scripts (pushed via @push('scripts')) -->
+        @stack('scripts')
     </body>
 </html>
