@@ -69,6 +69,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'destroy' => 'tags.destroy',
         ]]);
         
+        // Créer une catégorie de tags
+        Route::post('admin/tags-category', [TagController::class, 'storeCategory'])->name('tags.store-category');
+        
         // Supprimer une catégorie entière (tous les tags)
         Route::delete('admin/tags-category/{tagCategory}', [TagController::class, 'destroyCategory'])->name('tags.destroy-category');
     });
@@ -95,6 +98,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/audit-logs', [BackupController::class, 'getAuditLogs'])->name('audit-logs');
     });
 });
+
+// Image diagnostic route (development/testing)
+Route::get('/image-diagnostic', function () {
+    $plants = \App\Models\Plant::with('photos')
+        ->limit(5)
+        ->get();
+    return view('image-diagnostic', compact('plants'));
+})->middleware(['auth', 'verified'])->name('image-diagnostic');
 
 // Serve files from storage (bypass Laravel's public storage)
 Route::get('/storage/{path}', [StorageController::class, 'serve'])

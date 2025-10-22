@@ -20,12 +20,15 @@ class ImageService
             // Read image from storage using Intervention v3
             $image = \Intervention\Image\ImageManager::gd()->read($sourcePath);
 
-            // Generate WebP filename
+            // Generate WebP filename in the same directory as source
             $filename = pathinfo(basename($sourcePath), PATHINFO_FILENAME) . '.webp';
-            $webpPath = 'photos/' . $filename;
+            
+            // Get directory from source path
+            $sourceDir = dirname($sourcePath);
+            $webpPath = $sourceDir . '/' . $filename;
 
-            // Encode to WebP and save
-            Storage::disk('public')->put(
+            // Encode to WebP and save to full system path
+            file_put_contents(
                 $webpPath,
                 $image->toWebp($quality)
             );
