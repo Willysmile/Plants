@@ -99,9 +99,9 @@
         </div>
     </div>
 
-    <!-- Modal: Manage Categories (Admin Only) -->
+        <!-- Modal: Manage Categories (Admin Only) -->
     <div x-show="openCategoryModal" class="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col" @click.stop>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl h-[70vh] overflow-hidden flex flex-col" @click.stop>
             <!-- Modal Header -->
             <div class="bg-amber-500 text-white px-6 py-3 flex justify-between items-center flex-shrink-0">
                 <h2 class="text-lg font-bold">Gestion des Catégories</h2>
@@ -110,48 +110,90 @@
                 </button>
             </div>
 
-            <!-- Categories List -->
-            <div class="p-4 space-y-2 overflow-y-auto flex-grow">
-                @forelse($categories as $category)
-                    @php
-                        $count = $category->tags()->count();
-                    @endphp
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition text-sm">
+            <!-- Modal Content -->
+            <div class="flex-grow overflow-y-auto flex gap-4 p-4">
+                <!-- Left: New Category Form -->
+                <div class="w-1/3 flex-shrink-0 border-r pr-4">
+                    <h3 class="font-semibold text-gray-900 mb-3 text-sm">Créer une catégorie</h3>
+                    <form method="POST" action="{{ route('tags.store-category') }}" class="space-y-3">
+                        @csrf
+                        
                         <div>
-                            <p class="font-semibold text-gray-900">{{ $category->name }}</p>
-                            <p class="text-xs text-gray-600">
-                                @if($count === 0)
-                                    <span class="text-orange-600 font-semibold">Aucun tag</span>
-                                @elseif($count === 1)
-                                    <span class="text-blue-600">1 tag</span>
-                                @else
-                                    <span class="text-blue-600">{{ $count }} tags</span>
-                                @endif
-                            </p>
+                            <label for="cat-name" class="block text-xs font-medium text-gray-700 mb-1">
+                                Nom <span class="text-red-600">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="cat-name" 
+                                   name="name" 
+                                   class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-amber-500 focus:border-transparent @error('name') border-red-500 @enderror"
+                                   placeholder="Ex: Floraison"
+                                   required
+                                   autofocus>
+                            @error('name')
+                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
-                        @if($count === 0)
-                            <form method="POST" action="{{ route('tags.destroy-category', $category) }}" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition text-xs font-semibold" onclick="return confirm('Supprimer cette catégorie vide ?')">
-                                    🗑️
-                                </button>
-                            </form>
-                        @else
-                            <span class="text-gray-400 text-xs">{{ $count }} tag(s)</span>
-                        @endif
+                        <div>
+                            <label for="cat-desc" class="block text-xs font-medium text-gray-700 mb-1">
+                                Description
+                            </label>
+                            <textarea id="cat-desc" 
+                                      name="description" 
+                                      class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-amber-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                                      placeholder="Description optionnelle"
+                                      rows="2"></textarea>
+                            @error('description')
+                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="w-full bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 transition font-semibold text-xs">
+                            ✅ Créer
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Categories List -->
+                <div class="flex-grow overflow-y-auto">
+                    <h3 class="font-semibold text-gray-900 mb-3 text-sm">Catégories existantes</h3>
+                    <div class="space-y-1.5">
+                        @forelse($categories as $category)
+                            @php
+                                $count = $category->tags()->count();
+                            @endphp
+                            <div class="flex items-center justify-between px-3 py-2 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition text-xs">
+                                <div class="flex-grow">
+                                    <p class="font-semibold text-gray-900">{{ $category->name }}</p>
+                                </div>
+
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    @if($count === 0)
+                                        <span class="text-orange-600 font-semibold text-xs">Aucun tag</span>
+                                        <form method="POST" action="{{ route('tags.destroy-category', $category) }}" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-red-500 text-white px-1.5 py-0.5 rounded hover:bg-red-600 transition text-xs font-semibold" onclick="return confirm('Supprimer cette catégorie vide ?')">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-semibold">{{ $count }} tag{{ $count > 1 ? 's' : '' }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <p class="text-gray-500 text-sm">Aucune catégorie trouvée</p>
+                            </div>
+                        @endforelse
                     </div>
-                @empty
-                    <div class="text-center py-8">
-                        <p class="text-gray-500 text-sm">Aucune catégorie trouvée</p>
-                    </div>
-                @endforelse
+                </div>
             </div>
 
             <!-- Footer -->
             <div class="bg-gray-50 px-6 py-2 border-t flex justify-end flex-shrink-0">
-                <button @click="openCategoryModal = false" class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition font-semibold text-sm">
+                <button @click="openCategoryModal = false" class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition font-semibold text-xs">
                     Fermer
                 </button>
             </div>

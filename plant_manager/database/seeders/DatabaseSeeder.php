@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             FertilizerTypeSeeder::class,
             TagSeeder::class,
+            PlantDataSeeder::class,
         ]);
     }
 }

@@ -180,11 +180,12 @@ class BackupService
 
         foreach ($photos as $photo) {
             $filename = $photo['filename'];
+            $plantId = $photo['plant_id'];
             
             // Try different path variations
             $pathVariations = [
-                $filename,  // Original
-                'plants/' . basename($filename),  // With plants prefix
+                $filename,  // Original path (e.g., 'plants/31/uuid.jpg')
+                "plants/{$plantId}/" . basename($filename),  // Reconstructed path
                 basename($filename),  // Just filename
             ];
             
@@ -192,7 +193,8 @@ class BackupService
                 if ($disk->exists($path)) {
                     try {
                         $content = $disk->get($path);
-                        $zipPath = 'photos/' . basename($filename);
+                        // Create directory structure in ZIP: photos/plant_id/filename.ext
+                        $zipPath = "photos/{$plantId}/" . basename($filename);
                         $zip->addFromString($zipPath, $content);
                         $count++;
                         break; // Found and added, move to next photo

@@ -18,10 +18,24 @@ class TagController extends Controller
                                   ->orderBy('name')
                                   ->get();
         
-        $tags = Tag::with('tagCategory')
-                   ->orderBy('name')
-                   ->get()
-                   ->groupBy('category');
+        // Grouper les tags par leur catégorie
+        $tags = [];
+        foreach ($categories as $category) {
+            $categoryTags = $category->tags()
+                                     ->orderBy('name')
+                                     ->get();
+            if ($categoryTags->count() > 0) {
+                $tags[$category->name] = $categoryTags;
+            }
+        }
+        
+        // Ajouter les tags sans catégorie
+        $untaggedTags = Tag::where('tag_category_id', null)
+                          ->orderBy('name')
+                          ->get();
+        if ($untaggedTags->count() > 0) {
+            $tags['Sans catégorie'] = $untaggedTags;
+        }
 
         return view('admin.tags.index', compact('tags', 'categories'));
     }
@@ -75,6 +89,29 @@ class TagController extends Controller
 
         return redirect()->route('tags.index')
                        ->with('success', 'Tag supprimé avec succès.');
+    }
+
+    /**
+     * Store a newly created tag category
+     */
+    public function storeCategory(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|unique:tag_categories|max:255',
+            'description' => 'nullable|string|max:1000',
+        ], [
+            'name.required' => 'Le nom de la catégorie est requis.',
+            'name.unique' => 'Cette catégorie existe déjà.',
+            'name.max' => 'Le nom ne peut pas dépasser 255 caractères.',
+        ]);
+
+        TagCategory::create([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->route('tags.index')
+                       ->with('success', "Catégorie '{$request->name}' créée avec succès.");
     }
 
     /**
