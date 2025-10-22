@@ -39,6 +39,10 @@
                         </x-dropdown-link>
 
                         @if(auth()->user()?->is_admin)
+                            <x-dropdown-link :href="route('tags.index')">
+                                ⚙️ {{ __('Paramètres Tags') }}
+                            </x-dropdown-link>
+                            
                             <x-dropdown-link :href="route('backups.index')">
                                 💾 {{ __('Sauvegardes') }}
                             </x-dropdown-link>

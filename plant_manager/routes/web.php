@@ -9,6 +9,7 @@ use App\Http\Controllers\PlantHistoryController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 // Home redirect
@@ -56,6 +57,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::get('settings/references', [SettingsController::class, 'references'])->name('settings.references');
+
+    // Routes admin pour les tags (admin-only)
+    Route::middleware(['admin'])->group(function () {
+        Route::resource('admin/tags', TagController::class, ['names' => [
+            'index' => 'tags.index',
+            'create' => 'tags.create',
+            'store' => 'tags.store',
+            'edit' => 'tags.edit',
+            'update' => 'tags.update',
+            'destroy' => 'tags.destroy',
+        ]]);
+    });
 
     // Routes pour les sauvegardes et exports (admin-only)
     Route::middleware(['admin'])->prefix('settings/backups')->name('backups.')->group(function () {
