@@ -82,10 +82,13 @@ const ModalManager = {
     // Charger les images lightbox
     this.loadLightboxImages();
 
-    // 🔧 FIX: Restaurer l'état des échanges si une photo avait été changée
+    // 🔧 FIX: Initialiser le gestionnaire de galerie pour les event listeners
     if (typeof GalleryManager !== 'undefined') {
       const modal = this.modalContent.querySelector('[data-modal-plant-id]');
       if (modal) {
+        // Initialiser les handlers pour les thumbnails et photo principale
+        GalleryManager.init(modal);
+        // Restaurer l'état des échanges si une photo avait été changée
         GalleryManager.restoreSwapState(modal);
       }
     }
