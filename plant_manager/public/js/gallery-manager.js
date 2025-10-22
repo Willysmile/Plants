@@ -120,6 +120,9 @@ const GalleryManager = {
       // Mettre à jour l'array lightbox global pour que le lightbox ouvre la bonne image
       this.updateLightboxArray(modal, thumbIndex);
 
+      // 🔧 NOUVEAU FIX: Mettre à jour les miniatures de la galerie après le swap
+      this.updateGalleryThumbnails(modal, thumbnailBtn, mainPhoto);
+
       // Sauvegarder snapshot pour restauration ultérieure
       this.swapStates[plantId] = {
         thumbIndex,
@@ -189,6 +192,55 @@ const GalleryManager = {
   // DOM nodes replaced to force repaint
     } catch (err) {
       console.warn('[GALLERY_SWAP] Failed to force-replace nodes', err);
+    }
+  },
+
+  /**
+   * Met à jour les miniatures de la galerie après un swap
+   * Échange visuellement les miniatures affichées
+   * @param {HTMLElement} modal - Élément modal
+   * @param {HTMLElement} swappedThumb - Miniature qui a été swappée
+   * @param {HTMLElement} mainPhoto - Photo principale
+   */
+  updateGalleryThumbnails(modal, swappedThumb, mainPhoto) {
+    try {
+      // Récupérer le conteneur des miniatures
+      const thumbContainer = modal.querySelector('[data-type="thumbnail"]')?.parentElement;
+      if (!thumbContainer) return;
+
+      // Le conteneur parent des miniatures
+      const galleryContainer = thumbContainer.parentElement;
+      if (!galleryContainer) return;
+
+      // Récupérer tous les boutons miniatures
+      const allThumbs = Array.from(galleryContainer.querySelectorAll('[data-type="thumbnail"]'));
+      if (!allThumbs.length) return;
+
+      // Trouver l'index du swappedThumb
+      const swappedIndex = allThumbs.indexOf(swappedThumb);
+      if (swappedIndex === -1) return;
+
+      // Créer une nouvelle miniature pour remplacer celle qui est devenue principale
+      // Cette nouvelle miniature aura l'image qui était la photo principale
+      const newThumbBtn = swappedThumb.cloneNode(true);
+      newThumbBtn.setAttribute('data-index', swappedIndex + 1);
+      newThumbBtn.setAttribute('data-lightbox-index', swappedIndex + 1);
+      newThumbBtn.setAttribute('data-original-src', mainPhoto.getAttribute('data-original-src'));
+      
+      const newImg = newThumbBtn.querySelector('img');
+      if (newImg) {
+        newImg.src = mainPhoto.src;
+        newImg.setAttribute('src', mainPhoto.src);
+      }
+
+      // Remplacer l'ancienne miniature par la nouvelle
+      swappedThumb.replaceWith(newThumbBtn);
+
+      // Réinitialiser les event listeners (important!)
+      this.setupThumbnailHandlers(modal);
+
+    } catch (err) {
+      console.warn('[GALLERY] Failed to update gallery thumbnails after swap', err);
     }
   },
 
