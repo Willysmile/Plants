@@ -42,6 +42,10 @@
                         @if(auth()->user()?->is_admin)
                             <hr class="my-1 border-gray-200" />
                             
+                            <x-dropdown-link :href="route('admin.users.approval')">
+                                👥 {{ __('Approbations Utilisateurs') }}
+                            </x-dropdown-link>
+                            
                             <x-dropdown-link :href="route('settings.index')">
                                 ⚙️ {{ __('Paramètres') }}
                             </x-dropdown-link>

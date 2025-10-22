@@ -10,6 +10,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\Admin\UserApprovalController;
 use Illuminate\Support\Facades\Route;
 
 // Home redirect
@@ -23,7 +24,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Routes protégées par authentification
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'check.approval'])->group(function () {
     // Route pour les plantes archivées
     Route::get('plants/archived', [PlantController::class, 'archived'])->name('plants.archived');
 
@@ -74,6 +75,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Supprimer une catégorie entière (tous les tags)
         Route::delete('admin/tags-category/{tagCategory}', [TagController::class, 'destroyCategory'])->name('tags.destroy-category');
+
+        // Gestion des approbations d'utilisateurs
+        Route::get('admin/users/approval', [UserApprovalController::class, 'index'])->name('admin.users.approval');
+        Route::post('admin/users/{user}/approve', [UserApprovalController::class, 'approve'])->name('admin.users.approve');
+        Route::post('admin/users/{user}/reject', [UserApprovalController::class, 'reject'])->name('admin.users.reject');
+        Route::delete('admin/users/{user}', [UserApprovalController::class, 'destroy'])->name('admin.users.destroy');
     });
 
     // Routes pour les sauvegardes et exports (admin-only)

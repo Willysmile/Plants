@@ -39,12 +39,13 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'approved_at' => null, // En attente d'approbation
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        // Ne pas connecter automatiquement - en attente d'approbation admin
+        return redirect(route('login', absolute: false))
+            ->with('status', 'Inscription réussie ! Votre compte est en attente d\'approbation par un administrateur.');
     }
 }
