@@ -122,6 +122,46 @@ const QuickModalsManager = {
         modal.classList.remove('flex');
       }
     }
+  },
+
+  /**
+   * Gère la modale maladie rapide
+   */
+  disease: {
+    modalId: 'quickDiseaseModalFromModal',
+    dateFieldId: 'quickDiseaseDetectedAtFromModal',
+    checkboxId: 'quickDiseaseCheckbox',
+
+    open(checkbox) {
+      // Si checkbox existe et n'est pas coché, fermer
+      if (checkbox && !checkbox.checked) {
+        this.close();
+        return;
+      }
+
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      
+      const dateField = document.getElementById(this.dateFieldId);
+      if (dateField) dateField.value = dateStr;
+
+      const modal = document.getElementById(this.modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    },
+
+    close() {
+      const checkbox = document.getElementById(this.checkboxId);
+      if (checkbox) checkbox.checked = false;
+
+      const modal = document.getElementById(this.modalId);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
   }
 };
 
@@ -173,6 +213,21 @@ window.closeQuickRepottingModalFromModal = function() {
   }
 };
 
+window.openQuickDiseaseModalFromModal = function(checkbox) {
+  QuickModalsManager.disease.open.call(QuickModalsManager.disease, checkbox);
+};
+
+window.closeQuickDiseaseModalFromModal = function() {
+  QuickModalsManager.disease.close();
+  // Reset form
+  const form = document.getElementById('quickDiseaseFormFromModal');
+  if (form) form.reset();
+  // Refresh modal to see updated histories
+  if (typeof refreshModal === 'function') {
+    setTimeout(refreshModal, 300);
+  }
+};
+
 // Exporter pour utilisation globale
 window.QuickModalsManager = QuickModalsManager;
 
@@ -200,6 +255,24 @@ window.setupQuickRepottingModal = function() {
   if (dateInput) {
     const today = new Date().toISOString().split('T')[0];
     dateInput.max = today;
+  }
+};
+
+window.setupQuickDiseaseModal = function() {
+  const dateInput = document.getElementById('quickDiseaseDetectedAtFromModal');
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.max = today;
+  }
+  // Handle disease select change
+  const select = document.getElementById('quickDiseaseTypeFromModal');
+  const newDiseaseDiv = document.getElementById('quickNewDiseaseDiv');
+  if (select) {
+    select.addEventListener('change', function() {
+      if (newDiseaseDiv) {
+        newDiseaseDiv.style.display = this.value === 'new' ? 'block' : 'none';
+      }
+    });
   }
 };
 
@@ -510,6 +583,77 @@ window.handleQuickRepottingSubmit = function(event) {
     })
     .catch(error => {
       console.error('[QuickRepotting] Error:', error);
+      dateError.textContent = 'Erreur lors de l\'enregistrement';
+      dateError.classList.remove('hidden');
+    });
+  
+  return false;
+};
+
+/**
+ * Handle submission of quick disease modal
+ */
+window.handleQuickDiseaseSubmit = function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const form = document.getElementById('quickDiseaseFormFromModal');
+  const dateInput = document.getElementById('quickDiseaseDetectedAtFromModal');
+  const dateError = document.getElementById('quickDiseaseDateError');
+  
+  if (!form || !dateInput || !dateError) {
+    console.error('[QuickDisease] Elements not found');
+    return false;
+  }
+  
+  const enteredDate = dateInput.value;
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (!enteredDate) {
+    dateError.textContent = 'La date de détection est requise';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  if (enteredDate > today) {
+    dateError.textContent = 'La date de détection ne peut pas être dans le futur';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  dateError.classList.add('hidden');
+  
+  const formData = new FormData(form);
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  const csrfToken = csrfMeta ? csrfMeta.content : null;
+  
+  fetch(form.action, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+    },
+    body: formData,
+  })
+    .then(response => {
+      if (response.ok) {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess('Maladie enregistrée', 0);
+        }
+        // Refresh modal to see updated histories
+        if (typeof refreshModal === 'function') {
+          setTimeout(refreshModal, 500);
+        }
+        // Close modal
+        closeQuickDiseaseModalFromModal();
+      } else {
+        return response.text().then(text => {
+          throw new Error(text);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('[QuickDisease] Error:', error);
       dateError.textContent = 'Erreur lors de l\'enregistrement';
       dateError.classList.remove('hidden');
     });

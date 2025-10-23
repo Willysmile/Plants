@@ -110,101 +110,6 @@
           </div>
         @endif
 
-        <!-- Modal pour Ajouter une Maladie dans la modale plants -->
-        <div id="add-disease-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
-            <!-- Header -->
-            <div class="flex items-center justify-between p-4 border-b">
-              <h3 class="text-lg font-semibold text-gray-800">🦠 Ajouter une Maladie</h3>
-              <button type="button" 
-                      onclick="closeAddDiseaseModalFromModal({{ $plant->id }})" 
-                      class="text-gray-500 hover:text-gray-700">
-                <i data-lucide="x" class="w-5 h-5"></i>
-              </button>
-            </div>
-
-            <!-- Formulaire -->
-            <form id="add-disease-form-{{ $plant->id }}" action="{{ route('plants.disease-history.store', $plant) }}" method="POST" class="p-4" onsubmit="handleAddDiseaseSubmit(event, {{ $plant->id }})">
-              @csrf
-              <input type="hidden" name="_ajax" value="1">
-              
-              <div class="space-y-4">
-                <!-- Maladie existante ou nouvelle -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Maladie *</label>
-                  <select name="disease_id" id="diseaseSelect-modal-{{ $plant->id }}" onchange="toggleNewDiseaseFromModal({{ $plant->id }})" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="">-- Sélectionner une maladie existante --</option>
-                    @foreach(\App\Models\Disease::orderBy('name')->get() as $disease)
-                      <option value="{{ $disease->id }}">{{ $disease->name }}</option>
-                    @endforeach
-                    <option value="new">➕ Ajouter une nouvelle maladie...</option>
-                  </select>
-                </div>
-
-                <!-- Nouvelle maladie (caché par défaut) -->
-                <div id="newDiseaseDiv-modal-{{ $plant->id }}" style="display:none;">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la nouvelle maladie *</label>
-                  <input type="text" name="new_disease_name" placeholder="Ex: Cochenilles, Oïdium, etc."
-                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                </div>
-
-                <!-- Date de détection -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
-                  <input type="date" id="diseaseDetectedAt-{{ $plant->id }}" name="detected_at" required
-                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                  <p id="diseaseDetectedAtError-{{ $plant->id }}" class="text-xs text-red-600 mt-1 hidden">La date ne peut pas être dans le futur</p>
-                </div>
-
-                <!-- Description -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Description des symptômes</label>
-                  <textarea name="description" rows="3" placeholder="Décrivez les symptômes observés..."
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-                </div>
-
-                <!-- Traitement -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Traitement appliqué</label>
-                  <textarea name="treatment" rows="3" placeholder="Décrivez le traitement appliqué..."
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-                </div>
-
-                <!-- Date du traitement -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
-                  <input type="date" id="diseaseTreatedAt-{{ $plant->id }}" name="treated_at"
-                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                  <p id="diseaseTreatedAtError-{{ $plant->id }}" class="text-xs text-red-600 mt-1 hidden">La date ne peut pas être dans le futur</p>
-                </div>
-
-                <!-- Statut -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Statut *</label>
-                  <select name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="">-- Sélectionner un statut --</option>
-                    <option value="detected">🔴 Détectée (Nouveau problème)</option>
-                    <option value="treated">🟡 Traitée (En cours de traitement)</option>
-                    <option value="cured">🟢 Guérie (Problème résolu)</option>
-                    <option value="recurring">🔄 Récurrente (Problème revient)</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Boutons -->
-              <div class="flex justify-end gap-2 mt-6 border-t pt-4">
-                <button type="button" 
-                        onclick="closeAddDiseaseModalFromModal({{ $plant->id }})"
-                        class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
-                  Annuler
-                </button>
-                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
-                  Ajouter la Maladie
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
       </div>
 
       <!-- Colonne droite (1/2) : Cartes en 2 colonnes + Galerie fixe en bas -->
@@ -392,6 +297,7 @@
     <x-quick-watering-modal :plant="$plant" />
     <x-quick-fertilizing-modal :plant="$plant" :fertilizerTypes="$fertilizerTypes ?? \App\Models\FertilizerType::all()" />
     <x-quick-repotting-modal :plant="$plant" />
+    <x-quick-disease-modal :plant="$plant" />
   </div>
 
   <script type="application/json" data-lightbox-images>
@@ -422,135 +328,11 @@
       }
     };
 
-    // Fonctions pour ouvrir/fermer la modale d'ajout de maladie dans la modale plants
-    window.openAddDiseaseModal = function(plantId) {
-      const modal = document.getElementById('add-disease-modal-' + plantId);
-      if (modal) {
-        modal.style.display = 'flex';
-        if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
-        }
-        // Set max date to today for date inputs
-        const today = new Date().toISOString().split('T')[0];
-        const detectedAtInput = document.getElementById('diseaseDetectedAt-' + plantId);
-        const treatedAtInput = document.getElementById('diseaseTreatedAt-' + plantId);
-        if (detectedAtInput) detectedAtInput.max = today;
-        if (treatedAtInput) treatedAtInput.max = today;
-      }
-    };
+    
+  </script>
 
-    window.closeAddDiseaseModalFromModal = function(plantId) {
-      const modal = document.getElementById('add-disease-modal-' + plantId);
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    };
-
-    // Toggle new disease field when "new" is selected
-    window.toggleNewDiseaseFromModal = function(plantId) {
-      const select = document.getElementById('diseaseSelect-modal-' + plantId);
-      const newDiseaseDiv = document.getElementById('newDiseaseDiv-modal-' + plantId);
-      if (select && newDiseaseDiv) {
-        if (select.value === 'new') {
-          newDiseaseDiv.style.display = 'block';
-        } else {
-          newDiseaseDiv.style.display = 'none';
-        }
-      }
-    };
-
-    // Handle disease add form submission
-    window.handleAddDiseaseSubmit = function(event, plantId) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const form = document.getElementById('add-disease-form-' + plantId);
-      const detectedAtInput = document.getElementById('diseaseDetectedAt-' + plantId);
-      const treatedAtInput = document.getElementById('diseaseTreatedAt-' + plantId);
-      const detectedAtError = document.getElementById('diseaseDetectedAtError-' + plantId);
-      const treatedAtError = document.getElementById('diseaseTreatedAtError-' + plantId);
-      
-      if (!form || !detectedAtInput) {
-        console.error('[AddDisease] Form elements not found');
-        return false;
-      }
-      
-      const today = new Date().toISOString().split('T')[0];
-      const detectedAt = detectedAtInput.value;
-      const treatedAt = treatedAtInput ? treatedAtInput.value : null;
-      
-      // Validate detected_at
-      if (!detectedAt) {
-        if (detectedAtError) {
-          detectedAtError.textContent = 'La date de détection est requise';
-          detectedAtError.classList.remove('hidden');
-        }
-        return false;
-      }
-      
-      if (detectedAt > today) {
-        if (detectedAtError) {
-          detectedAtError.textContent = 'La date de détection ne peut pas être dans le futur';
-          detectedAtError.classList.remove('hidden');
-        }
-        return false;
-      }
-      
-      if (detectedAtError) {
-        detectedAtError.classList.add('hidden');
-      }
-      
-      // Validate treated_at
-      if (treatedAt && treatedAt > today) {
-        if (treatedAtError) {
-          treatedAtError.textContent = 'La date du traitement ne peut pas être dans le futur';
-          treatedAtError.classList.remove('hidden');
-        }
-        return false;
-      }
-      
-      if (treatedAtError) {
-        treatedAtError.classList.add('hidden');
-      }
-      
-      const formData = new FormData(form);
-      const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-      const csrfToken = csrfMeta ? csrfMeta.content : null;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
-        },
-        body: formData,
-      })
-        .then(response => {
-          if (response.ok) {
-            if (typeof alertSuccess === 'function') {
-              alertSuccess('Maladie ajoutée', 0);
-            }
-            // Close disease add modal
-            closeAddDiseaseModalFromModal(plantId);
-            // Refresh main modal to see updated diseases
-            if (typeof refreshModal === 'function') {
-              setTimeout(refreshModal, 500);
-            }
-          } else {
-            return response.text().then(text => {
-              throw new Error(text);
-            });
-          }
-        })
-        .catch(error => {
-          console.error('[AddDisease] Error:', error);
-          if (typeof alertError === 'function') {
-            alertError('Erreur lors de l\'ajout de la maladie');
-          }
-        });
-      
-      return false;
-    };
+</div>
+</div>
 
 
   </script>
