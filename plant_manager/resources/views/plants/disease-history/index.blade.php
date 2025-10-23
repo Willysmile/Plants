@@ -41,8 +41,16 @@
                 <div class="flex-1">
                   <div class="flex items-center gap-3 mb-2">
                     <h3 class="text-xl font-semibold text-gray-900">{{ $disease->disease->name }}</h3>
+                    @php
+                      $statusLabels = [
+                        'detected' => 'Détecté',
+                        'treated' => 'Traité',
+                        'cured' => 'Guéri',
+                        'recurring' => 'Récurrent'
+                      ];
+                    @endphp
                     <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold {{ $disease->status_color }}">
-                      {{ ucfirst(__('statuses.' . $disease->status)) }}
+                      {{ $statusLabels[$disease->status] ?? ucfirst($disease->status) }}
                     </span>
                   </div>
                   
