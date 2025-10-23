@@ -15,7 +15,12 @@
 <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
   <div class="flex items-center gap-2">
     <i data-lucide="bug" class="w-4 h-4 text-red-600"></i>
-    <span class="text-sm font-semibold text-red-900">Maladies</span>
+    <button 
+      type="button" 
+      onclick="@if($context === 'modal') openDiseasesModalFromModal({{ $plant->id }}) @else location.href='{{ route('plants.show', $plant) }}#diseases' @endif"
+      class="text-sm font-semibold text-red-900 hover:opacity-75 cursor-pointer">
+      Maladies
+    </button>
   </div>
   
   @if($lastDisease)
@@ -24,14 +29,35 @@
     <span class="inline-block text-xs px-2 py-0.5 rounded mt-1 {{ $statusColors[$lastDisease->status]['badge'] }}">
       {{ $lastDisease->status_label }}
     </span>
+    
+    <div class="space-y-1 mt-2 text-xs">
+      @if($lastDisease->description)
+        <p class="text-gray-600">{{ substr($lastDisease->description, 0, 60) }}{{ strlen($lastDisease->description) > 60 ? '...' : '' }}</p>
+      @endif
+      @if($lastDisease->treated_at)
+        <p class="text-gray-600">Traité le : {{ $lastDisease->treated_at->format('d/m/Y') }}</p>
+      @endif
+    </div>
   @else
     <p class="text-xs text-red-600 mt-2">Aucune maladie détectée</p>
   @endif
   
-  <button 
-    type="button" 
-    onclick="openQuickDiseaseModalFromModal()"
-    class="text-xs text-red-600 hover:text-red-900 mt-2 inline-block font-semibold flex items-center gap-1">
-    Créer →
-  </button>
+  <div class="mt-2 flex gap-2 items-center">
+    @if($allDiseases->count() > 0)
+      <button 
+        type="button" 
+        onclick="@if($context === 'modal') openDiseasesModalFromModal({{ $plant->id }}) @else location.href='{{ route('plants.show', $plant) }}#diseases' @endif"
+        class="text-xs text-red-600 hover:text-red-900 inline-block font-semibold flex items-center gap-1">
+        <i data-lucide="eye" class="w-3 h-3"></i>
+        Voir ({{ $allDiseases->count() }})
+      </button>
+    @endif
+    
+    <button 
+      type="button" 
+      onclick="openQuickDiseaseModalFromModal()"
+      class="text-xs text-red-600 hover:text-red-900 inline-block font-semibold flex items-center gap-1">
+      Créer →
+    </button>
+  </div>
 </div>
