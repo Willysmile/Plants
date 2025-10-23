@@ -1,16 +1,20 @@
-<!-- Afficher les messages flash de session -->
-@if(session('success'))
-    <x-alert type="success" message="{{ session('success') }}" />
-@endif
+@php
+    $flashNotifications = collect([
+        ['type' => 'success', 'message' => session('success')],
+        ['type' => 'error', 'message' => session('error')],
+        ['type' => 'warning', 'message' => session('warning')],
+        ['type' => 'info', 'message' => session('info')],
+    ])->filter(fn ($alert) => filled($alert['message']));
+@endphp
 
-@if(session('error'))
-    <x-alert type="error" message="{{ session('error') }}" />
-@endif
-
-@if(session('warning'))
-    <x-alert type="warning" message="{{ session('warning') }}" />
-@endif
-
-@if(session('info'))
-    <x-alert type="info" message="{{ session('info') }}" />
+@if($flashNotifications->isNotEmpty())
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            @foreach($flashNotifications as $alert)
+                if (typeof showNotification === 'function') {
+                    showNotification(@json($alert['message']), @json($alert['type']), 0);
+                }
+            @endforeach
+        });
+    </script>
 @endif
