@@ -9,6 +9,17 @@ use Illuminate\View\View;
 
 class UserApprovalController extends Controller
 {
+    public function __construct()
+    {
+        // Vérifier que l'utilisateur est admin
+        $this->middleware(function ($request, $next) {
+            if (!$request->user() || !$request->user()->is_admin) {
+                abort(403, 'Accès non autorisé');
+            }
+            return $next($request);
+        });
+    }
+
     /**
      * Afficher la liste des utilisateurs en attente d'approbation et approuvés.
      */
@@ -28,8 +39,6 @@ class UserApprovalController extends Controller
      */
     public function approve(User $user): RedirectResponse
     {
-        $this->authorize('admin', $user);
-        
         $user->approve();
 
         return redirect()->route('admin.users.approval')
@@ -41,8 +50,6 @@ class UserApprovalController extends Controller
      */
     public function reject(User $user): RedirectResponse
     {
-        $this->authorize('admin', $user);
-        
         $user->reject();
 
         return redirect()->route('admin.users.approval')
@@ -54,8 +61,6 @@ class UserApprovalController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
-        $this->authorize('admin', $user);
-        
         if ($user->isApproved()) {
             return redirect()->route('admin.users.approval')
                 ->with('error', 'Impossible de supprimer un utilisateur approuvé.');
