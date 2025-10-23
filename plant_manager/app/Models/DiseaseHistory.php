@@ -12,7 +12,7 @@ class DiseaseHistory extends Model
 
     protected $fillable = [
         'plant_id',
-        'disease_name',
+        'disease_id',
         'description',
         'treatment',
         'detected_at',
@@ -31,6 +31,22 @@ class DiseaseHistory extends Model
     public function plant(): BelongsTo
     {
         return $this->belongsTo(Plant::class);
+    }
+
+    /**
+     * Relation avec la maladie.
+     */
+    public function disease(): BelongsTo
+    {
+        return $this->belongsTo(Disease::class);
+    }
+
+    /**
+     * Accessor pour le nom de la maladie.
+     */
+    public function getDiseaseName(): string
+    {
+        return $this->disease?->name ?? 'Inconnue';
     }
 
     /**

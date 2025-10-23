@@ -89,9 +89,7 @@
     // Initial display
     showPage(0);
   </script>
-@endsection
-
-@section('extra-scripts')
+  
   <!-- Quick Modal Validation Scripts (must be loaded at page init, before AJAX modals load) -->
   <script>
     console.log('[INDEX] Defining quick modal handlers');

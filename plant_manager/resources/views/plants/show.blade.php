@@ -265,13 +265,25 @@
                   <div class="flex items-center gap-2">
                     <i data-lucide="alert-circle" class="w-5 h-5"></i>
                     <div>
-                      <h4 class="font-semibold">{{ $disease->disease_name }}</h4>
+                      <h4 class="font-semibold">{{ $disease->disease->name }}</h4>
                       <p class="text-xs opacity-75">Détectée le {{ $disease->detected_at->format('d/m/Y H:i') }}</p>
                     </div>
                   </div>
-                  <span class="inline-block text-xs px-2 py-1 rounded font-semibold">
-                    {{ $disease->status_label }}
-                  </span>
+                  <div class="flex items-center gap-2">
+                    <span class="inline-block text-xs px-2 py-1 rounded font-semibold">
+                      {{ $disease->status_label }}
+                    </span>
+                    <button type="button" onclick="openEditDiseaseModal({{ $disease->id }})" class="text-blue-600 hover:text-blue-800" title="Modifier">
+                      <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </button>
+                    <form action="{{ route('plants.disease-history.destroy', [$plant, $disease]) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer cette maladie ?')">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" class="text-red-600 hover:text-red-800" title="Supprimer">
+                        <i data-lucide="trash" class="w-4 h-4"></i>
+                      </button>
+                    </form>
+                  </div>
                 </div>
                 
                 @if($disease->description)
@@ -294,6 +306,187 @@
         </div>
       </div>
     @endif
+
+    <!-- Modal pour Ajouter une Maladie -->
+    <div id="add-disease-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 border-b">
+          <h3 class="text-lg font-semibold text-gray-800">🦠 Ajouter une Maladie</h3>
+          <button type="button" 
+                  onclick="document.getElementById('add-disease-modal-{{ $plant->id }}').style.display='none'" 
+                  class="text-gray-500 hover:text-gray-700">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Formulaire -->
+        <form action="{{ route('plants.disease-history.store', $plant) }}" method="POST" class="p-4">
+          @csrf
+          
+          <div class="space-y-4">
+            <!-- Maladie existante ou nouvelle -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Maladie *</label>
+              <select name="disease_id" id="diseaseSelect-{{ $plant->id }}" onchange="toggleNewDisease({{ $plant->id }})" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="">-- Sélectionner une maladie existante --</option>
+                @foreach(\App\Models\Disease::orderBy('name')->get() as $disease)
+                  <option value="{{ $disease->id }}">{{ $disease->name }}</option>
+                @endforeach
+                <option value="new">➕ Ajouter une nouvelle maladie...</option>
+              </select>
+            </div>
+
+            <!-- Nouvelle maladie (caché par défaut) -->
+            <div id="newDiseaseDiv-{{ $plant->id }}" style="display:none;">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la nouvelle maladie *</label>
+              <input type="text" name="new_disease_name" placeholder="Ex: Cochenilles, Oïdium, etc."
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+
+            <!-- Date de détection -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
+              <input type="datetime-local" name="detected_at" required
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Description des symptômes</label>
+              <textarea name="description" rows="3" placeholder="Décrivez les symptômes observés..."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+            </div>
+
+            <!-- Traitement -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Traitement appliqué</label>
+              <textarea name="treatment" rows="3" placeholder="Décrivez le traitement appliqué..."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+            </div>
+
+            <!-- Date du traitement -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
+              <input type="datetime-local" name="treated_at"
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+            </div>
+
+            <!-- Statut -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Statut *</label>
+              <select name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                <option value="">-- Sélectionner un statut --</option>
+                <option value="detected">🔴 Détectée (Nouveau problème)</option>
+                <option value="treated">🟡 Traitée (En cours de traitement)</option>
+                <option value="cured">🟢 Guérie (Problème résolu)</option>
+                <option value="recurring">🔄 Récurrente (Problème revient)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Boutons -->
+          <div class="flex justify-end gap-2 mt-6 border-t pt-4">
+            <button type="button" 
+                    onclick="document.getElementById('add-disease-modal-{{ $plant->id }}').style.display='none'"
+                    class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+              Annuler
+            </button>
+            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+              Ajouter la maladie
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modales d'édition de maladies (une par maladie) -->
+    @foreach($plant->diseaseHistories as $disease)
+      <div id="edit-disease-modal-{{ $disease->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-800">🦠 Modifier la Maladie</h3>
+            <button type="button" 
+                    onclick="document.getElementById('edit-disease-modal-{{ $disease->id }}').style.display='none'" 
+                    class="text-gray-500 hover:text-gray-700">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Formulaire -->
+          <form action="{{ route('plants.disease-history.update', [$plant, $disease]) }}" method="POST" class="p-4">
+            @csrf
+            @method('PATCH')
+            
+            <div class="space-y-4">
+              <!-- Maladie (sélection fixe) -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Maladie</label>
+                <select name="disease_id" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                  @foreach(\App\Models\Disease::orderBy('name')->get() as $d)
+                    <option value="{{ $d->id }}" {{ $disease->disease_id == $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+
+              <!-- Date de détection -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
+                <input type="datetime-local" name="detected_at" required
+                       value="{{ $disease->detected_at->format('Y-m-d\TH:i') }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+              </div>
+
+              <!-- Description -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description des symptômes</label>
+                <textarea name="description" rows="3" placeholder="Décrivez les symptômes observés..."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">{{ $disease->description }}</textarea>
+              </div>
+
+              <!-- Traitement -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Traitement appliqué</label>
+                <textarea name="treatment" rows="3" placeholder="Décrivez le traitement appliqué..."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">{{ $disease->treatment }}</textarea>
+              </div>
+
+              <!-- Date du traitement -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
+                <input type="datetime-local" name="treated_at"
+                       value="{{ $disease->treated_at ? $disease->treated_at->format('Y-m-d\TH:i') : '' }}"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+              </div>
+
+              <!-- Statut -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Statut *</label>
+                <select name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                  <option value="detected" {{ $disease->status == 'detected' ? 'selected' : '' }}>🔴 Détectée (Nouveau problème)</option>
+                  <option value="treated" {{ $disease->status == 'treated' ? 'selected' : '' }}>🟡 Traitée (En cours de traitement)</option>
+                  <option value="cured" {{ $disease->status == 'cured' ? 'selected' : '' }}>🟢 Guérie (Problème résolu)</option>
+                  <option value="recurring" {{ $disease->status == 'recurring' ? 'selected' : '' }}>🔄 Récurrente (Problème revient)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="flex justify-end gap-2 mt-6 border-t pt-4">
+              <button type="button" 
+                      onclick="document.getElementById('edit-disease-modal-{{ $disease->id }}').style.display='none'"
+                      class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+                Annuler
+              </button>
+              <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                Mettre à jour
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    @endforeach
 
     <!-- Galerie - occupe le 1/3 inférieur -->
     <x-gallery :plant="$plant" :maxThumbnails="99" />
@@ -486,11 +679,69 @@
     // Fonction pour ouvrir la modal des maladies
     window.openDiseasesModal = function(plantId) {
       document.getElementById(`diseases-modal-${plantId}`).style.display = 'flex';
+      // Réinitialiser les icônes Lucide
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
     };
 
     // Fonction pour fermer la modal des maladies
     window.closeDiseasesModal = function(plantId) {
       document.getElementById(`diseases-modal-${plantId}`).style.display = 'none';
+    };
+
+    // Fonction pour ouvrir la modal d'ajout de maladie
+    window.openAddDiseaseModal = function(plantId) {
+      document.getElementById(`add-disease-modal-${plantId}`).style.display = 'flex';
+    };
+
+    // Fonction pour fermer la modal d'ajout de maladie
+    window.closeAddDiseaseModal = function(plantId) {
+      document.getElementById(`add-disease-modal-${plantId}`).style.display = 'none';
+    };
+
+    // Fonction pour ouvrir la modal d'édition de maladie
+    window.openEditDiseaseModal = function(diseaseId) {
+      document.getElementById(`edit-disease-modal-${diseaseId}`).style.display = 'flex';
+      // Réinitialiser les icônes Lucide
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    };
+
+    // Fonction pour fermer la modal d'édition de maladie
+    window.closeEditDiseaseModal = function(diseaseId) {
+      document.getElementById(`edit-disease-modal-${diseaseId}`).style.display = 'none';
+    };
+
+    // Définir la date max aujourd'hui pour le formulaire d'ajout de maladie
+    document.addEventListener('DOMContentLoaded', function() {
+      const today = new Date().toISOString().split('T')[0];
+      const detectedAtInputs = document.querySelectorAll('input[name="detected_at"]');
+      const treatedAtInputs = document.querySelectorAll('input[name="treated_at"]');
+      
+      detectedAtInputs.forEach(input => {
+        input.max = today + 'T23:59';
+      });
+      treatedAtInputs.forEach(input => {
+        input.max = today + 'T23:59';
+      });
+    });
+
+    // Basculer le formulaire de nouvelle maladie
+    window.toggleNewDisease = function(plantId) {
+      const select = document.getElementById(`diseaseSelect-${plantId}`);
+      const newDiseaseDiv = document.getElementById(`newDiseaseDiv-${plantId}`);
+      
+      if (select.value === 'new') {
+        newDiseaseDiv.style.display = 'block';
+        document.querySelector(`#newDiseaseDiv-${plantId} input`).required = true;
+        document.querySelector('select[name="disease_id"]').removeAttribute('required');
+      } else {
+        newDiseaseDiv.style.display = 'none';
+        document.querySelector(`#newDiseaseDiv-${plantId} input`).removeAttribute('required');
+        document.querySelector('select[name="disease_id"]').required = true;
+      }
     };
   </script>
 @endsection

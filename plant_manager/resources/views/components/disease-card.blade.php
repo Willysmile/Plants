@@ -14,13 +14,13 @@
 
 <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
   <div class="flex items-center gap-2">
-    <i data-lucide="virus" class="w-4 h-4 text-red-600"></i>
+    <i data-lucide="bug" class="w-4 h-4 text-red-600"></i>
     <span class="text-sm font-semibold text-red-900">Maladies</span>
   </div>
   
   @if($lastDisease)
     <p class="text-xs text-red-600 mt-2">Dernière : {{ $lastDisease->detected_at->format('d/m/Y') }}</p>
-    <p class="text-xs text-gray-700 font-medium">{{ $lastDisease->disease_name }}</p>
+    <p class="text-xs text-gray-700 font-medium">{{ $lastDisease->disease->name }}</p>
     <span class="inline-block text-xs px-2 py-0.5 rounded mt-1 {{ $statusColors[$lastDisease->status]['badge'] }}">
       {{ $lastDisease->status_label }}
     </span>
@@ -37,4 +37,12 @@
       Voir ({{ $allDiseases->count() }})
     </button>
   @endif
+
+  <button 
+    type="button" 
+    onclick="openAddDiseaseModal({{ $plant->id }})"
+    class="text-xs text-red-600 hover:text-red-900 mt-2 inline-block font-semibold flex items-center gap-1 ml-2">
+    <i data-lucide="plus" class="w-3 h-3"></i>
+    Ajouter
+  </button>
 </div>
