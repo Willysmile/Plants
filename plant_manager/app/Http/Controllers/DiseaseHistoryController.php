@@ -30,15 +30,20 @@ class DiseaseHistoryController extends Controller
     public function store(Request $request, Plant $plant): RedirectResponse
     {
         // Validation flexible pour disease_id (peut être "new" ou un ID)
-        $request->validate([
+        $validated = $request->validate([
             'disease_id' => ['nullable', 'string'],
             'new_disease_name' => ['nullable', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:500'],
             'treatment' => ['nullable', 'string', 'max:500'],
             'detected_at' => ['required', 'date'],
-            'treated_at' => ['nullable', 'date', 'after_or_equal:detected_at'],
+            'treated_at' => ['nullable', 'date'],
             'status' => ['required', 'in:detected,treated,cured,recurring'],
         ]);
+
+        // Validation personnalisée pour treated_at >= detected_at
+        if ($validated['treated_at'] && $validated['treated_at'] < $validated['detected_at']) {
+            return redirect()->back()->withErrors(['treated_at' => 'La date du traitement doit être après ou égale à la date de détection']);
+        }
 
         // Déterminer le disease_id
         $diseaseId = null;
@@ -86,9 +91,14 @@ class DiseaseHistoryController extends Controller
             'description' => ['nullable', 'string', 'max:500'],
             'treatment' => ['nullable', 'string', 'max:500'],
             'detected_at' => ['required', 'date'],
-            'treated_at' => ['nullable', 'date', 'after_or_equal:detected_at'],
+            'treated_at' => ['nullable', 'date'],
             'status' => ['required', 'in:detected,treated,cured,recurring'],
         ]);
+
+        // Validation personnalisée pour treated_at >= detected_at
+        if ($validated['treated_at'] && $validated['treated_at'] < $validated['detected_at']) {
+            return redirect()->back()->withErrors(['treated_at' => 'La date du traitement doit être après ou égale à la date de détection']);
+        }
 
         $diseaseHistory->update($validated);
 

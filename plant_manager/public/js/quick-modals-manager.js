@@ -634,6 +634,13 @@ window.handleQuickDiseaseSubmit = function(event) {
     dateError.classList.remove('hidden');
     return false;
   }
+
+  // Validate treated_at >= detected_at
+  if (treatedAt && treatedAt < enteredDate) {
+    dateError.textContent = 'La date du traitement doit être après ou égale à la date de détection';
+    dateError.classList.remove('hidden');
+    return false;
+  }
   
   dateError.classList.add('hidden');
   
