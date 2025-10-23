@@ -9,22 +9,14 @@ use Illuminate\View\View;
 
 class UserApprovalController extends Controller
 {
-    public function __construct()
-    {
-        // Vérifier que l'utilisateur est admin
-        $this->middleware(function ($request, $next) {
-            if (!$request->user() || !$request->user()->is_admin) {
-                abort(403, 'Accès non autorisé');
-            }
-            return $next($request);
-        });
-    }
-
     /**
      * Afficher la liste des utilisateurs en attente d'approbation et approuvés.
      */
     public function index(): View
     {
+        // Vérifier que l'utilisateur est admin
+        abort_unless(auth()->user()?->is_admin, 403, 'Accès non autorisé');
+        
         $pendingUsers = User::whereNull('approved_at')->get();
         $approvedUsers = User::whereNotNull('approved_at')->get();
 
@@ -39,6 +31,8 @@ class UserApprovalController extends Controller
      */
     public function approve(User $user): RedirectResponse
     {
+        abort_unless(auth()->user()?->is_admin, 403, 'Accès non autorisé');
+        
         $user->approve();
 
         return redirect()->route('admin.users.approval')
@@ -50,6 +44,8 @@ class UserApprovalController extends Controller
      */
     public function reject(User $user): RedirectResponse
     {
+        abort_unless(auth()->user()?->is_admin, 403, 'Accès non autorisé');
+        
         $user->reject();
 
         return redirect()->route('admin.users.approval')
@@ -61,6 +57,8 @@ class UserApprovalController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        abort_unless(auth()->user()?->is_admin, 403, 'Accès non autorisé');
+        
         if ($user->isApproved()) {
             return redirect()->route('admin.users.approval')
                 ->with('error', 'Impossible de supprimer un utilisateur approuvé.');
