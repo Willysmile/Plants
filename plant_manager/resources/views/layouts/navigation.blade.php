@@ -53,6 +53,14 @@
                             <x-dropdown-link :href="route('settings.references')">
                                 📌 {{ __('Gestion Références') }}
                             </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('locations.index')">
+                                📍 {{ __('Gestion Emplacements') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('purchase-places.index')">
+                                🛒 {{ __('Gestion Lieux d\'Achat') }}
+                            </x-dropdown-link>
                             
                             <x-dropdown-link :href="route('fertilizer-types.index')">
                                 🌿 {{ __('Gestion Engrais') }}

@@ -7,6 +7,8 @@ use App\Http\Controllers\FertilizingHistoryController;
 use App\Http\Controllers\RepottingHistoryController;
 use App\Http\Controllers\PlantHistoryController;
 use App\Http\Controllers\DiseaseHistoryController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\PurchasePlaceController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\BackupController;
@@ -55,6 +57,10 @@ Route::middleware(['auth', 'verified', 'check.approval'])->group(function () {
 
     // Gestion des types d'engrais
     Route::resource('fertilizer-types', FertilizerTypeController::class);
+
+    // Gestion des emplacements et lieux d'achat
+    Route::resource('locations', LocationController::class);
+    Route::resource('purchase-places', PurchasePlaceController::class);
 
     // Routes pour les paramètres
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
