@@ -88,7 +88,7 @@ class PlantController extends Controller
      */
     public function show(\App\Models\Plant $plant)
 {
-    $plant->load(['tags','photos','parents','daughters']);
+    $plant->load(['tags','photos','parents','daughters','location','purchasePlace']);
     return view('plants.show', compact('plant'));
 }
     /**

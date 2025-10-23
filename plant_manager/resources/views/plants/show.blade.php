@@ -177,24 +177,30 @@
 
           <!-- Localisation (Emplacement, Date, Lieu d'achat) EN BAS -->
           <div class="grid gap-2 text-xs mt-4" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">
-            @if($plant->location)
+            @if($plant->location_id && $plant->location)
               <div class="bg-green-50 p-2 rounded border border-green-200">
-                <p class="text-gray-600 font-medium text-xs">Emplacement</p>
-                <p class="text-green-700 font-semibold">{{ $plant->location }}</p>
+                <p class="text-gray-600 font-medium text-xs">📍 Emplacement</p>
+                <p class="text-green-700 font-semibold">{{ $plant->location->name }}</p>
+                @if($plant->location->light_level)
+                  <p class="text-xs text-gray-600 mt-1">💡 {{ $plant->location->light_level }}</p>
+                @endif
               </div>
             @endif
             
             @if($plant->purchase_date)
               <div class="bg-blue-50 p-2 rounded border border-blue-200">
-                <p class="text-gray-600 font-medium text-xs">Date d'achat</p>
+                <p class="text-gray-600 font-medium text-xs">📅 Date d'achat</p>
                 <p class="text-blue-700 font-semibold">{{ $plant->formatted_purchase_date ?? $plant->purchase_date }}</p>
               </div>
             @endif
             
-            @if($plant->purchase_place)
+            @if($plant->purchase_place_id && $plant->purchasePlace)
               <div class="bg-orange-50 p-2 rounded border border-orange-200">
-                <p class="text-gray-600 font-medium text-xs">Lieu d'achat</p>
-                <p class="text-orange-700 font-semibold">{{ $plant->purchase_place }}</p>
+                <p class="text-gray-600 font-medium text-xs">🛒 Lieu d'achat</p>
+                <p class="text-orange-700 font-semibold">{{ $plant->purchasePlace->name }}</p>
+                @if($plant->purchasePlace->phone)
+                  <p class="text-xs text-gray-600 mt-1">☎️ {{ $plant->purchasePlace->phone }}</p>
+                @endif
               </div>
             @endif
 
