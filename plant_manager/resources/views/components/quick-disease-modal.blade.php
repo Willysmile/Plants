@@ -53,6 +53,16 @@
         <textarea id="quickDiseaseDescriptionFromModal" name="description" placeholder="Symptômes observés..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500" rows="2"></textarea>
       </div>
 
+      <div class="mb-3">
+        <label for="quickDiseaseTreatedAtFromModal" class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
+        <input type="date" id="quickDiseaseTreatedAtFromModal" name="treated_at" max="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500">
+      </div>
+
+      <div class="mb-4">
+        <label for="quickDiseaseTreatmentFromModal" class="block text-sm font-medium text-gray-700 mb-1">Traitement appliqué</label>
+        <textarea id="quickDiseaseTreatmentFromModal" name="treatment" placeholder="Traitement appliqué..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500" rows="2"></textarea>
+      </div>
+
       <div class="flex gap-2">
         <button type="submit" class="flex-1 bg-red-600 text-white font-medium py-2 rounded hover:bg-red-700">Enregistrer</button>
         <button type="button" class="flex-1 bg-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-400" onclick="closeQuickDiseaseModalFromModal()">Annuler</button>

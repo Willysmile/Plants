@@ -15,12 +15,9 @@
 <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
   <div class="flex items-center gap-2">
     <i data-lucide="bug" class="w-4 h-4 text-red-600"></i>
-    <button 
-      type="button" 
-      onclick="@if($context === 'modal') openDiseasesModalFromModal({{ $plant->id }}) @else location.href='{{ route('plants.show', $plant) }}#diseases' @endif"
-      class="text-sm font-semibold text-red-900 hover:opacity-75 cursor-pointer">
+    <a href="{{ route('plants.disease-history.index', $plant) }}" class="text-sm font-semibold text-red-900 hover:opacity-75">
       Maladies
-    </button>
+    </a>
   </div>
   
   @if($lastDisease)
@@ -42,17 +39,7 @@
     <p class="text-xs text-red-600 mt-2">Aucune maladie détectée</p>
   @endif
   
-  <div class="mt-2 flex gap-2 items-center">
-    @if($allDiseases->count() > 0)
-      <button 
-        type="button" 
-        onclick="@if($context === 'modal') openDiseasesModalFromModal({{ $plant->id }}) @else location.href='{{ route('plants.show', $plant) }}#diseases' @endif"
-        class="text-xs text-red-600 hover:text-red-900 inline-block font-semibold flex items-center gap-1">
-        <i data-lucide="eye" class="w-3 h-3"></i>
-        Voir ({{ $allDiseases->count() }})
-      </button>
-    @endif
-    
+  <div class="mt-2">
     <button 
       type="button" 
       onclick="openQuickDiseaseModalFromModal()"

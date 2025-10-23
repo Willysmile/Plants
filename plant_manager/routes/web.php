@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified', 'check.approval'])->group(function () {
     Route::resource('plants.fertilizing-history', FertilizingHistoryController::class);
     Route::resource('plants.repotting-history', RepottingHistoryController::class);
     Route::resource('plants.histories', PlantHistoryController::class);
-    Route::resource('plants.disease-history', DiseaseHistoryController::class, ['only' => ['store', 'update', 'destroy']]);
+    Route::resource('plants.disease-history', DiseaseHistoryController::class, ['only' => ['index', 'store', 'update', 'destroy']]);
 
     // Gestion des types d'engrais
     Route::resource('fertilizer-types', FertilizerTypeController::class);

@@ -12,6 +12,19 @@ use Illuminate\Http\RedirectResponse;
 class DiseaseHistoryController extends Controller
 {
     /**
+     * Afficher tous les historiques de maladies pour une plante.
+     */
+    public function index(Plant $plant)
+    {
+        $diseaseHistories = $plant->diseaseHistories()->with('disease')->orderByDesc('detected_at')->get();
+        
+        return view('plants.disease-history.index', [
+            'plant' => $plant,
+            'diseaseHistories' => $diseaseHistories,
+        ]);
+    }
+
+    /**
      * Stocker un nouvel historique de maladie.
      */
     public function store(Request $request, Plant $plant): RedirectResponse

@@ -260,9 +260,14 @@ window.setupQuickRepottingModal = function() {
 
 window.setupQuickDiseaseModal = function() {
   const dateInput = document.getElementById('quickDiseaseDetectedAtFromModal');
+  const treatedAtInput = document.getElementById('quickDiseaseTreatedAtFromModal');
   if (dateInput) {
     const today = new Date().toISOString().split('T')[0];
     dateInput.max = today;
+  }
+  if (treatedAtInput) {
+    const today = new Date().toISOString().split('T')[0];
+    treatedAtInput.max = today;
   }
   // Handle disease select change
   const select = document.getElementById('quickDiseaseTypeFromModal');
@@ -599,6 +604,7 @@ window.handleQuickDiseaseSubmit = function(event) {
   
   const form = document.getElementById('quickDiseaseFormFromModal');
   const dateInput = document.getElementById('quickDiseaseDetectedAtFromModal');
+  const treatedAtInput = document.getElementById('quickDiseaseTreatedAtFromModal');
   const dateError = document.getElementById('quickDiseaseDateError');
   
   if (!form || !dateInput || !dateError) {
@@ -607,6 +613,7 @@ window.handleQuickDiseaseSubmit = function(event) {
   }
   
   const enteredDate = dateInput.value;
+  const treatedAt = treatedAtInput ? treatedAtInput.value : null;
   const today = new Date().toISOString().split('T')[0];
   
   if (!enteredDate) {
@@ -617,6 +624,13 @@ window.handleQuickDiseaseSubmit = function(event) {
   
   if (enteredDate > today) {
     dateError.textContent = 'La date de détection ne peut pas être dans le futur';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+
+  // Validate treated_at
+  if (treatedAt && treatedAt > today) {
+    dateError.textContent = 'La date du traitement ne peut pas être dans le futur';
     dateError.classList.remove('hidden');
     return false;
   }
