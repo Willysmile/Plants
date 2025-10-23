@@ -87,14 +87,14 @@
                     onclick="editDiseaseHistory({{ $disease->id }}, '{{ $disease->disease->name }}', '{{ $disease->description }}', '{{ $disease->treatment }}', '{{ $disease->detected_at->format('Y-m-d') }}', '{{ optional($disease->treated_at)->format('Y-m-d') }}', '{{ $disease->status }}')"
                     class="text-blue-500 hover:text-blue-700 font-semibold text-sm flex items-center gap-1"
                   >
-                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                    <i data-lucide="pencil" class="w-4 h-4"></i>
                     Éditer
                   </button>
                   <form action="{{ route('plants.disease-history.destroy', [$plant, $disease]) }}" method="POST" class="inline" onsubmit="return confirm('Êtes-vous sûr ?')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="text-red-500 hover:text-red-700 font-semibold text-sm flex items-center gap-1">
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                      <i data-lucide="trash" class="w-4 h-4"></i>
                       Supprimer
                     </button>
                   </form>
