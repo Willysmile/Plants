@@ -551,6 +551,31 @@
   window.closeQuickRepottingModal = function() {
     window.closeQuickRepottingModalFromModal?.();
   };
+
+  // Setup functions for quick modal initialization
+  window.setupQuickWateringModal = function() {
+    const dateInput = document.getElementById('quickWateringDateFromModal');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.max = today;
+    }
+  };
+
+  window.setupQuickFertilizingModal = function() {
+    const dateInput = document.getElementById('quickFertilizingDateFromModal');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.max = today;
+    }
+  };
+
+  window.setupQuickRepottingModal = function() {
+    const dateInput = document.getElementById('quickRepottingDateFromModal');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.max = today;
+    }
+  };
 </script>
 
 @include('partials.lightbox')
