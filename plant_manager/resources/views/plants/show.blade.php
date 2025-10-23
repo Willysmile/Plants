@@ -551,14 +551,82 @@
     form.submit();
   }
 
-  // Close modal when clicking outside
+  // Quick fertilizing modal functions
+  function openQuickFertilizingModal() {
+    const modal = document.getElementById('quickFertilizingModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+  }
+
+  function closeQuickFertilizingModal() {
+    const modal = document.getElementById('quickFertilizingModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
+
+  function submitQuickFertilizing() {
+    const form = document.getElementById('quickFertilizingForm');
+    if (form) {
+      form.submit();
+    }
+  }
+
+  // Quick repotting modal functions
+  function openQuickRepottingModal() {
+    const modal = document.getElementById('quickRepottingModal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+  }
+
+  function closeQuickRepottingModal() {
+    const modal = document.getElementById('quickRepottingModal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+  }
+
+  function submitQuickRepotting() {
+    const form = document.getElementById('quickRepottingForm');
+    if (form) {
+      form.submit();
+    }
+  }
+
+  // Close modals when clicking outside
   document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('quickWateringModal');
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeQuickWateringModal();
-      }
-    });
+    const wateringModal = document.getElementById('quickWateringModal');
+    if (wateringModal) {
+      wateringModal.addEventListener('click', function(e) {
+        if (e.target === wateringModal) {
+          closeQuickWateringModal();
+        }
+      });
+    }
+    
+    const fertilizingModal = document.getElementById('quickFertilizingModal');
+    if (fertilizingModal) {
+      fertilizingModal.addEventListener('click', function(e) {
+        if (e.target === fertilizingModal) {
+          closeQuickFertilizingModal();
+        }
+      });
+    }
+    
+    const repottingModal = document.getElementById('quickRepottingModal');
+    if (repottingModal) {
+      repottingModal.addEventListener('click', function(e) {
+        if (e.target === repottingModal) {
+          closeQuickRepottingModal();
+        }
+      });
+    }
   });
 </script>
 
@@ -597,6 +665,118 @@
           Annuler
         </button>
         <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded transition">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Quick Fertilizing Modal -->
+<div id="quickFertilizingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Fertilisation rapide</h2>
+      <button type="button" onclick="closeQuickFertilizingModal()" class="text-gray-500 hover:text-gray-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <form id="quickFertilizingForm" action="{{ route('plants.fertilizing-history.store', $plant) }}" method="POST">
+      @csrf
+
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2" for="quickFertilizingDate">
+          Date <span class="text-red-500">*</span>
+        </label>
+        <input type="date" id="quickFertilizingDate" name="fertilizing_date" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2" for="quickFertilizingType">
+          Type d'engrais
+        </label>
+        <select id="quickFertilizingType" name="fertilizer_type_id" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500">
+          <option value="">-- Sélectionner --</option>
+          @foreach(\App\Models\FertilizerType::all() as $type)
+            <option value="{{ $type->id }}">{{ $type->name }}</option>
+          @endforeach
+        </select>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2" for="quickFertilizingAmount">
+          Quantité
+        </label>
+        <input type="text" id="quickFertilizingAmount" name="amount" placeholder="50ml..." class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500">
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2" for="quickFertilizingNotes">
+          Notes
+        </label>
+        <textarea id="quickFertilizingNotes" name="notes" placeholder="Remarques..." rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-green-500"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button type="button" onclick="closeQuickFertilizingModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded transition">
+          Annuler
+        </button>
+        <button type="submit" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded transition">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Quick Repotting Modal -->
+<div id="quickRepottingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg p-6 w-96">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Rempotage rapide</h2>
+      <button type="button" onclick="closeQuickRepottingModal()" class="text-gray-500 hover:text-gray-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <form id="quickRepottingForm" action="{{ route('plants.repotting-history.store', $plant) }}" method="POST">
+      @csrf
+
+      <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2" for="quickRepottingDate">
+          Date <span class="text-red-500">*</span>
+        </label>
+        <input type="date" id="quickRepottingDate" name="repotting_date" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-amber-500">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-2" for="quickOldPotSize">
+            Ancien pot
+          </label>
+          <input type="number" id="quickOldPotSize" name="old_pot_size" placeholder="10" step="0.5" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2" for="quickNewPotSize">
+            Nouveau pot
+          </label>
+          <input type="number" id="quickNewPotSize" name="new_pot_size" placeholder="12" step="0.5" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-amber-500">
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2" for="quickRepottingNotes">
+          Notes
+        </label>
+        <textarea id="quickRepottingNotes" name="notes" placeholder="Remarques..." rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-amber-500"></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button type="button" onclick="closeQuickRepottingModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded transition">
+          Annuler
+        </button>
+        <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded transition">
           Enregistrer
         </button>
       </div>
