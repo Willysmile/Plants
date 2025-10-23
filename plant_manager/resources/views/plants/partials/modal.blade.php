@@ -151,8 +151,9 @@
             </div>
 
             <!-- Formulaire -->
-            <form action="{{ route('plants.disease-history.store', $plant) }}" method="POST" class="p-4">
+            <form id="add-disease-form-{{ $plant->id }}" action="{{ route('plants.disease-history.store', $plant) }}" method="POST" class="p-4" onsubmit="handleAddDiseaseSubmit(event, {{ $plant->id }})">
               @csrf
+              <input type="hidden" name="_ajax" value="1">
               
               <div class="space-y-4">
                 <!-- Maladie existante ou nouvelle -->
@@ -491,6 +492,57 @@
         }
       }
     };
+
+    // Handle disease add form submission
+    window.handleAddDiseaseSubmit = function(event, plantId) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const form = document.getElementById('add-disease-form-' + plantId);
+      if (!form) {
+        console.error('[AddDisease] Form not found');
+        return false;
+      }
+      
+      const formData = new FormData(form);
+      const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+      const csrfToken = csrfMeta ? csrfMeta.content : null;
+      
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+        },
+        body: formData,
+      })
+        .then(response => {
+          if (response.ok) {
+            if (typeof alertSuccess === 'function') {
+              alertSuccess('Maladie ajoutée', 0);
+            }
+            // Close disease add modal
+            closeAddDiseaseModalFromModal(plantId);
+            // Refresh main modal to see updated diseases
+            if (typeof refreshModal === 'function') {
+              setTimeout(refreshModal, 500);
+            }
+          } else {
+            return response.text().then(text => {
+              throw new Error(text);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('[AddDisease] Error:', error);
+          if (typeof alertError === 'function') {
+            alertError('Erreur lors de l\'ajout de la maladie');
+          }
+        });
+      
+      return false;
+    };
+
 
   </script>
 
