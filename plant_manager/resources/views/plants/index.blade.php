@@ -117,22 +117,27 @@
         return;
       }
       
-      // Fetch the new histories HTML
-      fetch(`/plants/${plantId}/histories`, {
+      // Fetch the plant data and re-render just the history cards (not the full page)
+      fetch(`/plants/${plantId}/modal`, {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => response.text())
       .then(html => {
-        container.innerHTML = html;
-        console.log('[RELOAD] Histories reloaded successfully');
-        // Réinitialise la galerie après injection en ciblant l'élément modal
-        if (typeof GalleryManager !== 'undefined') {
-          const plantModalEl = container.closest('[data-modal-plant-id]');
-          GalleryManager.init(plantModalEl || container);
-        }
-        // Reinitialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
+        // Parse the response to extract just the history cards
+        const parser = new DOMParser();
+        const newModal = parser.parseFromString(html, 'text/html');
+        const newContainer = newModal.querySelector(`#modal-histories-container-${plantId}`);
+        
+        if (newContainer) {
+          container.innerHTML = newContainer.innerHTML;
+          console.log('[RELOAD] Histories reloaded successfully');
+          
+          // Reinitialize Lucide icons
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+        } else {
+          console.warn('[RELOAD] Could not find histories container in response');
         }
       })
       .catch(error => console.error('[RELOAD] Error reloading histories:', error));
