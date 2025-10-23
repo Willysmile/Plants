@@ -29,6 +29,8 @@ const QuickModalsManager = {
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        // Setup date constraints when modal opens
+        setupQuickWateringModal();
       }
     },
 
@@ -69,6 +71,8 @@ const QuickModalsManager = {
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        // Setup date constraints when modal opens
+        setupQuickFertilizingModal();
       }
     },
 
@@ -109,6 +113,8 @@ const QuickModalsManager = {
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        // Setup date constraints when modal opens
+        setupQuickRepottingModal();
       }
     },
 
@@ -149,6 +155,8 @@ const QuickModalsManager = {
       if (modal) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+        // Setup date constraints when modal opens
+        setupQuickDiseaseModal();
       }
     },
 
