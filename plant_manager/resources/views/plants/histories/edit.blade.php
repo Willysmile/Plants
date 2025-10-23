@@ -12,7 +12,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow-md p-6">
-      <form action="{{ route('plants.histories.update', $plantHistory) }}" method="POST">
+      <form action="{{ route('plants.histories.update', [$plant, $plantHistory]) }}" method="POST">
         @csrf
         @method('PUT')
         

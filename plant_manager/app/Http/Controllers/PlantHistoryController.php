@@ -38,23 +38,23 @@ class PlantHistoryController extends Controller
     /**
      * Afficher une entrée spécifique
      */
-    public function show(PlantHistory $plantHistory)
+    public function show(Plant $plant, PlantHistory $plantHistory)
     {
-        return view('plants.histories.show', compact('plantHistory'));
+        return view('plants.histories.show', compact('plant', 'plantHistory'));
     }
 
     /**
      * Modifier une entrée
      */
-    public function edit(PlantHistory $plantHistory)
+    public function edit(Plant $plant, PlantHistory $plantHistory)
     {
-        return view('plants.histories.edit', compact('plantHistory'));
+        return view('plants.histories.edit', compact('plant', 'plantHistory'));
     }
 
     /**
      * Mettre à jour une entrée
      */
-    public function update(Request $request, PlantHistory $plantHistory)
+    public function update(Request $request, Plant $plant, PlantHistory $plantHistory)
     {
         $validated = $request->validate([
             'body' => 'required|string|max:144',
@@ -72,9 +72,8 @@ class PlantHistoryController extends Controller
     /**
      * Supprimer une entrée
      */
-    public function destroy(PlantHistory $plantHistory, Request $request)
+    public function destroy(Plant $plant, PlantHistory $plantHistory, Request $request)
     {
-        $plant = $plantHistory->plant;
         $plantHistory->delete();
 
         if ($request->expectsJson()) {

@@ -23,10 +23,10 @@
       </div>
 
       <div class="flex space-x-3">
-        <a href="{{ route('plants.histories.edit', $plantHistory) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+        <a href="{{ route('plants.histories.edit', [$plant, $plantHistory]) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
           Éditer
         </a>
-        <form action="{{ route('plants.histories.destroy', $plantHistory) }}" method="POST" style="display:inline;" onsubmit="return confirm('Confirmer la suppression?');">
+        <form action="{{ route('plants.histories.destroy', [$plant, $plantHistory]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Confirmer la suppression?');">
           @csrf
           @method('DELETE')
           <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
