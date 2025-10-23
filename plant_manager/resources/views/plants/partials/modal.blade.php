@@ -126,7 +126,7 @@
                 @foreach($plant->diseaseHistories->sortByDesc('detected_at') as $disease)
                   <div class="{{ $disease->status_color }} p-2 rounded border text-xs">
                     <div class="font-medium">{{ $disease->disease->name }}</div>
-                    <div class="text-gray-500 text-xs">{{ $disease->detected_at->format('d/m/Y H:i') }}</div>
+                    <div class="text-gray-500 text-xs">{{ $disease->detected_at->format('d/m/Y') }}</div>
                     @if($disease->description)
                       <div class="mt-1 whitespace-pre-wrap break-words">{{ substr($disease->description, 0, 100) }}{{ strlen($disease->description) > 100 ? '...' : '' }}</div>
                     @endif

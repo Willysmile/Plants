@@ -277,7 +277,7 @@
                     <i data-lucide="alert-circle" class="w-5 h-5"></i>
                     <div>
                       <h4 class="font-semibold">{{ $disease->disease->name }}</h4>
-                      <p class="text-xs opacity-75">Détectée le {{ $disease->detected_at->format('d/m/Y H:i') }}</p>
+                      <p class="text-xs opacity-75">Détectée le {{ $disease->detected_at->format('d/m/Y') }}</p>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
@@ -309,7 +309,7 @@
                 @endif
                 
                 @if($disease->treated_at)
-                  <p class="text-xs opacity-75 mt-2">Traité le {{ $disease->treated_at->format('d/m/Y H:i') }}</p>
+                  <p class="text-xs opacity-75 mt-2">Traité le {{ $disease->treated_at->format('d/m/Y') }}</p>
                 @endif
               </div>
             @endforeach
