@@ -1,16 +1,8 @@
 /**
- * Affiche une notification avec composant Blade réutilisable
- * @param {string} message - Le message à afficher
- * @param {string} type - Le type: 'success', 'error', 'warning', 'info'
- * @param {number} duration - Durée avant fermeture automatique (ms), 0 = pas de fermeture
+ * Système de notifications professionnel avec gestion des contextes
+ * Affiche les notifications dans le meilleur conteneur disponible
  */
 window.showNotification = function(message, type = 'info', duration = 0) {
-    const container = document.getElementById('notifications-container');
-    if (!container) {
-        console.error('notifications-container not found');
-        return;
-    }
-
     // Configuration des styles
     const config = {
         success: {
@@ -45,9 +37,42 @@ window.showNotification = function(message, type = 'info', duration = 0) {
 
     const styles = config[type] || config.info;
 
-    // Créer le div avec les classes Tailwind pures
+    // Déterminer le meilleur conteneur pour la notification
+    let container = null;
+    let isInContext = false;
+    
+    // Chercher un conteneur contextuel ouvert (modal ou show page)
+    const quickModals = document.querySelectorAll('[id*="FromModal"]:not(.hidden)');
+    const showContainer = document.getElementById('show-container');
+    
+    if (quickModals.length > 0) {
+        // Si une modale rapide est ouverte, utiliser celle-ci
+        container = quickModals[0];
+        isInContext = true;
+    } else if (showContainer) {
+        // Sinon, utiliser le conteneur show s'il existe
+        container = showContainer;
+        isInContext = true;
+    } else {
+        // Sinon utiliser le conteneur global
+        container = document.getElementById('notifications-container');
+    }
+
+    if (!container) {
+        console.error('No notification container found');
+        return;
+    }
+
+    // Créer le div notification avec les classes Tailwind pures
     const notificationDiv = document.createElement('div');
-    notificationDiv.className = `p-8 rounded-2xl border-2 ${styles.bg} ${styles.border} shadow-2xl max-w-2xl w-11/12 pointer-events-auto cursor-pointer transform transition-all duration-300`;
+    
+    if (isInContext) {
+        // Notifications contextuelles: position absolute en haut au centre
+        notificationDiv.className = `absolute top-4 left-1/2 transform -translate-x-1/2 p-6 rounded-lg border-2 ${styles.bg} ${styles.border} shadow-xl max-w-md w-11/12 pointer-events-auto z-50`;
+    } else {
+        // Notifications globales: fixed au centre
+        notificationDiv.className = `p-8 rounded-2xl border-2 ${styles.bg} ${styles.border} shadow-2xl max-w-2xl w-11/12 pointer-events-auto cursor-pointer transform transition-all duration-300 opacity-100 scale-100`;
+    }
     
     notificationDiv.innerHTML = `
         <div class="flex items-center gap-4">
@@ -63,17 +88,18 @@ window.showNotification = function(message, type = 'info', duration = 0) {
 
     // Event listener pour le bouton close
     const closeBtn = notificationDiv.querySelector('button');
-    closeBtn.addEventListener('click', function() {
+    closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         notificationDiv.style.opacity = '0';
-        notificationDiv.style.transform = 'scale(0.95)';
+        notificationDiv.style.transform = isInContext ? 'translateY(-20px)' : 'scale(0.95)';
         setTimeout(() => notificationDiv.remove(), 300);
     });
 
     // Click sur la notification pour fermer
     notificationDiv.addEventListener('click', function(e) {
-        if (e.target === notificationDiv) {
+        if (e.target === notificationDiv || e.target.closest('.flex.items-center')) {
             notificationDiv.style.opacity = '0';
-            notificationDiv.style.transform = 'scale(0.95)';
+            notificationDiv.style.transform = isInContext ? 'translateY(-20px)' : 'scale(0.95)';
             setTimeout(() => notificationDiv.remove(), 300);
         }
     });
@@ -89,7 +115,7 @@ window.showNotification = function(message, type = 'info', duration = 0) {
     if (duration > 0) {
         setTimeout(() => {
             notificationDiv.style.opacity = '0';
-            notificationDiv.style.transform = 'scale(0.95)';
+            notificationDiv.style.transform = isInContext ? 'translateY(-20px)' : 'scale(0.95)';
             setTimeout(() => notificationDiv.remove(), 300);
         }, duration);
     }
