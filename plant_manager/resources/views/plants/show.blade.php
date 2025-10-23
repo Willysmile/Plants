@@ -709,5 +709,191 @@
         document.querySelector('select[name="disease_id"]').required = true;
       }
     };
+
+    // QUICK FORM HANDLERS FOR SHOW PAGE
+    // These handlers are used by the quick-*-modal components when included in show.blade.php
+    
+    window.handleQuickWateringSubmit = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const dateInput = document.getElementById('quickWateringDateFromModal');
+      const dateError = document.getElementById('quickWateringDateError');
+      const form = document.getElementById('quickWateringFormFromModal');
+      
+      if (!dateInput || !dateError || !form) {
+        console.error('[WATERING] Elements not found!');
+        return false;
+      }
+      
+      const enteredDate = dateInput.value;
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (!enteredDate) {
+        dateError.textContent = 'La date est requise';
+        dateError.classList.remove('hidden');
+        return false;
+      }
+      
+      if (enteredDate > today) {
+        dateError.textContent = 'La date ne peut pas être dans le futur';
+        dateError.classList.remove('hidden');
+        return false;
+      }
+      
+      dateError.classList.add('hidden');
+      
+      const formData = new FormData(form);
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+      
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Arrosage enregistré !');
+          closeQuickWateringModalFromModal();
+          location.reload();
+        } else {
+          return response.text().then(text => {
+            throw new Error(text);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        dateError.textContent = 'Erreur lors de l\'enregistrement';
+        dateError.classList.remove('hidden');
+      });
+      
+      return false;
+    };
+
+    window.handleQuickFertilizingSubmit = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const dateInput = document.getElementById('quickFertilizingDateFromModal');
+      const dateError = document.getElementById('quickFertilizingDateError');
+      const form = document.getElementById('quickFertilizingFormFromModal');
+      
+      if (!dateInput || !dateError || !form) {
+        console.error('[FERTILIZING] Elements not found!');
+        return false;
+      }
+      
+      const enteredDate = dateInput.value;
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (!enteredDate) {
+        dateError.textContent = 'La date est requise';
+        dateError.classList.remove('hidden');
+        return false;
+      }
+      
+      if (enteredDate > today) {
+        dateError.textContent = 'La date ne peut pas être dans le futur';
+        dateError.classList.remove('hidden');
+        return false;
+      }
+      
+      dateError.classList.add('hidden');
+      
+      const formData = new FormData(form);
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+      
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Fertilisation enregistrée !');
+          closeQuickFertilizingModalFromModal();
+          location.reload();
+        } else {
+          return response.text().then(text => {
+            throw new Error(text);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        dateError.textContent = 'Erreur lors de l\'enregistrement';
+        dateError.classList.remove('hidden');
+      });
+      
+      return false;
+    };
+
+    window.handleQuickRepottingSubmit = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const dateInput = document.getElementById('quickRepottingDateFromModal');
+      const dateError = document.getElementById('quickRepottingDateError');
+      const form = document.getElementById('quickRepottingFormFromModal');
+      
+      if (!dateInput || !dateError || !form) {
+        console.error('[REPOTTING] Elements not found!');
+        return false;
+      }
+      
+      const enteredDate = dateInput.value;
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (!enteredDate) {
+        dateError.textContent = 'La date est requise';
+        dateError.classList.remove('hidden');
+        return false;
+      }
+      
+      if (enteredDate > today) {
+        dateError.textContent = 'La date ne peut pas être dans le futur';
+        dateError.classList.remove('hidden');
+        return false;
+      }
+      
+      dateError.classList.add('hidden');
+      
+      const formData = new FormData(form);
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+      
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Rempotage enregistré !');
+          closeQuickRepottingModalFromModal();
+          location.reload();
+        } else {
+          return response.text().then(text => {
+            throw new Error(text);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        dateError.textContent = 'Erreur lors de l\'enregistrement';
+        dateError.classList.remove('hidden');
+      });
+      
+      return false;
+    };
   </script>
 @endsection
