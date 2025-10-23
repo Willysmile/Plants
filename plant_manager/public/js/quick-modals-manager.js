@@ -134,6 +134,9 @@ window.openQuickWateringModalFromModal = function(checkbox) {
 
 window.closeQuickWateringModalFromModal = function() {
   QuickModalsManager.watering.close();
+  // Reset form
+  const form = document.getElementById('quickWateringFormFromModal');
+  if (form) form.reset();
   if (typeof reloadHistoriesInModal === 'function') {
     reloadHistoriesInModal();
   }
@@ -145,6 +148,9 @@ window.openQuickFertilizingModalFromModal = function(checkbox) {
 
 window.closeQuickFertilizingModalFromModal = function() {
   QuickModalsManager.fertilizing.close();
+  // Reset form
+  const form = document.getElementById('quickFertilizingFormFromModal');
+  if (form) form.reset();
   if (typeof reloadHistoriesInModal === 'function') {
     reloadHistoriesInModal();
   }
@@ -156,6 +162,9 @@ window.openQuickRepottingModalFromModal = function(checkbox) {
 
 window.closeQuickRepottingModalFromModal = function() {
   QuickModalsManager.repotting.close();
+  // Reset form
+  const form = document.getElementById('quickRepottingFormFromModal');
+  if (form) form.reset();
   if (typeof reloadHistoriesInModal === 'function') {
     reloadHistoriesInModal();
   }
@@ -163,6 +172,33 @@ window.closeQuickRepottingModalFromModal = function() {
 
 // Exporter pour utilisation globale
 window.QuickModalsManager = QuickModalsManager;
+
+/**
+ * Setup functions for quick modals - called when modal opens
+ */
+window.setupQuickWateringModal = function() {
+  const dateInput = document.getElementById('quickWateringDateFromModal');
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.max = today;
+  }
+};
+
+window.setupQuickFertilizingModal = function() {
+  const dateInput = document.getElementById('quickFertilizingDateFromModal');
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.max = today;
+  }
+};
+
+window.setupQuickRepottingModal = function() {
+  const dateInput = document.getElementById('quickRepottingDateFromModal');
+  if (dateInput) {
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.max = today;
+  }
+};
 
 /**
  * Helpers génériques pour paramétrer les modales rapides
@@ -259,6 +295,211 @@ window.createQuickModalSubmitHandler = function(options) {
 
     return false;
   };
+};
+
+/**
+ * Submit handlers for quick modals - validates date and submits AJAX form
+ */
+
+/**
+ * Handle submission of quick watering modal
+ */
+window.handleQuickWateringSubmit = function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const form = document.getElementById('quickWateringFormFromModal');
+  const dateInput = document.getElementById('quickWateringDateFromModal');
+  const dateError = document.getElementById('quickWateringDateError');
+  
+  if (!form || !dateInput || !dateError) {
+    console.error('[QuickWatering] Elements not found');
+    return false;
+  }
+  
+  const enteredDate = dateInput.value;
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (!enteredDate) {
+    dateError.textContent = 'La date est requise';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  if (enteredDate > today) {
+    dateError.textContent = 'La date ne peut pas être dans le futur';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  dateError.classList.add('hidden');
+  
+  const formData = new FormData(form);
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  const csrfToken = csrfMeta ? csrfMeta.content : null;
+  
+  fetch(form.action, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+    },
+    body: formData,
+  })
+    .then(response => {
+      if (response.ok) {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess('Arrosage enregistré', 0);
+        }
+        // Close modal and reload histories
+        closeQuickWateringModalFromModal();
+      } else {
+        return response.text().then(text => {
+          throw new Error(text);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('[QuickWatering] Error:', error);
+      dateError.textContent = 'Erreur lors de l\'enregistrement';
+      dateError.classList.remove('hidden');
+    });
+  
+  return false;
+};
+
+/**
+ * Handle submission of quick fertilizing modal
+ */
+window.handleQuickFertilizingSubmit = function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const form = document.getElementById('quickFertilizingFormFromModal');
+  const dateInput = document.getElementById('quickFertilizingDateFromModal');
+  const dateError = document.getElementById('quickFertilizingDateError');
+  
+  if (!form || !dateInput || !dateError) {
+    console.error('[QuickFertilizing] Elements not found');
+    return false;
+  }
+  
+  const enteredDate = dateInput.value;
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (!enteredDate) {
+    dateError.textContent = 'La date est requise';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  if (enteredDate > today) {
+    dateError.textContent = 'La date ne peut pas être dans le futur';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  dateError.classList.add('hidden');
+  
+  const formData = new FormData(form);
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  const csrfToken = csrfMeta ? csrfMeta.content : null;
+  
+  fetch(form.action, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+    },
+    body: formData,
+  })
+    .then(response => {
+      if (response.ok) {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess('Fertilisation enregistrée', 0);
+        }
+        // Close modal and reload histories
+        closeQuickFertilizingModalFromModal();
+      } else {
+        return response.text().then(text => {
+          throw new Error(text);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('[QuickFertilizing] Error:', error);
+      dateError.textContent = 'Erreur lors de l\'enregistrement';
+      dateError.classList.remove('hidden');
+    });
+  
+  return false;
+};
+
+/**
+ * Handle submission of quick repotting modal
+ */
+window.handleQuickRepottingSubmit = function(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const form = document.getElementById('quickRepottingFormFromModal');
+  const dateInput = document.getElementById('quickRepottingDateFromModal');
+  const dateError = document.getElementById('quickRepottingDateError');
+  
+  if (!form || !dateInput || !dateError) {
+    console.error('[QuickRepotting] Elements not found');
+    return false;
+  }
+  
+  const enteredDate = dateInput.value;
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (!enteredDate) {
+    dateError.textContent = 'La date est requise';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  if (enteredDate > today) {
+    dateError.textContent = 'La date ne peut pas être dans le futur';
+    dateError.classList.remove('hidden');
+    return false;
+  }
+  
+  dateError.classList.add('hidden');
+  
+  const formData = new FormData(form);
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  const csrfToken = csrfMeta ? csrfMeta.content : null;
+  
+  fetch(form.action, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+    },
+    body: formData,
+  })
+    .then(response => {
+      if (response.ok) {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess('Rempotage enregistré', 0);
+        }
+        // Close modal and reload histories
+        closeQuickRepottingModalFromModal();
+      } else {
+        return response.text().then(text => {
+          throw new Error(text);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('[QuickRepotting] Error:', error);
+      dateError.textContent = 'Erreur lors de l\'enregistrement';
+      dateError.classList.remove('hidden');
+    });
+  
+  return false;
 };
 
 /**
