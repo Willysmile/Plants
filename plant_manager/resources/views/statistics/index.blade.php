@@ -84,43 +84,40 @@
         </div>
       </div>
 
-      <!-- Derniers arrosages -->
+      <!-- État de santé des plantes -->
       <div class="bg-white p-6 rounded-lg shadow">
         <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i data-lucide="droplet" class="w-5 h-5 text-blue-500"></i>
-          Derniers arrosages
+          <i data-lucide="heart" class="w-5 h-5"></i>
+          État de santé
         </h2>
-        <div class="space-y-2">
-          @forelse($lastWatering as $plant)
-            <div class="flex items-center justify-between p-3 bg-blue-50 rounded border-l-2 border-blue-500">
-              <a href="{{ route('plants.show', $plant) }}" class="text-blue-600 hover:underline font-medium">
-                {{ $plant->name }}
-              </a>
-              <span class="text-sm text-gray-600">{{ $plant->watering_date->format('d/m/Y') }}</span>
-            </div>
-          @empty
-            <p class="text-gray-500 text-center py-4">Aucun arrosage enregistré</p>
-          @endforelse
-        </div>
-      </div>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- En bonne santé -->
+          <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border-l-4 border-green-500">
+            <p class="text-gray-600 text-xs font-medium">En bonne santé</p>
+            <p class="text-2xl font-bold text-green-700 mt-1">{{ $diseasesStats['healthy'] }}</p>
+            <p class="text-xs text-gray-600 mt-1">plantes</p>
+          </div>
 
-      <!-- Dernières fertilisations -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i data-lucide="leaf" class="w-5 h-5 text-green-500"></i>
-          Dernières fertilisations
-        </h2>
-        <div class="space-y-2">
-          @forelse($lastFertilizing as $plant)
-            <div class="flex items-center justify-between p-3 bg-green-50 rounded border-l-2 border-green-500">
-              <a href="{{ route('plants.show', $plant) }}" class="text-green-600 hover:underline font-medium">
-                {{ $plant->name }}
-              </a>
-              <span class="text-sm text-gray-600">{{ $plant->fertilizing_date->format('d/m/Y') }}</span>
-            </div>
-          @empty
-            <p class="text-gray-500 text-center py-4">Aucune fertilisation enregistrée</p>
-          @endforelse
+          <!-- Détectées -->
+          <div class="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border-l-4 border-red-500">
+            <p class="text-gray-600 text-xs font-medium">🔴 Détectées</p>
+            <p class="text-2xl font-bold text-red-700 mt-1">{{ $diseasesStats['detected'] }}</p>
+            <p class="text-xs text-gray-600 mt-1">plantes</p>
+          </div>
+
+          <!-- Traitées -->
+          <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border-l-4 border-yellow-500">
+            <p class="text-gray-600 text-xs font-medium">🟡 Traitées</p>
+            <p class="text-2xl font-bold text-yellow-700 mt-1">{{ $diseasesStats['treated'] }}</p>
+            <p class="text-xs text-gray-600 mt-1">plantes</p>
+          </div>
+
+          <!-- Récurrentes -->
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border-l-4 border-orange-500">
+            <p class="text-gray-600 text-xs font-medium">🔄 Récurrentes</p>
+            <p class="text-2xl font-bold text-orange-700 mt-1">{{ $diseasesStats['recurring'] }}</p>
+            <p class="text-xs text-gray-600 mt-1">plantes</p>
+          </div>
         </div>
       </div>
     </div>
@@ -184,57 +181,6 @@
             <p class="text-gray-500 text-sm">Aucun tag</p>
           @endforelse
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section maladies -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-    <!-- Maladies actives -->
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-        <i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>
-        Maladies actives
-      </h2>
-      <div class="space-y-2">
-        @forelse($activeDiseases as $disease)
-          <div class="flex items-center justify-between p-3 bg-red-50 rounded border-l-2 border-red-500">
-            <div>
-              <p class="font-medium text-gray-700">{{ $disease->name }}</p>
-              <p class="text-xs text-gray-600">
-                @if($disease->status === 'detected')
-                  🔴 Détectée
-                @elseif($disease->status === 'treated')
-                  🟡 Traitée
-                @elseif($disease->status === 'recurring')
-                  🔄 Récurrente
-                @endif
-              </p>
-            </div>
-            <span class="font-bold text-red-700">{{ $disease->count }}</span>
-          </div>
-        @empty
-          <p class="text-gray-500 text-center py-4">✅ Aucune maladie active</p>
-        @endforelse
-      </div>
-    </div>
-
-    <!-- Plantes à arroser -->
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-        <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-500"></i>
-        À arroser bientôt
-      </h2>
-      <div class="space-y-2">
-        @forelse($plantsDueForWatering as $plant)
-          <div class="p-3 bg-orange-50 rounded border-l-2 border-orange-500">
-            <a href="{{ route('plants.show', $plant) }}" class="text-orange-600 hover:underline font-medium">
-              {{ $plant->name }}
-            </a>
-          </div>
-        @empty
-          <p class="text-gray-500 text-center py-4">✅ Toutes les plantes sont à jour</p>
-        @endforelse
       </div>
     </div>
   </div>
