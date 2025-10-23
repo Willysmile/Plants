@@ -28,21 +28,10 @@
     <p class="text-xs text-red-600 mt-2">Aucune maladie détectée</p>
   @endif
   
-  @if($allDiseases->count() > 0)
-    <button 
-      type="button" 
-      onclick="@if($context === 'modal') openDiseasesModalFromModal({{ $plant->id }}) @else openDiseasesModal({{ $plant->id }}) @endif"
-      class="text-xs text-red-600 hover:text-red-900 mt-2 inline-block font-semibold flex items-center gap-1">
-      <i data-lucide="eye" class="w-3 h-3"></i>
-      Voir ({{ $allDiseases->count() }})
-    </button>
-  @endif
-
   <button 
     type="button" 
     onclick="@if($context === 'modal') openAddDiseaseModal({{ $plant->id }}) @else openAddDiseaseModal({{ $plant->id }}) @endif"
-    class="text-xs text-red-600 hover:text-red-900 mt-2 inline-block font-semibold flex items-center gap-1 ml-2">
-    <i data-lucide="plus" class="w-3 h-3"></i>
-    Ajouter
+    class="text-xs text-red-600 hover:text-red-900 mt-2 inline-block font-semibold flex items-center gap-1">
+    Créer →
   </button>
 </div>

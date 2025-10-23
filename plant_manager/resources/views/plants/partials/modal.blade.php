@@ -110,33 +110,6 @@
           </div>
         @endif
 
-        <!-- Modal pour les Maladies dans la modale plants -->
-        @if($plant->diseaseHistories->count())
-          <div id="free-diseases-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto m-4">
-              <div class="flex items-center justify-between p-3 border-b sticky top-0 bg-white">
-                <h3 class="text-sm font-semibold text-gray-800">🦠 Maladies</h3>
-                <button type="button" 
-                        onclick="closeDiseasesModalFromModal({{ $plant->id }})" 
-                        class="text-gray-500 hover:text-gray-700">
-                  <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-              </div>
-              <div class="p-3 space-y-2">
-                @foreach($plant->diseaseHistories->sortByDesc('detected_at') as $disease)
-                  <div class="{{ $disease->status_color }} p-2 rounded border text-xs">
-                    <div class="font-medium">{{ $disease->disease->name }}</div>
-                    <div class="text-gray-500 text-xs">{{ $disease->detected_at->format('d/m/Y') }}</div>
-                    @if($disease->description)
-                      <div class="mt-1 whitespace-pre-wrap break-words">{{ substr($disease->description, 0, 100) }}{{ strlen($disease->description) > 100 ? '...' : '' }}</div>
-                    @endif
-                  </div>
-                @endforeach
-              </div>
-            </div>
-          </div>
-        @endif
-
         <!-- Modal pour Ajouter une Maladie dans la modale plants -->
         <div id="add-disease-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4">
@@ -444,21 +417,6 @@
 
     window.closeModalFreeHistories = function(plantId) {
       const modal = document.getElementById('modal-free-histories-' + plantId);
-      if (modal) {
-        modal.style.display = 'none';
-      }
-    };
-
-    // Fonctions pour ouvrir/fermer la modale des Maladies dans la modale plants
-    window.openDiseasesModalFromModal = function(plantId) {
-      const modal = document.getElementById('free-diseases-modal-' + plantId);
-      if (modal) {
-        modal.style.display = 'flex';
-      }
-    };
-
-    window.closeDiseasesModalFromModal = function(plantId) {
-      const modal = document.getElementById('free-diseases-modal-' + plantId);
       if (modal) {
         modal.style.display = 'none';
       }
