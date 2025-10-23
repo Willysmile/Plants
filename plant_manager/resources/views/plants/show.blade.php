@@ -781,10 +781,17 @@
       })
       .then(response => {
         if (response.ok) {
-          alertSuccess('Arrosage enregistré !', 0);
           closeQuickWateringModalFromModal();
-          // Attendre un peu que la notification s'affiche avant de recharger
-          setTimeout(() => location.reload(), 500);
+          // Mettre en session et recharger pour afficher la notification persistante
+          fetch('{{ route("session.flash") }}', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': csrfToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: 'success', message: 'Arrosage enregistré !' })
+          }).then(() => location.reload());
         } else {
           return response.text().then(text => {
             throw new Error(text);
@@ -843,10 +850,17 @@
       })
       .then(response => {
         if (response.ok) {
-          alertSuccess('Fertilisation enregistrée !', 0);
           closeQuickFertilizingModalFromModal();
-          // Attendre un peu que la notification s'affiche avant de recharger
-          setTimeout(() => location.reload(), 500);
+          // Mettre en session et recharger pour afficher la notification persistante
+          fetch('{{ route("session.flash") }}', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': csrfToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: 'success', message: 'Fertilisation enregistrée !' })
+          }).then(() => location.reload());
         } else {
           return response.text().then(text => {
             throw new Error(text);
@@ -905,10 +919,17 @@
       })
       .then(response => {
         if (response.ok) {
-          alertSuccess('Rempotage enregistré !', 0);
           closeQuickRepottingModalFromModal();
-          // Attendre un peu que la notification s'affiche avant de recharger
-          setTimeout(() => location.reload(), 500);
+          // Mettre en session et recharger pour afficher la notification persistante
+          fetch('{{ route("session.flash") }}', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': csrfToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ type: 'success', message: 'Rempotage enregistré !' })
+          }).then(() => location.reload());
         } else {
           return response.text().then(text => {
             throw new Error(text);

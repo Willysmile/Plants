@@ -131,4 +131,14 @@ Route::get('/storage/{path}', [StorageController::class, 'serve'])
     ->where('path', '.*')
     ->name('storage.serve');
 
+// Flash session messages via AJAX
+Route::post('/session/flash', function (\Illuminate\Http\Request $request) {
+    $type = $request->input('type', 'info');
+    $message = $request->input('message', '');
+    
+    session()->flash($type, $message);
+    
+    return response()->json(['success' => true]);
+})->middleware(['auth', 'verified'])->name('session.flash');
+
 require __DIR__.'/auth.php';
