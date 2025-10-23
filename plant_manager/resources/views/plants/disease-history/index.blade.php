@@ -42,15 +42,17 @@
                   <div class="flex items-center gap-3 mb-2">
                     <h3 class="text-xl font-semibold text-gray-900">{{ $disease->disease->name }}</h3>
                     @php
-                      $statusLabels = [
-                        'detected' => 'Détecté',
-                        'treated' => 'Traité',
-                        'cured' => 'Guéri',
-                        'recurring' => 'Récurrent'
+                      $statusConfig = [
+                        'detected' => ['label' => 'Détecté', 'bg' => 'bg-red-100', 'text' => 'text-red-800', 'dot' => 'bg-red-500'],
+                        'treated' => ['label' => 'Traité', 'bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'dot' => 'bg-yellow-500'],
+                        'cured' => ['label' => 'Guéri', 'bg' => 'bg-green-100', 'text' => 'text-green-800', 'dot' => 'bg-green-500'],
+                        'recurring' => ['label' => 'Récurrent', 'bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'dot' => 'bg-orange-500']
                       ];
+                      $config = $statusConfig[$disease->status] ?? ['label' => ucfirst($disease->status), 'bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'dot' => 'bg-gray-500'];
                     @endphp
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold {{ $disease->status_color }}">
-                      {{ $statusLabels[$disease->status] ?? ucfirst($disease->status) }}
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ $config['bg'] }} {{ $config['text'] }}">
+                      <span class="w-2 h-2 rounded-full {{ $config['dot'] }}"></span>
+                      {{ $config['label'] }}
                     </span>
                   </div>
                   
