@@ -756,7 +756,7 @@
       })
       .then(response => {
         if (response.ok) {
-          alertSuccess('Arrosage enregistré !');
+          alertSuccess('Arrosage enregistré !', 0);
           closeQuickWateringModalFromModal();
           location.reload();
         } else {
@@ -817,7 +817,7 @@
       })
       .then(response => {
         if (response.ok) {
-          alertSuccess('Fertilisation enregistrée !');
+          alertSuccess('Fertilisation enregistrée !', 0);
           closeQuickFertilizingModalFromModal();
           location.reload();
         } else {
@@ -878,7 +878,7 @@
       })
       .then(response => {
         if (response.ok) {
-          alertSuccess('Rempotage enregistré !');
+          alertSuccess('Rempotage enregistré !', 0);
           closeQuickRepottingModalFromModal();
           location.reload();
         } else {
