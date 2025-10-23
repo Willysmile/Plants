@@ -21,6 +21,11 @@
         <div class="min-h-screen bg-gray-50">
             @include('layouts.navigation')
 
+            <!-- Session Alerts (Flash Messages) -->
+            <div class="max-w-7xl mx-auto px-4 py-4">
+                <x-session-alerts />
+            </div>
+
             <!-- Page Content -->
             <main>
                 @yield('content', $slot ?? '')
@@ -32,6 +37,8 @@
     <script src="{{ asset('js/alpine.js') }}"></script>
     <!-- Lucide Icons (local fallback vendor) -->
     <script src="{{ asset('vendor/lucide.min.js') }}"></script>
+    <!-- Notifications Helper -->
+    <script src="{{ asset('js/notifications.js') }}"></script>
 
     <!-- Application JavaScript -->
     <script src="{{ asset('js/app.js') }}"></script>

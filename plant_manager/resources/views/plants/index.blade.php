@@ -204,7 +204,7 @@
       })
       .then(response => {
         if (response.ok) {
-          alert('Arrosage enregistré !');
+          alertSuccess('Arrosage enregistré !');
           closeQuickWateringModalFromModal();
           reloadHistoriesInModal();
           const plantsModal = document.getElementById('quickPlantsModalFromModal');
@@ -276,7 +276,7 @@
       })
       .then(response => {
         if (response.ok) {
-          alert('Fertilisation enregistrée !');
+          alertSuccess('Fertilisation enregistrée !');
           closeQuickFertilizingModalFromModal();
           reloadHistoriesInModal();
           const plantsModal = document.getElementById('quickPlantsModalFromModal');
@@ -348,7 +348,7 @@
       })
       .then(response => {
         if (response.ok) {
-          alert('Rempotage enregistré !');
+          alertSuccess('Rempotage enregistré !');
           closeQuickRepottingModalFromModal();
           reloadHistoriesInModal();
           const plantsModal = document.getElementById('quickPlantsModalFromModal');
