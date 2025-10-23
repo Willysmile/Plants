@@ -526,6 +526,13 @@
   // 🔧 FIX: Sauvegarder l'array original pour pouvoir le restaurer lors du déswap
   window.globalLightboxImagesOriginal = JSON.parse(JSON.stringify(window.globalLightboxImages));
 
+  // Override refreshModal for show page (redefine from app.js)
+  // On the show page, we just reload since there's no modal to refresh
+  window.refreshModal = function() {
+    console.log('[SHOW] Reloading page after quick modal submission');
+    location.reload();
+  };
+
   // Aliases for quick modal functions (using reusable components from modal)
   // These map the history-card component calls to the component modal functions
   window.openQuickWateringModal = function() {
