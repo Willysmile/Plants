@@ -55,7 +55,7 @@
 </div>
 
 <script>
-  async function addNewFertilizerTypeQuick(event) {
+  window.addNewFertilizerTypeQuick = async function(event) {
     event.preventDefault();
     const input = document.getElementById('quickNewFertilizerTypeName');
     const name = input.value.trim();
@@ -96,5 +96,5 @@
       console.error('Error:', error);
       alert('Erreur lors de la création du type d\'engrais');
     }
-  }
+  };
 </script>

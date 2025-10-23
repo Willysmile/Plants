@@ -134,6 +134,9 @@ window.openQuickWateringModalFromModal = function(checkbox) {
 
 window.closeQuickWateringModalFromModal = function() {
   QuickModalsManager.watering.close();
+  if (typeof reloadHistoriesInModal === 'function') {
+    reloadHistoriesInModal();
+  }
 };
 
 window.openQuickFertilizingModalFromModal = function(checkbox) {
@@ -142,6 +145,9 @@ window.openQuickFertilizingModalFromModal = function(checkbox) {
 
 window.closeQuickFertilizingModalFromModal = function() {
   QuickModalsManager.fertilizing.close();
+  if (typeof reloadHistoriesInModal === 'function') {
+    reloadHistoriesInModal();
+  }
 };
 
 window.openQuickRepottingModalFromModal = function(checkbox) {
@@ -150,6 +156,9 @@ window.openQuickRepottingModalFromModal = function(checkbox) {
 
 window.closeQuickRepottingModalFromModal = function() {
   QuickModalsManager.repotting.close();
+  if (typeof reloadHistoriesInModal === 'function') {
+    reloadHistoriesInModal();
+  }
 };
 
 // Exporter pour utilisation globale

@@ -429,51 +429,8 @@
 ]
   </script>
   
-  <!-- Fonction de refresh local pour cette modale -->
-    <script>
-    window.refreshModal = function(event) {
-      // Trouver le bouton refresh
-      let button = event?.currentTarget;
-      if (!button) {
-        button = document.querySelector('button[onclick="refreshModal()"]');
-      }
-      if (!button) return;
-      
-      const icon = button.querySelector('[data-lucide="refresh-cw"]');
-      const modal = document.getElementById('plant-modal-{{ $plant->id }}');
-      
-      if (!modal) return;
-      
-      // Add spinning animation
-      if (icon) {
-        icon.style.animation = 'spin 1s linear infinite';
-      }
-      
-      const plantId = {{ $plant->id }};
-      
-      // Fetch the updated modal HTML
-      fetch(`/plants/${plantId}/modal`, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(response => response.text())
-      .then(html => {
-        // Parse and replace just the content
-        const parser = new DOMParser();
-        const newModal = parser.parseFromString(html, 'text/html').body.firstChild;
-        modal.replaceWith(newModal);
-        
-        // Modal refreshed successfully
-      })
-      .catch(error => {
-        console.error('Modal refresh error:', error);
-      })
-      .finally(() => {
-        if (icon) {
-          icon.style.animation = 'none';
-        }
-      });
-    };
-
+  <!-- Fonctions modales spécifiques pour cette modale plants -->
+  <script>
     // Fonctions pour ouvrir/fermer la modale des Infos Diverses dans la modale plants
     window.openModalFreeHistories = function(plantId) {
       const modal = document.getElementById('modal-free-histories-' + plantId);
@@ -533,6 +490,50 @@
           newDiseaseDiv.style.display = 'none';
         }
       }
+    };
+
+    /**
+     * Recharge les cartes d'historiques de la modale plants
+     * Appelée après succès des quick modals (watering, fertilizing, repotting)
+     */
+    window.reloadHistoriesInModal = function() {
+      const plantId = {{ $plant->id }};
+      const container = document.getElementById('modal-histories-container-' + plantId);
+      
+      if (!container) {
+        console.warn('[RELOAD_HISTORIES] Container not found for plant', plantId);
+        return;
+      }
+      
+      fetch(`/plants/${plantId}/modal`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => response.text())
+      .then(html => {
+        // Parse le HTML retourné
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Chercher le container d'historiques dans le nouveau HTML
+        const newContainer = doc.querySelector('#modal-histories-container-' + plantId);
+        
+        if (newContainer) {
+          // Remplacer le contenu du container
+          container.innerHTML = newContainer.innerHTML;
+          
+          // Réinitialiser les icônes Lucide
+          if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+          }
+          
+          console.log('[RELOAD_HISTORIES] Histories reloaded successfully');
+        } else {
+          console.warn('[RELOAD_HISTORIES] New container not found in response');
+        }
+      })
+      .catch(error => {
+        console.error('[RELOAD_HISTORIES] Error reloading histories:', error);
+      });
     };
   </script>
 
