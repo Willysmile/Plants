@@ -6,6 +6,7 @@ use App\Http\Controllers\WateringHistoryController;
 use App\Http\Controllers\FertilizingHistoryController;
 use App\Http\Controllers\RepottingHistoryController;
 use App\Http\Controllers\PlantHistoryController;
+use App\Http\Controllers\DiseaseHistoryController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\BackupController;
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'verified', 'check.approval'])->group(function () {
     Route::resource('plants.fertilizing-history', FertilizingHistoryController::class);
     Route::resource('plants.repotting-history', RepottingHistoryController::class);
     Route::resource('plants.histories', PlantHistoryController::class);
+    Route::resource('plants.disease-history', DiseaseHistoryController::class, ['only' => ['store', 'update', 'destroy']]);
 
     // Gestion des types d'engrais
     Route::resource('fertilizer-types', FertilizerTypeController::class);

@@ -1,10 +1,11 @@
 <!-- Infos Diverses - Formulaire + Titre + Compteur + Button -->
 <div class="mt-4 space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-  <!-- Formulaire de saisie -->
+  <!-- Formulaire de saisie (caché par défaut) -->
   <form id="free-history-form-{{ $plant->id }}" 
         action="{{ route('plants.histories.store', $plant) }}" 
         method="POST"
-        class="space-y-2">
+        class="space-y-2 hidden"
+        style="display: none;">
     @csrf
     <textarea name="body" 
               id="free-history-body-{{ $plant->id }}"
@@ -24,7 +25,12 @@
   <!-- Titre + Compteur + Button pour voir les entrées -->
   <div class="flex items-center justify-between gap-3 pt-2 border-t">
     <div class="flex items-center gap-2">
-      <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Infos Diverses</h4>
+      <button type="button" 
+              onclick="toggleFreeHistoriesForm({{ $plant->id }})"
+              class="text-sm font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-2 hover:text-blue-600 transition">
+        Infos Diverses
+        <i data-lucide="chevron-down" id="chevron-free-{{ $plant->id }}" class="w-4 h-4 transition-transform duration-200"></i>
+      </button>
       @if($plant->histories && $plant->histories->count() > 0)
         <span class="inline-block bg-gray-200 text-gray-700 text-xs font-bold px-2.5 py-0.5 rounded-full">
           {{ $plant->histories->count() }}
@@ -98,4 +104,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Fonction pour toggle le formulaire des infos diverses
+window.toggleFreeHistoriesForm = function(plantId) {
+  const form = document.getElementById(`free-history-form-${plantId}`);
+  const chevron = document.getElementById(`chevron-free-${plantId}`);
+  
+  if (form) {
+    const isHidden = form.style.display === 'none';
+    form.style.display = isHidden ? 'block' : 'none';
+    
+    if (chevron) {
+      chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+  }
+};
 </script>

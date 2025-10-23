@@ -197,6 +197,9 @@
                 <p class="text-orange-700 font-semibold">{{ $plant->purchase_place }}</p>
               </div>
             @endif
+
+            <!-- Maladies -->
+            <x-disease-card :plant="$plant" context="show" />
           </div>
 
           <!-- Infos Diverses -->
@@ -233,6 +236,58 @@
                     {{ $history->body }}
                   @endif
                 </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+    @endif
+
+    <!-- Modal pour les Maladies -->
+    @if($plant->diseaseHistories && $plant->diseaseHistories->count() > 0)
+      <div id="diseases-modal-{{ $plant->id }}" style="display:none" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto m-4">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
+            <h3 class="text-lg font-semibold text-gray-800">🦠 Historique des Maladies</h3>
+            <button type="button" 
+                    onclick="document.getElementById('diseases-modal-{{ $plant->id }}').style.display='none'" 
+                    class="text-gray-500 hover:text-gray-700">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Contenu -->
+          <div class="p-4 space-y-3">
+            @foreach($plant->diseaseHistories->sortByDesc('detected_at') as $disease)
+              <div class="{{ $disease->status_color }} p-3 rounded border">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                    <div>
+                      <h4 class="font-semibold">{{ $disease->disease_name }}</h4>
+                      <p class="text-xs opacity-75">Détectée le {{ $disease->detected_at->format('d/m/Y H:i') }}</p>
+                    </div>
+                  </div>
+                  <span class="inline-block text-xs px-2 py-1 rounded font-semibold">
+                    {{ $disease->status_label }}
+                  </span>
+                </div>
+                
+                @if($disease->description)
+                  <p class="text-sm mt-2 whitespace-pre-wrap break-words">{{ $disease->description }}</p>
+                @endif
+                
+                @if($disease->treatment)
+                  <div class="mt-2 text-sm">
+                    <p class="font-semibold">Traitement :</p>
+                    <p class="whitespace-pre-wrap break-words">{{ $disease->treatment }}</p>
+                  </div>
+                @endif
+                
+                @if($disease->treated_at)
+                  <p class="text-xs opacity-75 mt-2">Traité le {{ $disease->treated_at->format('d/m/Y H:i') }}</p>
+                @endif
               </div>
             @endforeach
           </div>
@@ -426,6 +481,16 @@
       const reasonInput = form.querySelector('input[name="reason"]');
       reasonInput.value = reason;
       form.submit();
+    };
+
+    // Fonction pour ouvrir la modal des maladies
+    window.openDiseasesModal = function(plantId) {
+      document.getElementById(`diseases-modal-${plantId}`).style.display = 'flex';
+    };
+
+    // Fonction pour fermer la modal des maladies
+    window.closeDiseasesModal = function(plantId) {
+      document.getElementById(`diseases-modal-${plantId}`).style.display = 'none';
     };
   </script>
 @endsection

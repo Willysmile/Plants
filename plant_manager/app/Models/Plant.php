@@ -317,6 +317,14 @@ class Plant extends Model
     }
 
     /**
+     * Historique des maladies
+     */
+    public function diseaseHistories()
+    {
+        return $this->hasMany(DiseaseHistory::class);
+    }
+
+    /**
      * 🔧 Boot the model - Générer la référence automatiquement lors de la création
      */
     protected static function booted(): void
