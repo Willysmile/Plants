@@ -492,49 +492,6 @@
       }
     };
 
-    /**
-     * Recharge les cartes d'historiques de la modale plants
-     * Appelée après succès des quick modals (watering, fertilizing, repotting)
-     */
-    window.reloadHistoriesInModal = function() {
-      const plantId = {{ $plant->id }};
-      const container = document.getElementById('modal-histories-container-' + plantId);
-      
-      if (!container) {
-        console.warn('[RELOAD_HISTORIES] Container not found for plant', plantId);
-        return;
-      }
-      
-      fetch(`/plants/${plantId}/modal`, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(response => response.text())
-      .then(html => {
-        // Parse le HTML retourné
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Chercher le container d'historiques dans le nouveau HTML
-        const newContainer = doc.querySelector('#modal-histories-container-' + plantId);
-        
-        if (newContainer) {
-          // Remplacer le contenu du container
-          container.innerHTML = newContainer.innerHTML;
-          
-          // Réinitialiser les icônes Lucide
-          if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-          }
-          
-          console.log('[RELOAD_HISTORIES] Histories reloaded successfully');
-        } else {
-          console.warn('[RELOAD_HISTORIES] New container not found in response');
-        }
-      })
-      .catch(error => {
-        console.error('[RELOAD_HISTORIES] Error reloading histories:', error);
-      });
-    };
   </script>
 
 </div>

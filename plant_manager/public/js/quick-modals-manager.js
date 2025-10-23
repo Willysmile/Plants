@@ -137,8 +137,9 @@ window.closeQuickWateringModalFromModal = function() {
   // Reset form
   const form = document.getElementById('quickWateringFormFromModal');
   if (form) form.reset();
-  if (typeof reloadHistoriesInModal === 'function') {
-    reloadHistoriesInModal();
+  // Refresh modal to see updated histories
+  if (typeof refreshModal === 'function') {
+    setTimeout(refreshModal, 300);
   }
 };
 
@@ -151,8 +152,9 @@ window.closeQuickFertilizingModalFromModal = function() {
   // Reset form
   const form = document.getElementById('quickFertilizingFormFromModal');
   if (form) form.reset();
-  if (typeof reloadHistoriesInModal === 'function') {
-    reloadHistoriesInModal();
+  // Refresh modal to see updated histories
+  if (typeof refreshModal === 'function') {
+    setTimeout(refreshModal, 300);
   }
 };
 
@@ -165,8 +167,9 @@ window.closeQuickRepottingModalFromModal = function() {
   // Reset form
   const form = document.getElementById('quickRepottingFormFromModal');
   if (form) form.reset();
-  if (typeof reloadHistoriesInModal === 'function') {
-    reloadHistoriesInModal();
+  // Refresh modal to see updated histories
+  if (typeof refreshModal === 'function') {
+    setTimeout(refreshModal, 300);
   }
 };
 
@@ -351,7 +354,11 @@ window.handleQuickWateringSubmit = function(event) {
         if (typeof alertSuccess === 'function') {
           alertSuccess('Arrosage enregistré', 0);
         }
-        // Close modal and reload histories
+        // Refresh modal to see updated histories
+        if (typeof refreshModal === 'function') {
+          setTimeout(refreshModal, 500);
+        }
+        // Close modal
         closeQuickWateringModalFromModal();
       } else {
         return response.text().then(text => {
@@ -418,7 +425,11 @@ window.handleQuickFertilizingSubmit = function(event) {
         if (typeof alertSuccess === 'function') {
           alertSuccess('Fertilisation enregistrée', 0);
         }
-        // Close modal and reload histories
+        // Refresh modal to see updated histories
+        if (typeof refreshModal === 'function') {
+          setTimeout(refreshModal, 500);
+        }
+        // Close modal
         closeQuickFertilizingModalFromModal();
       } else {
         return response.text().then(text => {
@@ -485,7 +496,11 @@ window.handleQuickRepottingSubmit = function(event) {
         if (typeof alertSuccess === 'function') {
           alertSuccess('Rempotage enregistré', 0);
         }
-        // Close modal and reload histories
+        // Refresh modal to see updated histories
+        if (typeof refreshModal === 'function') {
+          setTimeout(refreshModal, 500);
+        }
+        // Close modal
         closeQuickRepottingModalFromModal();
       } else {
         return response.text().then(text => {
