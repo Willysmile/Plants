@@ -358,7 +358,7 @@
             <!-- Date de détection -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
-              <input type="datetime-local" name="detected_at" required
+              <input type="date" name="detected_at" required
                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
             </div>
 
@@ -379,7 +379,7 @@
             <!-- Date du traitement -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
-              <input type="datetime-local" name="treated_at"
+              <input type="date" name="treated_at"
                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
             </div>
 
@@ -444,8 +444,8 @@
               <!-- Date de détection -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
-                <input type="datetime-local" name="detected_at" required
-                       value="{{ $disease->detected_at->format('Y-m-d\TH:i') }}"
+                <input type="date" name="detected_at" required
+                       value="{{ $disease->detected_at->format('Y-m-d') }}"
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
               </div>
 
@@ -466,8 +466,8 @@
               <!-- Date du traitement -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
-                <input type="datetime-local" name="treated_at"
-                       value="{{ $disease->treated_at ? $disease->treated_at->format('Y-m-d\TH:i') : '' }}"
+                <input type="date" name="treated_at"
+                       value="{{ $disease->treated_at ? $disease->treated_at->format('Y-m-d') : '' }}"
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
               </div>
 
@@ -680,17 +680,17 @@
       document.getElementById(`edit-disease-modal-${diseaseId}`).style.display = 'none';
     };
 
-    // Définir la date max aujourd'hui pour le formulaire d'ajout de maladie
+    // Définir la date max aujourd'hui pour le formulaire d'ajout/édition de maladie
     document.addEventListener('DOMContentLoaded', function() {
       const today = new Date().toISOString().split('T')[0];
       const detectedAtInputs = document.querySelectorAll('input[name="detected_at"]');
       const treatedAtInputs = document.querySelectorAll('input[name="treated_at"]');
       
       detectedAtInputs.forEach(input => {
-        input.max = today + 'T23:59';
+        input.max = today;
       });
       treatedAtInputs.forEach(input => {
-        input.max = today + 'T23:59';
+        input.max = today;
       });
     });
 
