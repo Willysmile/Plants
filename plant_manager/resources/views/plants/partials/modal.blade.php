@@ -177,7 +177,7 @@
                 <!-- Date de détection -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
-                  <input type="datetime-local" name="detected_at" required
+                  <input type="date" name="detected_at" required
                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
 
@@ -198,7 +198,7 @@
                 <!-- Date du traitement -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
-                  <input type="datetime-local" name="treated_at"
+                  <input type="date" name="treated_at"
                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
 
