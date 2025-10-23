@@ -177,12 +177,17 @@
 
           <!-- Localisation (Emplacement, Date, Lieu d'achat) EN BAS -->
           <div class="grid gap-2 text-xs mt-4" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">
-            @if($plant->location_id && $plant->location)
+            @php
+              $locationObj = $plant->location && is_object($plant->location) ? $plant->location : null;
+              $purchasePlaceObj = $plant->purchasePlace && is_object($plant->purchasePlace) ? $plant->purchasePlace : null;
+            @endphp
+            
+            @if($locationObj)
               <div class="bg-green-50 p-2 rounded border border-green-200">
                 <p class="text-gray-600 font-medium text-xs">📍 Emplacement</p>
-                <p class="text-green-700 font-semibold">{{ $plant->location->name }}</p>
-                @if($plant->location->light_level)
-                  <p class="text-xs text-gray-600 mt-1">💡 {{ $plant->location->light_level }}</p>
+                <p class="text-green-700 font-semibold">{{ $locationObj->name }}</p>
+                @if($locationObj->light_level)
+                  <p class="text-xs text-gray-600 mt-1">💡 {{ $locationObj->light_level }}</p>
                 @endif
               </div>
             @endif
@@ -194,12 +199,12 @@
               </div>
             @endif
             
-            @if($plant->purchase_place_id && $plant->purchasePlace)
+            @if($purchasePlaceObj)
               <div class="bg-orange-50 p-2 rounded border border-orange-200">
                 <p class="text-gray-600 font-medium text-xs">🛒 Lieu d'achat</p>
-                <p class="text-orange-700 font-semibold">{{ $plant->purchasePlace->name }}</p>
-                @if($plant->purchasePlace->phone)
-                  <p class="text-xs text-gray-600 mt-1">☎️ {{ $plant->purchasePlace->phone }}</p>
+                <p class="text-orange-700 font-semibold">{{ $purchasePlaceObj->name }}</p>
+                @if($purchasePlaceObj->phone)
+                  <p class="text-xs text-gray-600 mt-1">☎️ {{ $purchasePlaceObj->phone }}</p>
                 @endif
               </div>
             @endif
