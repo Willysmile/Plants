@@ -1,0 +1,137 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Plant;
+use App\Models\Location;
+use App\Models\PurchasePlace;
+use App\Models\Tag;
+use App\Models\Disease;
+use Illuminate\Support\Facades\DB;
+
+class StatisticsController extends Controller
+{
+    /**
+     * Afficher le dashboard de statistiques
+     */
+    public function index()
+    {
+        // Statistiques générales
+        $totalPlants = Plant::count();
+        $activePlants = Plant::where('is_archived', false)->count();
+        $archivedPlants = Plant::where('is_archived', true)->count();
+
+        // Statistiques par famille
+        $plantsByFamily = Plant::select('family', DB::raw('count(*) as total'))
+            ->where('is_archived', false)
+            ->groupBy('family')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get();
+
+        // Statistiques par emplacement
+        $plantsByLocation = Location::withCount(['plants' => function ($query) {
+            $query->where('is_archived', false);
+        }])
+            ->orderByDesc('plants_count')
+            ->get();
+
+        // Statistiques par lieu d'achat
+        $plantsByPurchasePlace = PurchasePlace::withCount(['plants' => function ($query) {
+            $query->where('is_archived', false);
+        }])
+            ->orderByDesc('plants_count')
+            ->get();
+
+        // Top tags utilisés
+        $topTags = Tag::withCount(['plants' => function ($query) {
+            $query->where('is_archived', false);
+        }])
+            ->orderByDesc('plants_count')
+            ->limit(15)
+            ->get();
+
+        // Historique d'arrosage
+        $lastWatering = Plant::select('plants.id', 'plants.name', 'watering_histories.watering_date')
+            ->join('watering_histories', 'plants.id', '=', 'watering_histories.plant_id')
+            ->where('plants.is_archived', false)
+            ->orderByDesc('watering_histories.watering_date')
+            ->limit(10)
+            ->get();
+
+        $plantsDueForWatering = Plant::where('is_archived', false)
+            ->whereRaw('id NOT IN (
+                SELECT DISTINCT plant_id FROM watering_histories
+                WHERE watering_date > DATE_SUB(NOW(), INTERVAL 14 DAY)
+            )')
+            ->orWhereDoesntHave('wateringHistories')
+            ->where('is_archived', false)
+            ->limit(10)
+            ->get();
+
+        // Statistiques des maladies
+        $activeDiseases = DB::table('disease_histories')
+            ->join('plants', 'disease_histories.plant_id', '=', 'plants.id')
+            ->join('diseases', 'disease_histories.disease_id', '=', 'diseases.id')
+            ->where('disease_histories.status', '!=', 'cured')
+            ->where('plants.is_archived', false)
+            ->select('diseases.name', 'disease_histories.status', DB::raw('count(*) as count'))
+            ->groupBy('diseases.name', 'disease_histories.status')
+            ->orderByDesc('count')
+            ->get();
+
+        $curedDiseases = DB::table('disease_histories')
+            ->join('diseases', 'disease_histories.disease_id', '=', 'diseases.id')
+            ->where('disease_histories.status', 'cured')
+            ->select('diseases.name', DB::raw('count(*) as count'))
+            ->groupBy('diseases.name')
+            ->orderByDesc('count')
+            ->limit(10)
+            ->get();
+
+        // Statistiques de besoins en arrosage
+        $wateringFrequencies = Plant::select('watering_frequency', DB::raw('count(*) as total'))
+            ->where('is_archived', false)
+            ->groupBy('watering_frequency')
+            ->get();
+
+        $lightRequirements = Plant::select('light_requirement', DB::raw('count(*) as total'))
+            ->where('is_archived', false)
+            ->groupBy('light_requirement')
+            ->get();
+
+        // Statistiques de fertilisation
+        $lastFertilizing = Plant::select('plants.id', 'plants.name', 'fertilizing_histories.fertilizing_date')
+            ->join('fertilizing_histories', 'plants.id', '=', 'fertilizing_histories.plant_id')
+            ->where('plants.is_archived', false)
+            ->orderByDesc('fertilizing_histories.fertilizing_date')
+            ->limit(10)
+            ->get();
+
+        // Statistiques de rempotage
+        $lastRepotting = Plant::select('plants.id', 'plants.name', 'repotting_histories.repotting_date')
+            ->join('repotting_histories', 'plants.id', '=', 'repotting_histories.plant_id')
+            ->where('plants.is_archived', false)
+            ->orderByDesc('repotting_histories.repotting_date')
+            ->limit(10)
+            ->get();
+
+        return view('statistics.index', compact(
+            'totalPlants',
+            'activePlants',
+            'archivedPlants',
+            'plantsByFamily',
+            'plantsByLocation',
+            'plantsByPurchasePlace',
+            'topTags',
+            'lastWatering',
+            'plantsDueForWatering',
+            'activeDiseases',
+            'curedDiseases',
+            'wateringFrequencies',
+            'lightRequirements',
+            'lastFertilizing',
+            'lastRepotting'
+        ));
+    }
+}

@@ -13,6 +13,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\StatisticsController;
 use App\Http\Controllers\Admin\UserApprovalController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,9 @@ Route::get('/dashboard', function () {
 
 // Routes protégées par authentification
 Route::middleware(['auth', 'verified', 'check.approval'])->group(function () {
+    // Statistiques
+    Route::get('statistics', [StatisticsController::class, 'index'])->name('statistics.index');
+
     // Route pour les plantes archivées
     Route::get('plants/archived', [PlantController::class, 'archived'])->name('plants.archived');
 
