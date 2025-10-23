@@ -783,7 +783,8 @@
         if (response.ok) {
           alertSuccess('Arrosage enregistré !', 0);
           closeQuickWateringModalFromModal();
-          location.reload();
+          // Attendre un peu que la notification s'affiche avant de recharger
+          setTimeout(() => location.reload(), 500);
         } else {
           return response.text().then(text => {
             throw new Error(text);
@@ -844,7 +845,8 @@
         if (response.ok) {
           alertSuccess('Fertilisation enregistrée !', 0);
           closeQuickFertilizingModalFromModal();
-          location.reload();
+          // Attendre un peu que la notification s'affiche avant de recharger
+          setTimeout(() => location.reload(), 500);
         } else {
           return response.text().then(text => {
             throw new Error(text);
@@ -905,7 +907,8 @@
         if (response.ok) {
           alertSuccess('Rempotage enregistré !', 0);
           closeQuickRepottingModalFromModal();
-          location.reload();
+          // Attendre un peu que la notification s'affiche avant de recharger
+          setTimeout(() => location.reload(), 500);
         } else {
           return response.text().then(text => {
             throw new Error(text);
