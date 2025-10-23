@@ -242,6 +242,102 @@ window.refreshShowPage = function() {
 };
 
 /**
+ * Ouvre la modale d'ajout de maladie
+ * Fonctionne dans le contexte show.blade.php OU modal.blade.php
+ */
+window.openAddDiseaseModal = function(plantId) {
+  const modal = document.getElementById(`add-disease-modal-${plantId}`);
+  if (modal) {
+    modal.style.display = 'flex';
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  } else {
+    console.warn(`[DISEASE] Modal add-disease-modal-${plantId} not found`);
+  }
+};
+
+/**
+ * Ferme la modale d'ajout de maladie (contexte modal.blade.php)
+ */
+window.closeAddDiseaseModalFromModal = function(plantId) {
+  const modal = document.getElementById(`add-disease-modal-${plantId}`);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+};
+
+/**
+ * Ferme la modale d'ajout de maladie (contexte show.blade.php)
+ */
+window.closeAddDiseaseModal = function(plantId) {
+  const modal = document.getElementById(`add-disease-modal-${plantId}`);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+};
+
+/**
+ * Bascule l'affichage du champ "nouvelle maladie"
+ */
+window.toggleNewDiseaseFromModal = function(plantId) {
+  const select = document.getElementById(`diseaseSelect-modal-${plantId}`);
+  const newDiseaseDiv = document.getElementById(`newDiseaseDiv-modal-${plantId}`);
+  if (select && newDiseaseDiv) {
+    if (select.value === 'new') {
+      newDiseaseDiv.style.display = 'block';
+    } else {
+      newDiseaseDiv.style.display = 'none';
+    }
+  }
+};
+
+/**
+ * Bascule l'affichage du champ "nouvelle maladie" (show.blade.php)
+ */
+window.toggleNewDisease = function(plantId) {
+  const select = document.getElementById(`diseaseSelect-${plantId}`);
+  const newDiseaseDiv = document.getElementById(`newDiseaseDiv-${plantId}`);
+  if (select && newDiseaseDiv) {
+    if (select.value === 'new') {
+      newDiseaseDiv.style.display = 'block';
+    } else {
+      newDiseaseDiv.style.display = 'none';
+    }
+  }
+};
+
+/**
+ * Ouvre la modale des maladies (show.blade.php)
+ */
+window.openDiseasesModal = function(plantId) {
+  const modal = document.getElementById(`diseases-modal-${plantId}`);
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+};
+
+/**
+ * Ouvre la modale des maladies (contexte modal.blade.php)
+ */
+window.openDiseasesModalFromModal = function(plantId) {
+  const modal = document.getElementById(`free-diseases-modal-${plantId}`);
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+};
+
+/**
+ * Ferme la modale des maladies (contexte modal.blade.php)
+ */
+window.closeDiseasesModalFromModal = function(plantId) {
+  const modal = document.getElementById(`free-diseases-modal-${plantId}`);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+};
+
+/**
  * Initialise l'app au chargement du DOM
  */
 document.addEventListener('DOMContentLoaded', () => {
