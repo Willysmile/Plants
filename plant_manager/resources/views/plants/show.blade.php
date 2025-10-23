@@ -552,6 +552,14 @@
     window.closeQuickRepottingModalFromModal?.();
   };
 
+  window.openQuickDiseaseModal = function() {
+    window.openQuickDiseaseModalFromModal?.();
+  };
+
+  window.closeQuickDiseaseModal = function() {
+    window.closeQuickDiseaseModalFromModal?.();
+  };
+
   // Setup functions for quick modal initialization
   window.setupQuickWateringModal = function() {
     const dateInput = document.getElementById('quickWateringDateFromModal');
@@ -576,6 +584,19 @@
       dateInput.max = today;
     }
   };
+
+  window.setupQuickDiseaseModal = function() {
+    const detectedAtInput = document.getElementById('quickDiseaseDetectedAtFromModal');
+    const treatedAtInput = document.getElementById('quickDiseaseTreatedAtFromModal');
+    if (detectedAtInput) {
+      const today = new Date().toISOString().split('T')[0];
+      detectedAtInput.max = today;
+    }
+    if (treatedAtInput) {
+      const today = new Date().toISOString().split('T')[0];
+      treatedAtInput.max = today;
+    }
+  };
 </script>
 
 @include('partials.lightbox')
@@ -584,6 +605,7 @@
 <x-quick-watering-modal :plant="$plant" />
 <x-quick-fertilizing-modal :plant="$plant" :fertilizerTypes="$fertilizerTypes ?? \App\Models\FertilizerType::all()" />
 <x-quick-repotting-modal :plant="$plant" />
+<x-quick-disease-modal :plant="$plant" />
 
 <!-- Formulaire caché pour l'archivage -->
 <form id="archiveForm" action="{{ route('plants.archive', $plant) }}" method="POST" style="display: none;">
