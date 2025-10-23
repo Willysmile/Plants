@@ -28,12 +28,12 @@
 
             <!-- Page Content -->
             <main>
-                <!-- Notifications Container (for dynamic notifications) -->
-                <x-notifications-container />
-                
                 @yield('content', $slot ?? '')
             </main>
         </div>
+        
+        <!-- Notifications Container (for dynamic notifications - must be outside main for fixed positioning) -->
+        <x-notifications-container />
         
         <!-- Load Lucide Icons at the very end to avoid conflicts -->
     <!-- Alpine.js Loader -->
