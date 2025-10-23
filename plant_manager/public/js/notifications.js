@@ -44,19 +44,21 @@ window.showNotification = function(message, type = 'info', duration = 4000) {
     if (!container) {
         container = document.createElement('div');
         container.id = 'notifications-container';
-        container.className = 'fixed top-4 right-4 space-y-2 z-50';
+        container.className = 'fixed inset-0 flex items-center justify-center pointer-events-none z-50';
         document.body.appendChild(container);
     }
 
     // Créer l'alerte
     const alertDiv = document.createElement('div');
-    alertDiv.className = `p-4 rounded-lg border ${styles.bg} ${styles.border} shadow-lg transform transition-all duration-300 ease-in-out translate-x-0 opacity-100 max-w-md`;
+    alertDiv.className = `p-8 rounded-2xl border ${styles.bg} ${styles.border} shadow-2xl transform transition-all duration-300 ease-in-out scale-100 opacity-100 max-w-2xl w-11/12 pointer-events-auto`;
     alertDiv.innerHTML = `
-        <div class="flex items-start">
-            <i data-lucide="${styles.icon}" class="w-5 h-5 ${styles.iconColor} mt-0.5 flex-shrink-0"></i>
-            <p class="ml-3 ${styles.text} text-sm font-medium">${message}</p>
-            <button class="ml-3 text-gray-400 hover:text-gray-600" onclick="this.parentElement.parentElement.remove()">
-                <i data-lucide="x" class="w-5 h-5"></i>
+        <div class="flex items-center gap-4">
+            <i data-lucide="${styles.icon}" class="w-10 h-10 ${styles.iconColor} flex-shrink-0"></i>
+            <div class="flex-1">
+                <p class="${styles.text} text-lg font-medium">${message}</p>
+            </div>
+            <button class="ml-4 text-gray-400 hover:text-gray-600 flex-shrink-0" onclick="this.closest('[class*=rounded-2xl]').remove()">
+                <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
     `;
@@ -71,7 +73,7 @@ window.showNotification = function(message, type = 'info', duration = 4000) {
     // Fermeture automatique après duration
     if (duration > 0) {
         setTimeout(() => {
-            alertDiv.classList.add('translate-x-96', 'opacity-0');
+            alertDiv.classList.add('scale-95', 'opacity-0');
             setTimeout(() => alertDiv.remove(), 300);
         }, duration);
     }
@@ -98,3 +100,4 @@ window.alertWarning = function(message, duration = 4000) {
 window.alertInfo = function(message, duration = 4000) {
     return showNotification(message, 'info', duration);
 };
+
