@@ -6,7 +6,7 @@
   <div class="bg-white p-6 rounded shadow">
     <h1 class="text-xl font-bold mb-6">Ajouter une plante</h1>
 
-    <x-plant-form :tags="$tags" />
+    <x-plant-form :tags="$tags" :locations="$locations" :purchase-places="$purchasePlaces" />
 
     <!-- Modal Tags -->
     <div id="tags-modal" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

@@ -51,8 +51,10 @@ class PlantController extends Controller
     public function create()
     {
         $tags = Tag::orderBy('name')->get();
+        $locations = \App\Models\Location::orderBy('name')->get();
+        $purchasePlaces = \App\Models\PurchasePlace::orderBy('name')->get();
 
-        return view('plants.create', compact('tags'));
+        return view('plants.create', compact('tags', 'locations', 'purchasePlaces'));
     }
 
     /**
@@ -95,8 +97,10 @@ class PlantController extends Controller
     public function edit(Plant $plant)
     {
         $tags = Tag::orderBy('name')->get();
+        $locations = \App\Models\Location::orderBy('name')->get();
+        $purchasePlaces = \App\Models\PurchasePlace::orderBy('name')->get();
 
-        return view('plants.edit', compact('plant','tags'));
+        return view('plants.edit', compact('plant', 'tags', 'locations', 'purchasePlaces'));
     }
 
     /**

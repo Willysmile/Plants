@@ -42,7 +42,7 @@ class StorePlantRequest extends FormRequest
             
             // Informations d'achat - Accepte "dd/mm/yyyy" ou "mm/yyyy"
             'purchase_date' => ['nullable', 'string', new \App\Rules\FlexibleDate],
-            'purchase_place' => 'nullable|string|max:255',
+            'purchase_place_id' => 'nullable|integer|exists:purchase_places,id',
             'purchase_price' => 'nullable|numeric|min:0',
             
             // Conditions de culture - VALIDATION: humidité max 100%, temp min < max
@@ -55,7 +55,7 @@ class StorePlantRequest extends FormRequest
             
             // Informations complémentaires
             'info_url' => 'nullable|url|max:2048',
-            'location' => 'nullable|string|max:255',
+            'location_id' => 'nullable|integer|exists:locations,id',
             'pot_size' => 'nullable|string|max:255',
             'health_status' => 'nullable|string|max:255',
             

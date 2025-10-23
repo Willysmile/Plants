@@ -1,4 +1,4 @@
-@props(['plant' => null, 'categories' => [], 'tags' => []])
+@props(['plant' => null, 'categories' => [], 'tags' => [], 'locations' => [], 'purchasePlaces' => []])
 
 @php
   $isEdit = $plant !== null;
@@ -211,23 +211,31 @@
     <!-- Lieu d'achat -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Lieu d'achat</label>
-      <input type="text" 
-             name="purchase_place" 
-             value="{{ old('purchase_place', $plant?->purchase_place ?? '') }}" 
-             placeholder="Ex: Pépinière, Jardinerie, Marché..."
-             class="mt-1 block w-full border rounded p-2 @error('purchase_place') border-red-500 @enderror">
-      @error('purchase_place') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+      <select name="purchase_place_id" class="mt-1 block w-full border rounded p-2 @error('purchase_place_id') border-red-500 @enderror">
+        <option value="">— Sélectionner un lieu —</option>
+        @foreach($purchasePlaces as $pp)
+          <option value="{{ $pp->id }}" 
+                  @selected((int) old('purchase_place_id', $plant?->purchase_place_id ?? null) === (int)$pp->id)>
+            {{ $pp->name }}
+          </option>
+        @endforeach
+      </select>
+      @error('purchase_place_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
     <!-- Emplacement actuel -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Emplacement actuel</label>
-      <input type="text" 
-             name="location" 
-             value="{{ old('location', $plant?->location ?? '') }}" 
-             placeholder="Ex: Fenêtre salon, Salle de bain..."
-             class="mt-1 block w-full border rounded p-2 @error('location') border-red-500 @enderror">
-      @error('location') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+      <select name="location_id" class="mt-1 block w-full border rounded p-2 @error('location_id') border-red-500 @enderror">
+        <option value="">— Sélectionner un emplacement —</option>
+        @foreach($locations as $loc)
+          <option value="{{ $loc->id }}" 
+                  @selected((int) old('location_id', $plant?->location_id ?? null) === (int)$loc->id)>
+            {{ $loc->name }}
+          </option>
+        @endforeach
+      </select>
+      @error('location_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
     </div>
 
     <!-- Notes -->
