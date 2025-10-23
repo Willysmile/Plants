@@ -178,8 +178,9 @@
                 <!-- Date de détection -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Date de détection *</label>
-                  <input type="date" name="detected_at" required
+                  <input type="date" id="diseaseDetectedAt-{{ $plant->id }}" name="detected_at" required
                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                  <p id="diseaseDetectedAtError-{{ $plant->id }}" class="text-xs text-red-600 mt-1 hidden">La date ne peut pas être dans le futur</p>
                 </div>
 
                 <!-- Description -->
@@ -199,8 +200,9 @@
                 <!-- Date du traitement -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Date du traitement</label>
-                  <input type="date" name="treated_at"
+                  <input type="date" id="diseaseTreatedAt-{{ $plant->id }}" name="treated_at"
                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                  <p id="diseaseTreatedAtError-{{ $plant->id }}" class="text-xs text-red-600 mt-1 hidden">La date ne peut pas être dans le futur</p>
                 </div>
 
                 <!-- Statut -->
@@ -470,6 +472,12 @@
         if (typeof lucide !== 'undefined') {
           lucide.createIcons();
         }
+        // Set max date to today for date inputs
+        const today = new Date().toISOString().split('T')[0];
+        const detectedAtInput = document.getElementById('diseaseDetectedAt-' + plantId);
+        const treatedAtInput = document.getElementById('diseaseTreatedAt-' + plantId);
+        if (detectedAtInput) detectedAtInput.max = today;
+        if (treatedAtInput) treatedAtInput.max = today;
       }
     };
 
@@ -499,9 +507,52 @@
       event.stopPropagation();
       
       const form = document.getElementById('add-disease-form-' + plantId);
-      if (!form) {
-        console.error('[AddDisease] Form not found');
+      const detectedAtInput = document.getElementById('diseaseDetectedAt-' + plantId);
+      const treatedAtInput = document.getElementById('diseaseTreatedAt-' + plantId);
+      const detectedAtError = document.getElementById('diseaseDetectedAtError-' + plantId);
+      const treatedAtError = document.getElementById('diseaseTreatedAtError-' + plantId);
+      
+      if (!form || !detectedAtInput) {
+        console.error('[AddDisease] Form elements not found');
         return false;
+      }
+      
+      const today = new Date().toISOString().split('T')[0];
+      const detectedAt = detectedAtInput.value;
+      const treatedAt = treatedAtInput ? treatedAtInput.value : null;
+      
+      // Validate detected_at
+      if (!detectedAt) {
+        if (detectedAtError) {
+          detectedAtError.textContent = 'La date de détection est requise';
+          detectedAtError.classList.remove('hidden');
+        }
+        return false;
+      }
+      
+      if (detectedAt > today) {
+        if (detectedAtError) {
+          detectedAtError.textContent = 'La date de détection ne peut pas être dans le futur';
+          detectedAtError.classList.remove('hidden');
+        }
+        return false;
+      }
+      
+      if (detectedAtError) {
+        detectedAtError.classList.add('hidden');
+      }
+      
+      // Validate treated_at
+      if (treatedAt && treatedAt > today) {
+        if (treatedAtError) {
+          treatedAtError.textContent = 'La date du traitement ne peut pas être dans le futur';
+          treatedAtError.classList.remove('hidden');
+        }
+        return false;
+      }
+      
+      if (treatedAtError) {
+        treatedAtError.classList.add('hidden');
       }
       
       const formData = new FormData(form);
