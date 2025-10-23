@@ -1,7 +1,7 @@
 <!-- Fertilizing History Summary (for modal) -->
 <div class="bg-green-50 p-3 rounded border-l-4 border-green-400">
     @php
-        $lastFertilizing = $plant->fertilizingHistories()->latest('fertilizing_date')->first();
+        $lastFertilizing = collect($plant->fertilizingHistories ?? [])->sortByDesc('fertilizing_date')->first();
     @endphp
     
     <div class="flex items-center justify-between mb-2">

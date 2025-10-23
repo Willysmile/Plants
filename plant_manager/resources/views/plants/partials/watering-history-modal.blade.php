@@ -1,7 +1,7 @@
 <!-- Watering History Summary (for modal) -->
 <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
     @php
-        $lastWatering = $plant->wateringHistories()->latest('watering_date')->first();
+        $lastWatering = collect($plant->wateringHistories ?? [])->sortByDesc('watering_date')->first();
     @endphp
     
     <div class="flex items-center justify-between mb-2">
