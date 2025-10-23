@@ -260,3 +260,50 @@ window.createQuickModalSubmitHandler = function(options) {
     return false;
   };
 };
+
+/**
+ * Add a new fertilizer type on-the-fly in quick fertilizing modal
+ */
+window.addNewFertilizerTypeQuick = async function(event) {
+  event.preventDefault();
+  const input = document.getElementById('quickNewFertilizerTypeName');
+  const name = input.value.trim();
+  
+  if (!name) {
+    alert('Veuillez entrer un nom pour le type d\'engrais');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/fertilizer-types', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({ name })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Erreur lors de la création');
+    }
+    
+    const data = await response.json();
+    
+    // Add option to select
+    const select = document.getElementById('quickFertilizingTypeFromModal');
+    const option = new Option(data.name, data.id);
+    select.appendChild(option);
+    select.value = data.id;
+    
+    // Clear input
+    input.value = '';
+    
+    alert('Type d\'engrais créé avec succès !');
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Erreur lors de la création du type d\'engrais');
+  }
+};
+
