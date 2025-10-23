@@ -1,6 +1,6 @@
 /**
- * Système de notifications professionnel avec gestion des contextes
- * Affiche les notifications dans le conteneur global avec gestion intelligente
+ * Système de notifications professionnel utilisant Laravel flash sessions
+ * Affiche les notifications via le composant Blade réutilisable
  */
 window.showNotification = function(message, type = 'info', duration = 0) {
     // Configuration des styles
@@ -36,18 +36,19 @@ window.showNotification = function(message, type = 'info', duration = 0) {
     };
 
     const styles = config[type] || config.info;
-
-    // Toujours utiliser le conteneur global (fiable et visible)
-    let container = document.getElementById('notifications-container');
+    const container = document.getElementById('notifications-container');
     
     if (!container) {
-        console.error('No notification container found');
+        console.error('notifications-container not found');
         return;
     }
 
-    // Créer le div notification avec les classes Tailwind pures
+    // Créer un div avec les classes Tailwind complètes
     const notificationDiv = document.createElement('div');
-    notificationDiv.className = `p-8 rounded-2xl border-2 ${styles.bg} ${styles.border} shadow-2xl max-w-2xl w-11/12 pointer-events-auto cursor-pointer transform transition-all duration-300 opacity-100 scale-100`;
+    notificationDiv.className = `p-8 rounded-2xl border-2 ${styles.bg} ${styles.border} shadow-2xl max-w-2xl w-11/12 pointer-events-auto cursor-pointer transform transition-all duration-300 opacity-100 scale-100 notification-alert`;
+    notificationDiv.setAttribute('data-type', type);
+    // Force le centrage avec des styles inline pour éviter les conflits
+    notificationDiv.style.margin = '0 auto';
     
     notificationDiv.innerHTML = `
         <div class="flex items-center gap-4">
@@ -55,27 +56,23 @@ window.showNotification = function(message, type = 'info', duration = 0) {
             <div class="flex-1">
                 <p class="${styles.text} text-lg font-medium">${message}</p>
             </div>
-            <button class="ml-4 text-gray-500 hover:text-gray-700 flex-shrink-0 transition" type="button">
+            <button class="ml-4 text-gray-500 hover:text-gray-700 flex-shrink-0 transition notification-close" type="button">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
     `;
 
     // Event listener pour le bouton close
-    const closeBtn = notificationDiv.querySelector('button');
+    const closeBtn = notificationDiv.querySelector('.notification-close');
     closeBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        notificationDiv.style.opacity = '0';
-        notificationDiv.style.transform = 'scale(0.95)';
-        setTimeout(() => notificationDiv.remove(), 300);
+        closeNotification(notificationDiv);
     });
 
     // Click sur la notification pour fermer
     notificationDiv.addEventListener('click', function(e) {
         if (e.target === notificationDiv || e.target.closest('.flex.items-center')) {
-            notificationDiv.style.opacity = '0';
-            notificationDiv.style.transform = 'scale(0.95)';
-            setTimeout(() => notificationDiv.remove(), 300);
+            closeNotification(notificationDiv);
         }
     });
 
@@ -89,13 +86,22 @@ window.showNotification = function(message, type = 'info', duration = 0) {
     // Fermeture automatique si duration > 0
     if (duration > 0) {
         setTimeout(() => {
-            notificationDiv.style.opacity = '0';
-            notificationDiv.style.transform = 'scale(0.95)';
-            setTimeout(() => notificationDiv.remove(), 300);
+            closeNotification(notificationDiv);
         }, duration);
     }
 
     return notificationDiv;
+};
+
+/**
+ * Ferme une notification avec animation
+ */
+window.closeNotification = function(notificationDiv) {
+    if (!notificationDiv) return;
+    
+    notificationDiv.style.opacity = '0';
+    notificationDiv.style.transform = 'scale(0.95)';
+    setTimeout(() => notificationDiv.remove(), 300);
 };
 
 /**
@@ -116,4 +122,30 @@ window.alertWarning = function(message, duration = 0) {
 window.alertInfo = function(message, duration = 0) {
     return showNotification(message, 'info', duration);
 };
+
+/**
+ * Initialiser les event listeners sur les notifications existantes
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.notification-alert').forEach(function(alert) {
+        const closeBtn = alert.querySelector('.notification-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeNotification(alert);
+            });
+        }
+        
+        alert.addEventListener('click', function(e) {
+            if (e.target === alert || e.target.closest('.flex.items-center')) {
+                closeNotification(alert);
+            }
+        });
+    });
+    
+    // Initialiser les icônes
+    if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+        lucide.createIcons();
+    }
+});
 
