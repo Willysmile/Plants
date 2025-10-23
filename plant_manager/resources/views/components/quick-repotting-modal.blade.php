@@ -1,6 +1,6 @@
 <!-- Quick Repotting Modal -->
 <div id="quickRepottingModalFromModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="event.stopPropagation(); setupQuickRepottingModal();">
-  <div class="bg-white rounded-lg shadow-lg p-6 w-96" onclick="event.stopPropagation();">
+  <div class="relative bg-white rounded-lg shadow-lg p-6 w-96" onclick="event.stopPropagation();">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-semibold text-amber-900">Rempotage</h3>
       <button type="button" onclick="closeQuickRepottingModalFromModal()" class="text-gray-400 hover:text-gray-600">

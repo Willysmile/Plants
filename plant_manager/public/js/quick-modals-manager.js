@@ -154,3 +154,100 @@ window.closeQuickRepottingModalFromModal = function() {
 
 // Exporter pour utilisation globale
 window.QuickModalsManager = QuickModalsManager;
+
+/**
+ * Helpers génériques pour paramétrer les modales rapides
+ */
+function setDateMax(dateInputId) {
+  const dateInput = document.getElementById(dateInputId);
+  if (!dateInput) {
+    return;
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.max = today;
+}
+
+window.createQuickModalSetupHandler = function(dateInputId) {
+  return function () {
+    setDateMax(dateInputId);
+  };
+};
+
+window.createQuickModalSubmitHandler = function(options) {
+  const {
+    formId,
+    dateInputId,
+    dateErrorId,
+    successMessage,
+    onSuccess,
+    onError,
+  } = options;
+
+  return function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const form = document.getElementById(formId);
+    const dateInput = document.getElementById(dateInputId);
+    const dateError = document.getElementById(dateErrorId);
+
+    if (!form || !dateInput || !dateError) {
+      console.error(`[QuickModal] Elements not found for form ${formId}`);
+      return false;
+    }
+
+    const enteredDate = dateInput.value;
+    const today = new Date().toISOString().split('T')[0];
+
+    if (!enteredDate) {
+      dateError.textContent = 'La date est requise';
+      dateError.classList.remove('hidden');
+      return false;
+    }
+
+    if (enteredDate > today) {
+      dateError.textContent = 'La date ne peut pas être dans le futur';
+      dateError.classList.remove('hidden');
+      return false;
+    }
+
+    dateError.classList.add('hidden');
+
+    const formData = new FormData(form);
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMeta ? csrfMeta.content : null;
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+      },
+      body: formData,
+    })
+      .then(response => {
+        if (response.ok) {
+          if (typeof onSuccess === 'function') {
+            onSuccess({ form, dateInput, successMessage });
+          } else if (typeof alertSuccess === 'function') {
+            alertSuccess(successMessage, 0);
+          }
+        } else {
+          return response.text().then(text => {
+            throw new Error(text);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('[QuickModal] Error submitting form', error);
+        dateError.textContent = 'Erreur lors de l\'enregistrement';
+        dateError.classList.remove('hidden');
+        if (typeof onError === 'function') {
+          onError(error);
+        }
+      });
+
+    return false;
+  };
+};

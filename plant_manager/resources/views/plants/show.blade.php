@@ -735,214 +735,65 @@
       }
     };
 
-    // QUICK FORM HANDLERS FOR SHOW PAGE
-    // These handlers are used by the quick-*-modal components when included in show.blade.php
-    
-    window.handleQuickWateringSubmit = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const dateInput = document.getElementById('quickWateringDateFromModal');
-      const dateError = document.getElementById('quickWateringDateError');
-      const form = document.getElementById('quickWateringFormFromModal');
-      
-      if (!dateInput || !dateError || !form) {
-        console.error('[WATERING] Elements not found!');
-        return false;
+    window.setupQuickWateringModal = createQuickModalSetupHandler('quickWateringDateFromModal');
+    window.setupQuickFertilizingModal = createQuickModalSetupHandler('quickFertilizingDateFromModal');
+    window.setupQuickRepottingModal = createQuickModalSetupHandler('quickRepottingDateFromModal');
+
+    const sessionFlashRoute = '{{ route("session.flash") }}';
+    const persistFlashAndReload = function(successMessage) {
+      const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+      const csrfToken = csrfMeta ? csrfMeta.content : null;
+      const headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+      };
+      if (csrfToken) {
+        headers['X-CSRF-TOKEN'] = csrfToken;
       }
-      
-      const enteredDate = dateInput.value;
-      const today = new Date().toISOString().split('T')[0];
-      
-      if (!enteredDate) {
-        dateError.textContent = 'La date est requise';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      if (enteredDate > today) {
-        dateError.textContent = 'La date ne peut pas être dans le futur';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      dateError.classList.add('hidden');
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
+
+      fetch(sessionFlashRoute, {
         method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
+        headers,
+        body: JSON.stringify({ type: 'success', message: successMessage }),
       })
-      .then(response => {
-        if (response.ok) {
-          closeQuickWateringModalFromModal();
-          // Mettre en session et recharger pour afficher la notification persistante
-          fetch('{{ route("session.flash") }}', {
-            method: 'POST',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRF-TOKEN': csrfToken,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ type: 'success', message: 'Arrosage enregistré !' })
-          }).then(() => location.reload());
-        } else {
-          return response.text().then(text => {
-            throw new Error(text);
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        dateError.textContent = 'Erreur lors de l\'enregistrement';
-        dateError.classList.remove('hidden');
-      });
-      
-      return false;
+        .then(() => location.reload())
+        .catch(error => {
+          console.error('[QuickModal] Failed to persist flash message', error);
+          location.reload();
+        });
     };
 
-    window.handleQuickFertilizingSubmit = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const dateInput = document.getElementById('quickFertilizingDateFromModal');
-      const dateError = document.getElementById('quickFertilizingDateError');
-      const form = document.getElementById('quickFertilizingFormFromModal');
-      
-      if (!dateInput || !dateError || !form) {
-        console.error('[FERTILIZING] Elements not found!');
-        return false;
-      }
-      
-      const enteredDate = dateInput.value;
-      const today = new Date().toISOString().split('T')[0];
-      
-      if (!enteredDate) {
-        dateError.textContent = 'La date est requise';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      if (enteredDate > today) {
-        dateError.textContent = 'La date ne peut pas être dans le futur';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      dateError.classList.add('hidden');
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          closeQuickFertilizingModalFromModal();
-          // Mettre en session et recharger pour afficher la notification persistante
-          fetch('{{ route("session.flash") }}', {
-            method: 'POST',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRF-TOKEN': csrfToken,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ type: 'success', message: 'Fertilisation enregistrée !' })
-          }).then(() => location.reload());
-        } else {
-          return response.text().then(text => {
-            throw new Error(text);
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        dateError.textContent = 'Erreur lors de l\'enregistrement';
-        dateError.classList.remove('hidden');
-      });
-      
-      return false;
-    };
+    window.handleQuickWateringSubmit = createQuickModalSubmitHandler({
+      formId: 'quickWateringFormFromModal',
+      dateInputId: 'quickWateringDateFromModal',
+      dateErrorId: 'quickWateringDateError',
+      successMessage: 'Arrosage enregistré !',
+      onSuccess: ({ successMessage }) => {
+        closeQuickWateringModalFromModal();
+        persistFlashAndReload(successMessage);
+      },
+    });
 
-    window.handleQuickRepottingSubmit = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const dateInput = document.getElementById('quickRepottingDateFromModal');
-      const dateError = document.getElementById('quickRepottingDateError');
-      const form = document.getElementById('quickRepottingFormFromModal');
-      
-      if (!dateInput || !dateError || !form) {
-        console.error('[REPOTTING] Elements not found!');
-        return false;
-      }
-      
-      const enteredDate = dateInput.value;
-      const today = new Date().toISOString().split('T')[0];
-      
-      if (!enteredDate) {
-        dateError.textContent = 'La date est requise';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      if (enteredDate > today) {
-        dateError.textContent = 'La date ne peut pas être dans le futur';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      dateError.classList.add('hidden');
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          closeQuickRepottingModalFromModal();
-          // Mettre en session et recharger pour afficher la notification persistante
-          fetch('{{ route("session.flash") }}', {
-            method: 'POST',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRF-TOKEN': csrfToken,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ type: 'success', message: 'Rempotage enregistré !' })
-          }).then(() => location.reload());
-        } else {
-          return response.text().then(text => {
-            throw new Error(text);
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        dateError.textContent = 'Erreur lors de l\'enregistrement';
-        dateError.classList.remove('hidden');
-      });
-      
-      return false;
-    };
+    window.handleQuickFertilizingSubmit = createQuickModalSubmitHandler({
+      formId: 'quickFertilizingFormFromModal',
+      dateInputId: 'quickFertilizingDateFromModal',
+      dateErrorId: 'quickFertilizingDateError',
+      successMessage: 'Fertilisation enregistrée !',
+      onSuccess: ({ successMessage }) => {
+        closeQuickFertilizingModalFromModal();
+        persistFlashAndReload(successMessage);
+      },
+    });
+
+    window.handleQuickRepottingSubmit = createQuickModalSubmitHandler({
+      formId: 'quickRepottingFormFromModal',
+      dateInputId: 'quickRepottingDateFromModal',
+      dateErrorId: 'quickRepottingDateError',
+      successMessage: 'Rempotage enregistré !',
+      onSuccess: ({ successMessage }) => {
+        closeQuickRepottingModalFromModal();
+        persistFlashAndReload(successMessage);
+      },
+    });
   </script>
 @endsection

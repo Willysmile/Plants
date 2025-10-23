@@ -43,15 +43,6 @@ window.showNotification = function(message, type = 'info', duration = 0) {
         return;
     }
 
-    // Créer un wrapper pour centrer la notification
-    const wrapper = document.createElement('div');
-    wrapper.style.display = 'flex';
-    wrapper.style.alignItems = 'center';
-    wrapper.style.justifyContent = 'center';
-    wrapper.style.width = '100vw';
-    wrapper.style.height = '100vh';
-    wrapper.style.pointerEvents = 'auto';
-
     // Créer un div avec les classes Tailwind complètes
     const notificationDiv = document.createElement('div');
     notificationDiv.className = `p-8 rounded-2xl border-2 ${styles.bg} ${styles.border} shadow-2xl max-w-2xl w-11/12 pointer-events-auto cursor-pointer transform transition-all duration-300 opacity-100 scale-100 notification-alert`;
@@ -73,18 +64,17 @@ window.showNotification = function(message, type = 'info', duration = 0) {
     const closeBtn = notificationDiv.querySelector('.notification-close');
     closeBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        closeNotification(wrapper);
+        closeNotification(notificationDiv);
     });
 
     // Click sur la notification pour fermer
     notificationDiv.addEventListener('click', function(e) {
         if (e.target === notificationDiv || e.target.closest('.flex.items-center')) {
-            closeNotification(wrapper);
+            closeNotification(notificationDiv);
         }
     });
 
-    wrapper.appendChild(notificationDiv);
-    container.appendChild(wrapper);
+    container.appendChild(notificationDiv);
 
     // Initialiser les icônes Lucide
     if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {

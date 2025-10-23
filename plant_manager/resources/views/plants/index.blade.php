@@ -59,345 +59,68 @@
     const gridContainer = document.getElementById('plants-grid');
     const allCards = Array.from(gridContainer.querySelectorAll('article'));
     const totalPages = Math.ceil(allCards.length / PLANTS_PER_PAGE);
-    
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const pageInfo = document.getElementById('page-info');
-    
-    function showPage(page) {
-      currentPage = Math.max(0, Math.min(page, totalPages - 1));
-      
-      // Hide all cards
-      allCards.forEach(card => card.style.display = 'none');
-      
-      // Show cards for current page
-      const start = currentPage * PLANTS_PER_PAGE;
-      const end = start + PLANTS_PER_PAGE;
-      allCards.slice(start, end).forEach(card => card.style.display = 'block');
-      
-      // Update buttons
-      prevBtn.disabled = currentPage === 0;
-      nextBtn.disabled = currentPage === totalPages - 1;
-      
-      // Update page info
-      pageInfo.textContent = `Page ${currentPage + 1} / ${totalPages}`;
-    }
-    
-    prevBtn.addEventListener('click', () => showPage(currentPage - 1));
-    nextBtn.addEventListener('click', () => showPage(currentPage + 1));
-    
-    // Initial display
-    showPage(0);
-  </script>
-  
-  <!-- Quick Modal Validation Scripts (must be loaded at page init, before AJAX modals load) -->
-  <script>
-    console.log('[INDEX] Defining quick modal handlers');
-    
-    // Reload histories in modal via AJAX
-    window.reloadHistoriesInModal = function() {
-      const modal = document.getElementById('plant-modal-content');
-      if (!modal) return;
-      
-      const plantModalEl = modal.querySelector('[data-modal-plant-id]');
-      if (!plantModalEl) {
-        console.warn('[RELOAD] No plant modal found');
-        return;
+    const reopenPlantsModalIfNeeded = function() {
+      const plantsModal = document.getElementById('quickPlantsModalFromModal');
+      if (plantsModal) {
+        plantsModal.classList.remove('hidden');
       }
-      
-      const plantId = plantModalEl.getAttribute('data-modal-plant-id');
-      if (!plantId) {
-        console.warn('[RELOAD] No plant ID found');
-        return;
-      }
-      
-      const container = modal.querySelector(`#modal-histories-container-${plantId}`);
-      if (!container) {
-        console.warn('[RELOAD] No histories container found');
-        return;
-      }
-      
-      // Fetch the plant data and re-render just the history cards (not the full page)
-      fetch(`/plants/${plantId}/modal`, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(response => response.text())
-      .then(html => {
-        // Parse the response to extract just the history cards
-        const parser = new DOMParser();
-        const newModal = parser.parseFromString(html, 'text/html');
-        const newContainer = newModal.querySelector(`#modal-histories-container-${plantId}`);
-        
-        if (newContainer) {
-          container.innerHTML = newContainer.innerHTML;
-          console.log('[RELOAD] Histories reloaded successfully');
-          
-          // Reinitialize Lucide icons
-          if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-          }
-        } else {
-          console.warn('[RELOAD] Could not find histories container in response');
+    };
+
+    window.setupQuickWateringModal = createQuickModalSetupHandler('quickWateringDateFromModal');
+    window.setupQuickFertilizingModal = createQuickModalSetupHandler('quickFertilizingDateFromModal');
+    window.setupQuickRepottingModal = createQuickModalSetupHandler('quickRepottingDateFromModal');
+
+    window.handleQuickWateringSubmit = createQuickModalSubmitHandler({
+      formId: 'quickWateringFormFromModal',
+      dateInputId: 'quickWateringDateFromModal',
+      dateErrorId: 'quickWateringDateError',
+      successMessage: 'Arrosage enregistré !',
+      onSuccess: ({ successMessage }) => {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess(successMessage, 0);
         }
-      })
-      .catch(error => console.error('[RELOAD] Error reloading histories:', error));
-    };
-    
-    // FREE HISTORIES MODAL (Deprecated: use app.js functions instead)
-    // Keeping for backwards compatibility
-    window.openModalFreeHistories = window.openModalFreeHistories || function(plantId) {
-      console.warn('[DEPRECATED] Use window.openModalFreeHistories from app.js');
-    };
-    
-    window.closeModalFreeHistories = window.closeModalFreeHistories || function(plantId) {
-      console.warn('[DEPRECATED] Use window.closeModalFreeHistories from app.js');
-    };
-    
-    
-    // WATERING VALIDATION
-    window.handleQuickWateringSubmit = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const dateInput = document.getElementById('quickWateringDateFromModal');
-      const dateError = document.getElementById('quickWateringDateError');
-      const form = document.getElementById('quickWateringFormFromModal');
-      
-      if (!dateInput || !dateError || !form) {
-        console.error('[WATERING] Elements not found!');
-        return false;
-      }
-      
-      const enteredDate = dateInput.value;
-      const today = new Date().toISOString().split('T')[0];
-      
-      console.log('[WATERING] Date entered:', enteredDate);
-      console.log('[WATERING] Today:', today);
-      console.log('[WATERING] Is future?', enteredDate > today);
-      
-      if (!enteredDate) {
-        dateError.textContent = 'La date est requise';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      if (enteredDate > today) {
-        dateError.textContent = 'La date ne peut pas être dans le futur';
-        dateError.classList.remove('hidden');
-        console.log('[WATERING] Error: Future date blocked');
-        return false;
-      }
-      
-      dateError.classList.add('hidden');
-      console.log('[WATERING] Date valid, submitting...');
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          alertSuccess('Arrosage enregistré !', 0);
-          closeQuickWateringModalFromModal();
+        closeQuickWateringModalFromModal();
+        if (typeof reloadHistoriesInModal === 'function') {
           reloadHistoriesInModal();
-          const plantsModal = document.getElementById('quickPlantsModalFromModal');
-          if (plantsModal) {
-            plantsModal.classList.remove('hidden');
-          }
-        } else {
-          return response.text().then(text => {
-            throw new Error(text);
-          });
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        dateError.textContent = 'Erreur lors de l\'enregistrement';
-        dateError.classList.remove('hidden');
-      });
-      
-      return false;
-    };
-    
-    // FERTILIZING VALIDATION
-    window.handleQuickFertilizingSubmit = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const dateInput = document.getElementById('quickFertilizingDateFromModal');
-      const dateError = document.getElementById('quickFertilizingDateError');
-      const form = document.getElementById('quickFertilizingFormFromModal');
-      
-      if (!dateInput || !dateError || !form) {
-        console.error('[FERTILIZING] Elements not found!');
-        return false;
-      }
-      
-      const enteredDate = dateInput.value;
-      const today = new Date().toISOString().split('T')[0];
-      
-      console.log('[FERTILIZING] Date entered:', enteredDate);
-      console.log('[FERTILIZING] Today:', today);
-      console.log('[FERTILIZING] Is future?', enteredDate > today);
-      
-      if (!enteredDate) {
-        dateError.textContent = 'La date est requise';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      if (enteredDate > today) {
-        dateError.textContent = 'La date ne peut pas être dans le futur';
-        dateError.classList.remove('hidden');
-        console.log('[FERTILIZING] Error: Future date blocked');
-        return false;
-      }
-      
-      dateError.classList.add('hidden');
-      console.log('[FERTILIZING] Date valid, submitting...');
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          alertSuccess('Fertilisation enregistrée !', 0);
-          closeQuickFertilizingModalFromModal();
+        reopenPlantsModalIfNeeded();
+      },
+    });
+
+    window.handleQuickFertilizingSubmit = createQuickModalSubmitHandler({
+      formId: 'quickFertilizingFormFromModal',
+      dateInputId: 'quickFertilizingDateFromModal',
+      dateErrorId: 'quickFertilizingDateError',
+      successMessage: 'Fertilisation enregistrée !',
+      onSuccess: ({ successMessage }) => {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess(successMessage, 0);
+        }
+        closeQuickFertilizingModalFromModal();
+        if (typeof reloadHistoriesInModal === 'function') {
           reloadHistoriesInModal();
-          const plantsModal = document.getElementById('quickPlantsModalFromModal');
-          if (plantsModal) {
-            plantsModal.classList.remove('hidden');
-          }
-        } else {
-          return response.text().then(text => {
-            throw new Error(text);
-          });
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        dateError.textContent = 'Erreur lors de l\'enregistrement';
-        dateError.classList.remove('hidden');
-      });
-      
-      return false;
-    };
-    
-    // REPOTTING VALIDATION
-    window.handleQuickRepottingSubmit = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const dateInput = document.getElementById('quickRepottingDateFromModal');
-      const dateError = document.getElementById('quickRepottingDateError');
-      const form = document.getElementById('quickRepottingFormFromModal');
-      
-      if (!dateInput || !dateError || !form) {
-        console.error('[REPOTTING] Elements not found!');
-        return false;
-      }
-      
-      const enteredDate = dateInput.value;
-      const today = new Date().toISOString().split('T')[0];
-      
-      console.log('[REPOTTING] Date entered:', enteredDate);
-      console.log('[REPOTTING] Today:', today);
-      console.log('[REPOTTING] Is future?', enteredDate > today);
-      
-      if (!enteredDate) {
-        dateError.textContent = 'La date est requise';
-        dateError.classList.remove('hidden');
-        return false;
-      }
-      
-      if (enteredDate > today) {
-        dateError.textContent = 'La date ne peut pas être dans le futur';
-        dateError.classList.remove('hidden');
-        console.log('[REPOTTING] Error: Future date blocked');
-        return false;
-      }
-      
-      dateError.classList.add('hidden');
-      console.log('[REPOTTING] Date valid, submitting...');
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          alertSuccess('Rempotage enregistré !', 0);
-          closeQuickRepottingModalFromModal();
+        reopenPlantsModalIfNeeded();
+      },
+    });
+
+    window.handleQuickRepottingSubmit = createQuickModalSubmitHandler({
+      formId: 'quickRepottingFormFromModal',
+      dateInputId: 'quickRepottingDateFromModal',
+      dateErrorId: 'quickRepottingDateError',
+      successMessage: 'Rempotage enregistré !',
+      onSuccess: ({ successMessage }) => {
+        if (typeof alertSuccess === 'function') {
+          alertSuccess(successMessage, 0);
+        }
+        closeQuickRepottingModalFromModal();
+        if (typeof reloadHistoriesInModal === 'function') {
           reloadHistoriesInModal();
-          const plantsModal = document.getElementById('quickPlantsModalFromModal');
-          if (plantsModal) {
-            plantsModal.classList.remove('hidden');
-          }
-        } else {
-          return response.text().then(text => {
-            throw new Error(text);
-          });
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        dateError.textContent = 'Erreur lors de l\'enregistrement';
-        dateError.classList.remove('hidden');
-      });
-      
-      return false;
-    };
-    
-    // Setup functions for max date
-    window.setupQuickWateringModal = function() {
-      const dateInput = document.getElementById('quickWateringDateFromModal');
-      if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.max = today;
-        console.log('[WATERING] Max date set to:', today);
-      }
-    };
-    
-    window.setupQuickFertilizingModal = function() {
-      const dateInput = document.getElementById('quickFertilizingDateFromModal');
-      if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.max = today;
-        console.log('[FERTILIZING] Max date set to:', today);
-      }
-    };
-    
-    window.setupQuickRepottingModal = function() {
-      const dateInput = document.getElementById('quickRepottingDateFromModal');
-      if (dateInput) {
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.max = today;
-        console.log('[REPOTTING] Max date set to:', today);
-      }
-    };
-    
+        reopenPlantsModalIfNeeded();
+      },
+    });
+
     console.log('[INDEX] All quick modal handlers defined');
   </script>
 @endsection
