@@ -24,6 +24,7 @@ class Plant extends Model
         'cultivar',
         'purchase_date',
         'purchase_place',
+        'purchase_place_id',
         'purchase_price',
         'description',
         'watering_frequency',
@@ -40,6 +41,7 @@ class Plant extends Model
         'info_url',
         'main_photo',
         'location',
+        'location_id',
         'pot_size',
         'health_status',
         'is_archived',
@@ -322,6 +324,22 @@ class Plant extends Model
     public function diseaseHistories()
     {
         return $this->hasMany(DiseaseHistory::class);
+    }
+
+    /**
+     * Relation: Une plante a un emplacement
+     */
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    /**
+     * Relation: Une plante a un lieu d'achat
+     */
+    public function purchasePlace()
+    {
+        return $this->belongsTo(PurchasePlace::class);
     }
 
     /**
