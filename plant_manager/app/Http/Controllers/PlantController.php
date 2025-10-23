@@ -22,10 +22,7 @@ class PlantController extends Controller
     public function index(Request $request)
     {
         $plants = Plant::with(['tags', 'photos'])
-            ->where(function ($query) {
-                $query->whereNull('is_archived')
-                      ->orWhere('is_archived', false);
-            })
+            ->where('is_archived', false)
             ->latest('created_at')
             ->get();
 

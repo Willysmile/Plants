@@ -63,6 +63,13 @@ class Plant extends Model
     ];
 
     /**
+     * Attributs par défaut
+     */
+    protected $attributes = [
+        'is_archived' => false,
+    ];
+
+    /**
      * Convertir les dates en instances Carbon
      */
     protected $casts = [
