@@ -28,6 +28,9 @@
 
             <!-- Page Content -->
             <main>
+                <!-- Notifications Container (for dynamic notifications) -->
+                <x-notifications-container />
+                
                 @yield('content', $slot ?? '')
             </main>
         </div>
